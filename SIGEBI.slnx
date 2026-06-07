@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/Clients/">
+    <Project Path="SIGEBI.AppEscritorio/SIGEBI.AppEscritorio.csproj" />
+    <Project Path="SIGEBI.AppWeb/SIGEBI.AppWeb.csproj" />
+  </Folder>
+  <Folder Name="/Core/">
+    <Project Path="SIGEBI.Application/SIGEBI.Application.csproj" />
+    <Project Path="SIGEBI.Domain/SIGEBI.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="SIGEBI.Infrastructure/SIGEBI.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="SIGEBI.Api/SIGEBI.Api.csproj" />
+  </Folder>
+</Solution>
