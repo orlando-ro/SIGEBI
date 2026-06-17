@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SIGEBI.Application.Interfaces
+namespace SIGEBI.Domain.Entities
 {
-    internal interface IRepositorioPrestamo
+    internal class Notificacion
     {
     }
 }

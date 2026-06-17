@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SIGEBI.Application.Interfaces
+namespace SIGEBI.Application.DTOs
 {
-    internal interface IRepositorioPrestamo
+    internal class UsuarioRequestDTO
     {
     }
 }
