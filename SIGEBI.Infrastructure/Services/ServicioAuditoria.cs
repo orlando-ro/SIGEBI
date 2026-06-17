@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SIGEBI.Application.Interfaces
+namespace SIGEBI.Infrastructure.Services
 {
-    internal interface IRepositorioUsuario
+    internal class ServicioAuditoria
     {
     }
 }
