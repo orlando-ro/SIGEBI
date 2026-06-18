@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace SIGEBI.Domain.Entities
 {
+    
     public class Prestamo
     {
         public int IdPrestamo { get; set; }
