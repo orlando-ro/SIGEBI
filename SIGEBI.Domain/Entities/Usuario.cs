@@ -4,7 +4,8 @@ using System.Text;
 
 namespace SIGEBI.Domain.Entities
 {
-    internal class Usuario
+    public abstract class Usuario
     {
+
     }
 }

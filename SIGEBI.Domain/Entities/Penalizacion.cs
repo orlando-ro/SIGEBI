@@ -1,10 +1,12 @@
-﻿using System;
+﻿using SIGEBI.Domain.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace SIGEBI.Domain.Entities
 {
-    internal class Penalizacion
+    public class Penalizacion
     {
+
     }
 }
