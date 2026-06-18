@@ -1,4 +1,7 @@
 
+using Microsoft.EntityFrameworkCore;
+using SIGEBI.Infrastructure.Persistence;
+
 namespace SIGEBI.Api
 {
     public class Program
@@ -7,11 +10,20 @@ namespace SIGEBI.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
+            
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+            
             builder.Services.AddOpenApi();
+
+            // ---> INICIO DE LA CONFIGURACIÓN DE BASE DE DATOS <---
+            // 1. Leer el string de conexión desde appsettings.json
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            // 2. Registrar SIGEBIDbContext para usar SQL Server
+            builder.Services.AddDbContext<SIGEBIDbContext>(options =>
+                options.UseSqlServer(connectionString));
+
+            // ---> FIN DE LA CONFIGURACIÓN DE BASE DE DATOS <---
 
             var app = builder.Build();
 
@@ -24,7 +36,6 @@ namespace SIGEBI.Api
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
