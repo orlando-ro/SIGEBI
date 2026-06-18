@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+
 
 namespace SIGEBI.Domain.Entities
 {
-    internal class Prestamo
+    public class Prestamo
     {
+        public int IdPrestamo { get; set; }
+        public Usuario UsuarioResponsable { get; set; }
+        public Libro LibroPrestado { get; set; }
+        public DateTime FechaInicio { get; set; }
+        public DateTime FechaLimite { get; set; }
+        public EstadoPrestamo Estado { get; set; }
+
     }
 }

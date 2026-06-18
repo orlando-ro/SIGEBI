@@ -4,7 +4,8 @@ using System.Text;
 
 namespace SIGEBI.Domain.Entities
 {
-    internal class Docente
+    public class Docente : Usuario
     {
+        public string NumeroEmpleado { get; set; } = string.Empty;
     }
 }
