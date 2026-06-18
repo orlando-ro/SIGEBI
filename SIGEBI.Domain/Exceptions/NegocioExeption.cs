@@ -7,18 +7,18 @@ namespace SIGEBI.Domain.Exceptions
     internal class NegocioExeption : Exception
     {
        
-        public NegocioException()
+        public NegocioExeption()
         {
         }
 
         
-        public NegocioException(string message)
+        public NegocioExeption(string message)
             : base(message)
         {
         }
 
         
-        public NegocioException(string message, Exception inner)
+        public NegocioExeption(string message, Exception inner)
             : base(message, inner)
         {
         }

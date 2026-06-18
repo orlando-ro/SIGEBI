@@ -25,10 +25,10 @@ namespace SIGEBI.Domain.Entities
         public Devolucion(int idPrestamo, string condicionLibro, string observaciones = "")
         {
             if (idPrestamo <= 0)
-                throw new NegocioException("La devolución debe estar asociada a un préstamo válido.");
+                throw new NegocioExeption("La devolución debe estar asociada a un préstamo válido.");
 
             if (string.IsNullOrWhiteSpace(condicionLibro))
-                throw new NegocioException("Se debe especificar la condición física del recurso devuelto.");
+                throw new NegocioExeption("Se debe especificar la condición física del recurso devuelto.");
 
             IdPrestamo = idPrestamo;
             CondicionLibro = condicionLibro;

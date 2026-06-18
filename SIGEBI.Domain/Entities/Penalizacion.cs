@@ -30,13 +30,13 @@ namespace SIGEBI.Domain.Entities
         public Penalizacion(string idUsuario, double monto, string motivo)
         {
             if (string.IsNullOrWhiteSpace(idUsuario))
-                throw new NegocioException("La penalización debe estar asociada a un usuario.");
+                throw new NegocioExeption("La penalización debe estar asociada a un usuario.");
 
             if (monto <= 0)
-                throw new NegocioException("El monto de la penalización debe ser mayor a cero.");
+                throw new NegocioExeption("El monto de la penalización debe ser mayor a cero.");
 
             if (string.IsNullOrWhiteSpace(motivo))
-                throw new NegocioException("Se debe especificar el motivo de la penalización (ej. Retraso, Daño).");
+                throw new NegocioExeption("Se debe especificar el motivo de la penalización (ej. Retraso, Daño).");
 
             IdUsuario = idUsuario;
             Monto = monto;
@@ -49,7 +49,7 @@ namespace SIGEBI.Domain.Entities
         public void MarcarComoPagada()
         {
             if (Pagada)
-                throw new NegocioException("Esta penalización ya se encuentra pagada, no se puede volver a pagar.");
+                throw new NegocioExeption("Esta penalización ya se encuentra pagada, no se puede volver a pagar.");
 
             Pagada = true;
         }

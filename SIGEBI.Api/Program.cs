@@ -1,4 +1,6 @@
-
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using SIGEBI.Infrastructure.Persistence;
 
@@ -8,35 +10,28 @@ namespace SIGEBI.Api
     {
         public static void Main(string[] args)
         {
+            
             var builder = WebApplication.CreateBuilder(args);
 
-            
             builder.Services.AddControllers();
+
             
-            builder.Services.AddOpenApi();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
-            // ---> INICIO DE LA CONFIGURACIÓN DE BASE DE DATOS <---
-            // 1. Leer el string de conexión desde appsettings.json
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-            // 2. Registrar SIGEBIDbContext para usar SQL Server
+            // Conexión a Base de Datos
             builder.Services.AddDbContext<SIGEBIDbContext>(options =>
-                options.UseSqlServer(connectionString));
-
-            // ---> FIN DE LA CONFIGURACIÓN DE BASE DE DATOS <---
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
             app.MapControllers();
 
             app.Run();

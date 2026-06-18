@@ -40,5 +40,10 @@ namespace SIGEBI.Domain.Entities
                 CopiasDisponibles++;
             }
         }
+
+        public void IncrementarCopia()
+        {
+            CopiasDisponibles++;
+        }
     }
 }
