@@ -19,4 +19,10 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SIGEBI.Application\SIGEBI.Application.csproj" />
+    <ProjectReference Include="..\SIGEBI.AppWeb\SIGEBI.AppWeb.csproj" />
+    <ProjectReference Include="..\SIGEBI.Domain\SIGEBI.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
