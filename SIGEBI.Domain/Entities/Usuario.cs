@@ -18,6 +18,9 @@ namespace SIGEBI.Domain.Entities
         // Relación para el módulo de Penalizaciones
         public virtual ICollection<Penalizacion> Penalizaciones { get; set; } = new List<Penalizacion>();
 
+        // Permite que un Usuario acceda a su lista de préstamos: usuario.Prestamos
+        public virtual ICollection<Prestamo> Prestamos { get; set; } = new List<Prestamo>();
+
         // Regla de negocio del dominio (Rich Domain)
         public bool VerificarPenalizaciones()
         {
