@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SIGEBI.Domain.Entities
 {
-     public class Rechasado : Resolucion
+     public class Rechazo : Resolucion
     {
         public string MotivoRechazo { get; set; }
 

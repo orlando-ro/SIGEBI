@@ -6,13 +6,3 @@ using System.Runtime.InteropServices;
 // de los atributos que se incluyen y cómo personalizar este proceso, consulte https://aka.ms/assembly-info-properties
 
 
-// Al establecer ComVisible en false, se consigue que los tipos de este ensamblado
-// no sean visibles para los componentes COM. Si tiene que acceder a un tipo en este
-// ensamblado desde COM, establezca el atributo ComVisible en true en ese tipo.
-
-[assembly: ComVisible(false)]
-
-// El siguiente GUID es para el identificador de typelib, si este proyecto se expone
-// en COM.
-
-[assembly: Guid("3e34c373-3913-4b70-b9ce-516a59e3c48c")]
