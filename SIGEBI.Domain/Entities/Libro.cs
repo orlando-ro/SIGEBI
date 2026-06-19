@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SIGEBI.Domain.Exceptions;
 
 namespace SIGEBI.Domain.Entities
 {
@@ -23,27 +24,28 @@ namespace SIGEBI.Domain.Entities
 
         // reglas de negocio en dominio, puede cambiar si decidimos hacer toda la logica de negocios en servivios
 
-        public bool PrestarCopia()
+        public void PrestarCopia()
         {
-            if (CopiasDisponibles > 0)
+            if (CopiasDisponibles <= 0)
             {
-                CopiasDisponibles--;
-                return true;
+                throw new NegocioExeption($"El libro '{Titulo}' no tiene copias disponibles para préstamo.");
             }
-            return false;
+            CopiasDisponibles--;
         }
 
         public void DevolverCopia()
         {
-            if (CopiasDisponibles < CopiasTotales)
+            if (CopiasDisponibles >= CopiasTotales)
             {
-                CopiasDisponibles++;
+                throw new NegocioExeption($"Inconsistencia: No se pueden devolver más copias de las totales registradas para el libro '{Titulo}'.");
             }
+            CopiasDisponibles++;
         }
 
         public void IncrementarCopia()
         {
             CopiasDisponibles++;
+            CopiasTotales++;
         }
     }
 }
