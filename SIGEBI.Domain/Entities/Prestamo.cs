@@ -13,7 +13,7 @@ namespace SIGEBI.Domain.Entities
         public DateTime FechaInicio { get; private set; }
         public DateTime FechaVencimiento { get; private set; }
 
-        // AQUÍ ESTABA EL ERROR: Ahora es un string simple
+        
         public string Estado { get; private set; }
 
         public string IdUsuario { get; private set; }
