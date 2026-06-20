@@ -21,7 +21,7 @@ namespace SIGEBI.Infrastructure.Repositories
         {
             return await _dbSet
                 .Where(n => n.IdUsuario == idUsuario)
-                .OrderByDescending(n => n.FechaEnvio) // ordenadas por nuevas primero
+                .OrderByDescending(n => n.FechaEnvio) 
                 .ToListAsync();
         }
 

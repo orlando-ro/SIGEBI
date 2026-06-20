@@ -22,7 +22,7 @@ namespace SIGEBI.Infrastructure.Repositories
 
         public async Task<T?> ObtenerPorIdAsync(object id)
         {
-            // El hilo se libera mientras EF Core busca en la BD
+            
             return await _dbSet.FindAsync(id);
         }
 

@@ -17,11 +17,10 @@ namespace SIGEBI.Domain.Entities
         public string EntidadAfectada { get; private set; } // Ej: "Prestamo", "Libro"
         public string Detalles { get; private set; } // Un JSON o texto con los cambios realizados
 
-        // Constructor vacío requerido por Entity Framework
+        
         protected RegistroAuditoria() { }
 
-        // Un registro de auditoría solo se puede CREAR. 
-        // No hay métodos para editar, garantizando la inmutabilidad de la bitácora.
+        
         public RegistroAuditoria(string idUsuario, string accion, string entidadAfectada, string detalles)
         {
             if (string.IsNullOrWhiteSpace(idUsuario))
@@ -36,8 +35,7 @@ namespace SIGEBI.Domain.Entities
             IdUsuario = idUsuario;
             Accion = accion;
             EntidadAfectada = entidadAfectada;
-            Detalles = detalles ?? string.Empty; // Los detalles pueden estar vacíos
-
+            Detalles = detalles ?? string.Empty; 
             FechaHora = DateTime.Now;
         }
     }

@@ -11,7 +11,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
     internal class RepositorioSolicitudes : BaseRepository<Solicitud>, IRepoSolicitud
     {
 
-        // Guardamos el contexto localmente solo para poder guardar la Resolución
+        
         private readonly SIGEBIDbContext _contextLocal;
         public RepositorioSolicitudes(SIGEBIDbContext context) : base(context)
         {

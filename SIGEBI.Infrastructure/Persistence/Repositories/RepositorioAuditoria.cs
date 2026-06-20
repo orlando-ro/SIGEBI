@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace SIGEBI.Infrastructure.Persistence.Repositories
 {
-    // Heredamos del repositorio base inmutable que acabamos de crear
+    
     public class RepositorioAuditoria : InmutableRepository<RegistroAuditoria>, IRepositorioAuditoria
     {
         public RepositorioAuditoria(SIGEBIDbContext context) : base(context)
         {
         }
 
-        // Ya no escribimos el CRUD básico, solo las consultas de LINQ específicas usando _dbSet
+        
         public async Task<IEnumerable<RegistroAuditoria>> ObtenerPorActorAsync(string idUsuarioActor)
         {
             return await _dbSet

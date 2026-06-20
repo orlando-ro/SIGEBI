@@ -10,21 +10,21 @@ namespace SIGEBI.Domain.Entities
         public int IdSolicitud { get; set; }
         public DateTime FechaSolicitud { get; private set; }
 
-        // El estado ahora está protegido con private set
+        
         public string Estado { get; private set; }
 
-        // Relaciones protegidas
+        
         public string IdUsuario { get; private set; }
         public Usuario Usuario { get; set; }
         public ICollection<Libro> LibrosSolicitados { get; private set; } = new List<Libro>();
 
-        // Historial de resolución (Aprobación o Rechazo)
+        
         public Resolucion Resolucion { get; private set; }
 
-        // Constructor vacío requerido por Entity Framework
+        
         protected Solicitud() { }
 
-        // Constructor para garantizar que la solicitud nazca en un estado válido
+        
         public Solicitud(string idUsuario, List<Libro> librosSolicitados)
         {
             if (string.IsNullOrWhiteSpace(idUsuario))
@@ -35,11 +35,11 @@ namespace SIGEBI.Domain.Entities
 
             IdUsuario = idUsuario;
             FechaSolicitud = DateTime.Now;
-            Estado = "Pendiente"; // Toda solicitud nace como pendiente
+            Estado = "Pendiente"; 
             LibrosSolicitados = librosSolicitados;
         }
 
-        // Reglas de negocio (Métodos de Dominio)
+        
         public void Aprobar()
         {
             if (Estado != "Pendiente")

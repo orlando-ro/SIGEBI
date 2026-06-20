@@ -9,8 +9,7 @@ namespace SIGEBI.Infrastructure.Persistence
 {
    public class SIGEBIDbContext : DbContext
    {
-            // Este constructor es OBLIGATORIO.
-            // es lo que recibe el "Connection String" desde el Program.cs de la API
+            
             public SIGEBIDbContext(DbContextOptions<SIGEBIDbContext> options) : base(options)
             {
 
