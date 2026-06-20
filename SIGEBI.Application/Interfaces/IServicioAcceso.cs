@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SIGEBI.Application.Interfaces
 {
-    internal interface IServicioAcceso
+    public interface IServicioAcceso
     {
     }
 }

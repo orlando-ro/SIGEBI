@@ -1,10 +1,12 @@
-﻿using System;
+﻿using SIGEBI.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace SIGEBI.Application.Interfaces
 {
-    internal interface IRepositorioDevolucion
+    public interface IRepositorioDevolucion : IBaseRepository<Devolucion>
     {
+        Task<Devolucion?> ObtenerPorPrestamoAsync(int IdPrestamo);
     }
 }
