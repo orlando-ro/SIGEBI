@@ -13,6 +13,8 @@ namespace SIGEBI.Domain.Entities
         public string NombreAutor { get; set; } = string.Empty;
         public int AnioPublicacion { get; set; }
 
+        public string? UrlImagen { get; private set; }
+
         
         public int CopiasTotales { get; set; }
         public int CopiasDisponibles { get; set; }
@@ -21,6 +23,23 @@ namespace SIGEBI.Domain.Entities
         public int IdCategoria { get; set; }
         public virtual Categoria? Categoria { get; set; }
 
+        protected Libro() { } // este constructor es necesario para el EF Core
+
+        public Libro(string isbn, string titulo) {
+
+            ISBN = isbn;
+            Titulo = titulo;
+
+        }
+
+
+        public void AsignarImagen(string url) {
+
+            if (string.IsNullOrWhiteSpace(url))
+                throw new NegocioExeption(" La ruta de la imagen no puede estar vacia. ");
+
+            UrlImagen = url;
+        }
 
         
 
