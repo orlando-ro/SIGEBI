@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SIGEBI.Domain.Exceptions
 {
-    internal class NegocioExeption : Exception
+    public class NegocioExeption : Exception
     {
 
         public NegocioExeption()

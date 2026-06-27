@@ -10,5 +10,7 @@ namespace SIGEBI.Application.Interfaces
     {
         // metodo exclusivo para traer el libro con el nombre de su categoría
         Task<Libro?> ObtenerLibroConCategoriaAsync(string isbn);
+
+        Task<Libro?> BuscarLibroPorIsbnAsync(string isbn);
     }
 }
