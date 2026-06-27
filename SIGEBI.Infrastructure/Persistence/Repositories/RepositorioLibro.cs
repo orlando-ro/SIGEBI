@@ -22,5 +22,11 @@ namespace SIGEBI.Infrastructure.Repositories
                 .Include(l => l.Categoria)
                 .FirstOrDefaultAsync(l => l.ISBN == isbn);
         }
+
+        public async Task<Libro?> BuscarLibroPorIsbnAsync(string isbn) {
+
+            return await _dbSet.FirstOrDefaultAsync(l => l.ISBN == isbn);
+        }
     }
+
 }
