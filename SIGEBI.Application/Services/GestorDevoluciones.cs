@@ -65,7 +65,6 @@ namespace SIGEBI.Application.Services
             // 8. Auditar la acción
             await _servicioAuditoria.RegistrarAccionAsync(
                 idBibliotecario,
-                "Exito",
                 "Prestamo",
                 "Devolucion",
                 $"Devolución procesada para Préstamo {peticion.IdPrestamo}. Retraso: {diasRetraso} días. Condición: {peticion.CondicionLibro}"
