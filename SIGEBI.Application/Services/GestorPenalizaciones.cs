@@ -49,7 +49,6 @@ namespace SIGEBI.Application.Services
             await _servicioAuditoria.RegistrarAccionAsync(
                 idUsuarioResolutor,
                 "Resolver Penalización",
-                "Éxito",
                 "Penalizacion",
                 $"Penalización {peticion.IdPenalizacion} marcada como pagada. Motivo: {peticion.MotivoResolucion}"
             );
