@@ -5,6 +5,7 @@ using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Domain.Entities;
 using SIGEBI.Domain.Exceptions;
+using BCrypt.Net;
 
 namespace SIGEBI.Application.Services
 {
@@ -28,9 +29,9 @@ namespace SIGEBI.Application.Services
             {
                 "estudiante" => new Estudiante { Matricula = dto.Matricula },
                 "docente" => new Docente { NumeroEmpleado = dto.NumeroEmpleado },
-                "administrador" => new Administrador(),
-                "bibliotecario" => new PersonalBibliotecario(),
-                "auditor" => new Auditor(),
+                "administrador" => new Administrador { NumeroEmpleado = dto.NumeroEmpleado },
+                "bibliotecario" => new PersonalBibliotecario { NumeroEmpleado = dto.NumeroEmpleado },
+                "auditor" => new Auditor { NumeroEmpleado = dto.NumeroEmpleado },
                 _ => throw new NegocioExeption("Tipo de usuario inválido.")
             };
 
@@ -38,6 +39,7 @@ namespace SIGEBI.Application.Services
             nuevoUsuario.Nombre = dto.Nombre;
             nuevoUsuario.Email = dto.Email;
             nuevoUsuario.Estado = "Activo";
+            nuevoUsuario.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
             await _repositorioUsuario.AgregarAsync(nuevoUsuario);
 

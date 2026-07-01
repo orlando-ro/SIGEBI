@@ -6,5 +6,6 @@ namespace SIGEBI.Domain.Entities
 {
     public class Auditor : Usuario
     {
+        public string NumeroEmpleado { get; set; } = string.Empty;
     }
 }

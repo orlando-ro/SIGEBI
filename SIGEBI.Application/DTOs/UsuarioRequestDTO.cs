@@ -17,10 +17,10 @@ namespace SIGEBI.Application.DTOs
         [EmailAddress(ErrorMessage = "El formato del correo electrónico no es válido.")]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Debe especificar el tipo de usuario (Ej: Estudiante, Docente).")]
+        [Required(ErrorMessage = "Debe especificar el tipo de usuario (Ej: Estudiante, Docente.")]
         public string TipoUsuario { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Debe agregar una contrasenia inicial al usuario).")]
+        [Required(ErrorMessage = "Debe agregar una contrasenia inicial al usuario (igual al numero de empleado o matricula).")]
         public string Password { get; set; } = string.Empty;
 
         // los campos sigtes. no son Required porque dependen del TipoUsuario
