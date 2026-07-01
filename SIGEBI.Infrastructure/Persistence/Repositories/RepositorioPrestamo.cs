@@ -20,6 +20,34 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
                 .Where(p => p.IdUsuario == idUsuario && p.Estado == "Activo").ToListAsync();
         }
 
+        public async Task<IEnumerable<Prestamo>> ObtenerActivosPorRecursoAsync(string isbn)
+        {
+            return await _dbSet
+                .Include(p => p.Libros)
+                .Include(p => p.Usuario)
+                .Where(p => p.Estado == "Activo" && p.Libros.Any(l => l.ISBN == isbn)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Prestamo>> ObtenerHistorialPorRecurso(string isbn)
+        {
+            return await _dbSet
+                .Include(p => p.Libros)
+                .Include(p => p.Usuario)
+                .Where(p => p.Estado == "Activo" && p.Libros.Any(l => l.ISBN == isbn))
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Prestamo>> ObtenerHistorialPorUsuarioAsync(string idUsuario)
+        {
+            return await _dbSet
+                .Include(p => p.Libros)
+                .Include(p => p.Usuario)
+                .Where(p => p.IdUsuario == idUsuario)
+                .OrderByDescending(p => p.FechaInicio)
+                .ToListAsync();
+
+        }
+
         public async Task<Prestamo?> obtenerPrestamoConDetalleAsync(int id)
         {
             return await _dbSet

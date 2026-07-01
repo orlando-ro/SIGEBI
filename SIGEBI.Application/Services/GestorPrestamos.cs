@@ -1,7 +1,5 @@
 ﻿using SIGEBI.Application.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using SIGEBI.Application.DTOs;
 using SIGEBI.Domain.Exceptions;
 using SIGEBI.Domain.Entities;
 
@@ -31,21 +29,21 @@ namespace SIGEBI.Application.Services
 
         public async Task AprobarYRegistrarPrestamoAsync(int idSolicitud, string idBibliotecario)
         {
-            // 1. Buscamos los datos de la solicitud 
+           
             var solicitud = await _repoSolicitud.ObtenerSolicitudConDetallesAsync(idSolicitud);
             if (solicitud == null) throw new NegocioExeption("La solicitud no existe.");
 
-            // 2. Modificar el estado de la Solicitud 
+            
             solicitud.Aprobar(); 
 
-            // 3. Crear la Resolución de Aprobación
+            
             var aprobacion = new Aprobacion
             {
                 IdSolicitud = solicitud.IdSolicitud,
                 IdBibliotecario = idBibliotecario,
                 FechaResolucion = DateTime.Now
             };
-            // prestamo aprovado
+            
 
             await _servicioAuditoria.RegistrarAccionAsync(
                 idUsuario: idBibliotecario,
@@ -55,9 +53,9 @@ namespace SIGEBI.Application.Services
                 );
 
 
-            // 4. Creamos el prestamo oficial
+            
             DateTime fechaInicio = DateTime.Now;
-            DateTime fechaVencimiento = fechaInicio.AddDays(7);
+            DateTime fechaVencimiento = calcularFechaVencimiento(solicitud.IdUsuario, fechaInicio);
 
             var nuevoPrestamo = new Prestamo(
                 solicitud.IdUsuario,
@@ -66,21 +64,21 @@ namespace SIGEBI.Application.Services
                 new List<Libro>(solicitud.LibrosSolicitados)
             );
 
-            // 5. Decrementar el inventario fisico de los libros prestados
+           
             foreach (var libro in solicitud.LibrosSolicitados)
             {
                 libro.PrestarCopia();
                 await _repoLibro.ActualizarAsync(libro); 
             }
 
-            // 6. Guardamos todo
+            
             await _repoSolicitud.ActualizarAsync(solicitud);
             await _repoSolicitud.GuardarResolucionAsync(aprobacion);
 
             aprobacion.PrestamoGenerado = nuevoPrestamo; 
             await _repoPrestamo.AgregarAsync(nuevoPrestamo);
 
-            // agregamos el prestamo generado a auditoria para que el auditor pueda verla 
+            
 
             await _servicioAuditoria.RegistrarAccionAsync(
                 idUsuario: idBibliotecario,
@@ -93,32 +91,76 @@ namespace SIGEBI.Application.Services
 
         public async Task ProcesarDevolucionAsync(int idPrestamo, string condicionLibro)
         {
-            // 1. Obtener el préstamo
+           
             var prestamo = await _repoPrestamo.obtenerPrestamoConDetalleAsync(idPrestamo);
             if (prestamo == null) throw new NegocioExeption("El préstamo no fue encontrado.");
 
-            // 2. ¿Cuántos días de retraso tuvo? (Calculado por la entidad)
+            
             int diasRetraso = prestamo.CalcularDiasRetraso();
 
-            // 3. Registrar la devolución en el Dominio (cambia estado y restaura copias de libros)
+           
             prestamo.RegistrarDevolucion();
 
-            // 4. Crear la entidad de Devolución
+           
             var devolucion = new Devolucion(idPrestamo, condicionLibro);
 
-            // 5. Generar penalización si hubo retraso (Integración entre módulos)
+           
             if (diasRetraso > 0)
             {
                 
                 await _servicioPenalizacion.GenerarMultaPorRetrasoAsync(prestamo.IdUsuario, diasRetraso);
             }
 
-            // 6. Actualizar Base de Datos
+           
             await _repoPrestamo.ActualizarAsync(prestamo);
 
             
 
 
+        }
+
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorUsuario(string idusuario) {
+
+            var prestamos = await _repoPrestamo.ObtenerActivoPorUsuarioAsync(idusuario);
+            return prestamos.Select(MapearPrestamoResponse);
+        }
+
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorRecursos(string isbnLibro) {
+
+            var prestamos = await _repoPrestamo.ObtenerActivosPorRecursoAsync(isbnLibro);
+            return prestamos.Select(MapearPrestamoResponse);
+        }
+
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorRecurso(string isbnLibro) {
+
+            var prestamos = await _repoPrestamo.ObtenerHistorialPorRecurso(isbnLibro);
+            return prestamos.Select(MapearPrestamoResponse);
+        }
+
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorUsuario(string idusuario) {
+
+            var prestamos = await _repoPrestamo.ObtenerHistorialPorUsuarioAsync(idusuario);
+            return prestamos.Select(MapearPrestamoResponse);
+        }
+
+        private PrestamoResponseDTO MapearPrestamoResponse(Prestamo prestamo)
+        {
+            return new PrestamoResponseDTO
+            {
+                IdPrestamo = prestamo.IdPrestamo,
+                FechaInicio = prestamo.FechaInicio,
+                FechaVencimiento = prestamo.FechaVencimiento,
+                Estado = prestamo.Estado,
+                DiasRetraso = prestamo.CalcularDiasRetraso(),
+                IdUsuario = prestamo.IdUsuario,
+                NombreUsuario = prestamo.Usuario != null ? prestamo.Usuario.Nombre : string.Empty,
+                TitulosLibros = prestamo.Libros.Select(l => l.Titulo).ToList()
+            };
+        }
+
+        private DateTime calcularFechaVencimiento(string idUsuario, DateTime fechaInicio) {
+
+            return fechaInicio.AddDays(7);
         }
     }
 }
