@@ -52,10 +52,10 @@ namespace SIGEBI.Application.Services
             // 6. Integración: Multa por Daño (Regla opcional extraída de la entidad Devolucion)
             if (devolucion.RequierePenalizacionPorDano())
             {
-                // En un caso real, la tarifa por daño podría variar o venir de configuración
+               
                 double tarifaDano = 500.0;
                 var nuevaMultaDano = new Penalizacion(prestamo.IdUsuario, tarifaDano, $"Recurso dañado o extraviado: {peticion.CondicionLibro}");
-                // Nota: Aquí podrías exponer un método en IServicioPenalizacion para daños
+                
             }
 
             // 7. Persistir cambios
@@ -65,8 +65,8 @@ namespace SIGEBI.Application.Services
             // 8. Auditar la acción
             await _servicioAuditoria.RegistrarAccionAsync(
                 idBibliotecario,
-                "Prestamo",
                 "Devolucion",
+                "prestamo",
                 $"Devolución procesada para Préstamo {peticion.IdPrestamo}. Retraso: {diasRetraso} días. Condición: {peticion.CondicionLibro}"
             );
         }

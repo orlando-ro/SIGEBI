@@ -11,10 +11,12 @@ namespace SIGEBI.Application.Services
     public class GestorUsuarios : IServicioUsuarios
     {
         private readonly IUsuarios _repositorioUsuario;
+        private readonly IServicioAuditoria _servicioAuditoria;
 
-        public GestorUsuarios(IUsuarios repositorioUsuario)
+        public GestorUsuarios(IUsuarios repositorioUsuario, IServicioAuditoria servicioAuditoria)
         {
             _repositorioUsuario = repositorioUsuario;
+            _servicioAuditoria = servicioAuditoria;
         }
 
         public async Task RegistrarUsuarioAsync(UsuarioRequestDTO dto)
@@ -38,6 +40,15 @@ namespace SIGEBI.Application.Services
             nuevoUsuario.Estado = "Activo";
 
             await _repositorioUsuario.AgregarAsync(nuevoUsuario);
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+
+                idUsuario: dto.IdUsuario,
+                tipoAccion: "Registrar usuario",
+                 entidadAfectada: "Prestamo",
+                 detalles: $" Se ha agregado el usuario ({nuevoUsuario})"
+                );
+
         }
 
         public async Task SuspenderUsuarioAsync(string idUsuario)
@@ -47,6 +58,14 @@ namespace SIGEBI.Application.Services
 
             usuario.Estado = "Inactivo";
             await _repositorioUsuario.ActualizarAsync(usuario);
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+
+               idUsuario: idUsuario,
+               tipoAccion: "Suspender usuario",
+                entidadAfectada: "Usuario",
+                detalles: $" Se ha suspendido el usuario con el id: ({ idUsuario})"
+               );
         }
 
         public async Task<UsuarioResponseDTO?> ObtenerUsuarioPorIdAsync(string idUsuario)
@@ -63,6 +82,7 @@ namespace SIGEBI.Application.Services
                 TipoUsuario = usuario.GetType().Name,
                 HabilitadoParaPrestamos = !usuario.VerificarPenalizaciones()
             };
+
         }
 
         public async Task<IEnumerable<UsuarioResponseDTO>> ConsultarTodosAsync()

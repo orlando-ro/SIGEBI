@@ -13,17 +13,20 @@ namespace SIGEBI.Application.Services
         private readonly IRepoSolicitud _repoSolicitud;
         private readonly IRepositorioLibro _repoLibro;
         private readonly IServicioPenalizacion _servicioPenalizacion;
+        private readonly IServicioAuditoria _servicioAuditoria;
 
         public GestorPrestamos(
             IRepositorioPrestamo repoPrestamo,
             IRepoSolicitud repoSolicitud,
             IRepositorioLibro repoLibro,
-            IServicioPenalizacion servicioPenalizacion)
+            IServicioPenalizacion servicioPenalizacion,
+            IServicioAuditoria servicioAuditoria)
         {
             _repoPrestamo = repoPrestamo;
             _repoSolicitud = repoSolicitud;
             _repoLibro = repoLibro;
             _servicioPenalizacion = servicioPenalizacion;
+            _servicioAuditoria = servicioAuditoria;
         }
 
         public async Task AprobarYRegistrarPrestamoAsync(int idSolicitud, string idBibliotecario)
@@ -42,6 +45,15 @@ namespace SIGEBI.Application.Services
                 IdBibliotecario = idBibliotecario,
                 FechaResolucion = DateTime.Now
             };
+            // prestamo aprovado
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+                idUsuario: idBibliotecario,
+                tipoAccion: "Aprovacion",
+                 entidadAfectada: "Prestamo",
+                 detalles: $" Se registro el prestamo de la solicitud: ({idSolicitud})"
+                );
+
 
             // 4. Creamos el prestamo oficial
             DateTime fechaInicio = DateTime.Now;
@@ -67,6 +79,15 @@ namespace SIGEBI.Application.Services
 
             aprobacion.PrestamoGenerado = nuevoPrestamo; 
             await _repoPrestamo.AgregarAsync(nuevoPrestamo);
+
+            // agregamos el prestamo generado a auditoria para que el auditor pueda verla 
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+                idUsuario: idBibliotecario,
+                tipoAccion: "Registrar prestamo",
+                 entidadAfectada: "Prestamo",
+                 detalles: $" el bibliotecario con id: ({idBibliotecario}) registro el prestamo ({nuevoPrestamo})"
+                );
 
         }
 
@@ -94,7 +115,10 @@ namespace SIGEBI.Application.Services
 
             // 6. Actualizar Base de Datos
             await _repoPrestamo.ActualizarAsync(prestamo);
+
             
+
+
         }
     }
 }

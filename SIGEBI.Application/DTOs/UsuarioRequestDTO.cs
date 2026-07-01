@@ -20,6 +20,9 @@ namespace SIGEBI.Application.DTOs
         [Required(ErrorMessage = "Debe especificar el tipo de usuario (Ej: Estudiante, Docente).")]
         public string TipoUsuario { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Debe agregar una contrasenia inicial al usuario).")]
+        public string Password { get; set; } = string.Empty;
+
         // los campos sigtes. no son Required porque dependen del TipoUsuario
         public string Matricula { get; set; } = string.Empty;
         public string NumeroEmpleado { get; set; } = string.Empty;
