@@ -10,7 +10,6 @@ namespace SIGEBI.Application.DTOs
         public string IdUsuarioActor { get; set; } = string.Empty;
         public DateTime FechaHora { get; set; }
         public string TipoAccion { get; set; } = string.Empty;
-        public string Resultado { get; set; } = string.Empty;
         public string EntidadAfectada { get; set; } = string.Empty;
         public string DetallesAdicionales { get; set; } = string.Empty;
 

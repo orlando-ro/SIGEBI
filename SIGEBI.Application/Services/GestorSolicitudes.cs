@@ -12,13 +12,15 @@ namespace SIGEBI.Application.Services
         private readonly IRepoSolicitud _repoSolicitud;
         private readonly IUsuarios _usuarios;
         private readonly IRepositorioLibro _repositorioLibro;
+        private readonly IServicioAuditoria _servicioAuditoria;
 
 
-        public GestorSolicitudes(IRepoSolicitud repoSolicitud, IUsuarios usuarios, IRepositorioLibro repositorioLibro) {
+        public GestorSolicitudes(IRepoSolicitud repoSolicitud, IUsuarios usuarios, IRepositorioLibro repositorioLibro, IServicioAuditoria servicioAuditoria) {
 
             _repoSolicitud = repoSolicitud;
             _usuarios = usuarios;
             _repositorioLibro = repositorioLibro;
+            _servicioAuditoria = servicioAuditoria;
         }
 
         public async Task CrearSolicitudAsync(string idUsuario, List<string> isbnsLibros) {
@@ -49,6 +51,17 @@ namespace SIGEBI.Application.Services
 
             // PASO 5: Guardar
             await _repoSolicitud.AgregarAsync(nuevaSolicitud);
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+                
+                idUsuario: idUsuario,
+                tipoAccion: "Creacion de solicitud",
+                entidadAfectada: "solicitud",
+                detalles: $"El usuario {idUsuario} realizó una solicitud para los libros: {string.Join(", ", isbnsLibros)}"
+
+                );
+
         }
+      
     }
 }
