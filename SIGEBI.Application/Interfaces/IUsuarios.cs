@@ -12,5 +12,8 @@ namespace SIGEBI.Application.Interfaces
         // metodo para cargar al usuario con todas sus listas relacionadas
         // necesario para penalizaciones en dominio
         Task<Usuario?> ObtenerUsuarioConDetallesAsync(string idUsuario);
+
+        // metodo para obtener un usuario por email, es necesario para el login, ya que el email es unico y el usuario final no conoce su idUsuario
+        Task<Usuario?> ObtenerPorEmailAsync(string email);
     }
 }

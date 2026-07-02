@@ -100,5 +100,31 @@ namespace SIGEBI.Application.Services
                 HabilitadoParaPrestamos = true
             });
         }
+
+        public async Task<LoginResponseDTO> AutenticarUsuarioAsync(LoginRequestDTO dto)
+        {
+            var usuario = await _repositorioUsuario.ObtenerPorEmailAsync(dto.Email);
+
+            if (usuario == null)
+                throw new NegocioExeption("Credenciales incorrectas.");
+
+            // se compara el password dado del dto con el password almacenado en la base de datos (que está hasheado)
+            bool passwordValida = BCrypt.Net.BCrypt.Verify(dto.Password, usuario.Password);
+
+            if (!passwordValida)
+                throw new NegocioExeption("Credenciales incorrectas.");
+
+            // valida que el usuario no este suspendido
+            if (usuario.Estado == "Inactivo")
+                throw new NegocioExeption("El usuario se encuentra suspendido.");
+
+            return new LoginResponseDTO
+            {
+                IdUsuario = usuario.IdUsuario,
+                Nombre = usuario.Nombre,
+                Email = usuario.Email,
+                TipoUsuario = usuario.GetType().Name
+            };
+        }
     }
 }
