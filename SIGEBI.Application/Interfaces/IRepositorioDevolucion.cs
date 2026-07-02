@@ -8,5 +8,10 @@ namespace SIGEBI.Application.Interfaces
     public interface IRepositorioDevolucion : IBaseRepository<Devolucion>
     {
         Task<Devolucion?> ObtenerPorPrestamoAsync(int IdPrestamo);
+
+
+        Task<IEnumerable<Devolucion>> ConsultarHistorialPorUsuario(string IdUsuario);
+
+        Task<IEnumerable<Devolucion>> ConsultarHistorialPorRecurso(string isbnLibro);
     }
 }

@@ -2,9 +2,6 @@
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Domain.Entities;
 using SIGEBI.Domain.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SIGEBI.Application.Services
 {
@@ -27,48 +24,85 @@ namespace SIGEBI.Application.Services
             _servicioAuditoria = servicioAuditoria;
         }
 
+        public async Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorRecurso(string isbnLibro)
+        {
+            var devoluciones =  await _repoDevolucion.ConsultarHistorialPorRecurso(isbnLibro);
+
+            return devoluciones.Select(MapearDevolucionesResponse);
+        }
+
+        public async Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorUsuario(string IdUsuario)
+        {
+            var devoluciones = await _repoDevolucion.ConsultarHistorialPorUsuario(IdUsuario);
+
+            return devoluciones.Select(MapearDevolucionesResponse);
+        }
+
         public async Task ProcesarDevolucionAsync(DevolucionRequestDTO peticion, string idBibliotecario)
         {
-            // 1. Obtener el préstamo
+            
             var prestamo = await _repoPrestamo.obtenerPrestamoConDetalleAsync(peticion.IdPrestamo);
             if (prestamo == null)
                 throw new NegocioExeption("El préstamo indicado no existe.");
 
-            // 2. Calcular días de retraso antes de mutar el estado
+            if (prestamo.Estado != "Activo")
+                throw new NegocioExeption(" El prestamo ya fue devuelto o no esta activo");
+
+            
             int diasRetraso = prestamo.CalcularDiasRetraso();
 
-            // 3. Registrar devolución en el Dominio
+            
             prestamo.RegistrarDevolucion();
 
-            // 4. Crear entidad de Devolución
+            
             var devolucion = new Devolucion(peticion.IdPrestamo, peticion.CondicionLibro, peticion.Observaciones);
 
-            // 5. Integración: Multa por Retraso
+            bool generoPenalizacion = false;
+
+            
             if (diasRetraso > 0)
             {
                 await _servicioPenalizacion.GenerarMultaPorRetrasoAsync(prestamo.IdUsuario, diasRetraso);
+
+                 generoPenalizacion = true;
             }
 
-            // 6. Integración: Multa por Daño (Regla opcional extraída de la entidad Devolucion)
             if (devolucion.RequierePenalizacionPorDano())
             {
                
                 double tarifaDano = 500.0;
                 var nuevaMultaDano = new Penalizacion(prestamo.IdUsuario, tarifaDano, $"Recurso dañado o extraviado: {peticion.CondicionLibro}");
-                
+
+                generoPenalizacion = true;
             }
 
-            // 7. Persistir cambios
+           
             await _repoDevolucion.AgregarAsync(devolucion);
             await _repoPrestamo.ActualizarAsync(prestamo);
 
-            // 8. Auditar la acción
+            
             await _servicioAuditoria.RegistrarAccionAsync(
                 idBibliotecario,
                 "Devolucion",
                 "prestamo",
                 $"Devolución procesada para Préstamo {peticion.IdPrestamo}. Retraso: {diasRetraso} días. Condición: {peticion.CondicionLibro}"
             );
+        }
+
+        private DevolucionResponseDTO MapearDevolucionesResponse(Devolucion devolucion) {
+
+            return new DevolucionResponseDTO
+            {
+
+                IdDevolucion = devolucion.IdDevolucion,
+                IdPrestamo = devolucion.IdPrestamo,
+                FechaDevolucion = devolucion.FechaDevolucion,
+                CondicionLibro = devolucion.CondicionLibro,
+                Observaciones = devolucion.Observaciones,
+                idusuario = devolucion.Prestamo.IdUsuario,
+                NombreUsuario = devolucion.Prestamo.Usuario != null ? devolucion.Prestamo.Usuario.Nombre : string.Empty,
+                TitulosLibros = devolucion.Prestamo.Libros.Select(l => l.Titulo).ToList()
+            };
         }
     }
 }
