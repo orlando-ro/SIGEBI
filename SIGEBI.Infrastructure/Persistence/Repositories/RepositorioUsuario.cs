@@ -25,5 +25,11 @@ namespace SIGEBI.Infrastructure.Repositories
                 .Include(u => u.Penalizaciones)
                 .FirstOrDefaultAsync(u => u.IdUsuario == idUsuario);
         }
+
+        public async Task<Usuario?> ObtenerPorEmailAsync(string email)
+        {
+            return await _dbSet
+                .FirstOrDefaultAsync(u => u.Email == email);
+        }
     }
 }
