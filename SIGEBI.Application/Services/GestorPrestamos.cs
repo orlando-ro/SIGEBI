@@ -5,7 +5,7 @@ using SIGEBI.Domain.Entities;
 
 namespace SIGEBI.Application.Services
 {
-    public class GestorPrestamos
+    public class GestorPrestamos : IservicioPrestamo
     {
         private readonly IRepositorioPrestamo _repoPrestamo;
         private readonly IRepoSolicitud _repoSolicitud;
@@ -119,25 +119,25 @@ namespace SIGEBI.Application.Services
 
         }
 
-        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorUsuario(string idusuario) {
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorUsuarioAsync(string idusuario) {
 
             var prestamos = await _repoPrestamo.ObtenerActivoPorUsuarioAsync(idusuario);
             return prestamos.Select(MapearPrestamoResponse);
         }
 
-        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorRecursos(string isbnLibro) {
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorRecursoAsync(string isbnLibro) {
 
             var prestamos = await _repoPrestamo.ObtenerActivosPorRecursoAsync(isbnLibro);
             return prestamos.Select(MapearPrestamoResponse);
         }
 
-        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorRecurso(string isbnLibro) {
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorRecursoAsync(string isbnLibro) {
 
             var prestamos = await _repoPrestamo.ObtenerHistorialPorRecurso(isbnLibro);
             return prestamos.Select(MapearPrestamoResponse);
         }
 
-        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorUsuario(string idusuario) {
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorUsuarioAsync(string idusuario) {
 
             var prestamos = await _repoPrestamo.ObtenerHistorialPorUsuarioAsync(idusuario);
             return prestamos.Select(MapearPrestamoResponse);

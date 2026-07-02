@@ -14,7 +14,16 @@ namespace SIGEBI.Application.DTOs
         public int IdPrestamo { get; set; }
 
         // Propiedades de ayuda para la UI
-        public bool GeneroPenalizacion { get; set; }
+
+        public string idusuario { get; set; } = string.Empty;
         public string NombreUsuario { get; set; } = string.Empty;
+        public string IdBibliotecario { get; set; } = string.Empty;
+        public bool GeneroPenalizacion { get; set; }
+        public int DiasRetraso { get; set; }
+
+        public List<string> TitulosLibros { get; set; } = new();
+
+
+
     }
 }
