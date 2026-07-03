@@ -11,5 +11,10 @@ namespace SIGEBI.Application.Interfaces
         Task<UsuarioResponseDTO?> ObtenerUsuarioPorIdAsync(string idUsuario);
         Task<IEnumerable<UsuarioResponseDTO>> ConsultarTodosAsync();
         Task<LoginResponseDTO> AutenticarUsuarioAsync(LoginRequestDTO dto);
+       // Task ActualizarUsuarioAsync(UsuarioUpdateRequestDTO dto);
+        Task ActualizarPorEmailAsync(string email, UsuarioUpdateRequestDTO dto);
+        Task ActualizarPorMatriculaAsync(string matricula, UsuarioUpdateRequestDTO dto);
+        Task ActualizarPorNumeroEmpleadoAsync(string numeroEmpleado, UsuarioUpdateRequestDTO dto);
     }
+
 }

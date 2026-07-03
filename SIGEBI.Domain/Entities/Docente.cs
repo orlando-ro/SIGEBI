@@ -6,6 +6,5 @@ namespace SIGEBI.Domain.Entities
 {
     public class Docente : Usuario
     {
-        public string NumeroEmpleado { get; set; } = string.Empty;
     }
 }
