@@ -82,7 +82,7 @@ namespace SIGEBI.Application.Services
                 Email = usuario.Email,
                 Estado = usuario.Estado,
                 TipoUsuario = usuario.GetType().Name,
-                HabilitadoParaPrestamos = !usuario.VerificarPenalizaciones()
+                HabilitadoParaPrestamos = usuario.Estado == "Activo" && !usuario.VerificarPenalizaciones()
             };
 
         }
