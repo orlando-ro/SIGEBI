@@ -126,5 +126,67 @@ namespace SIGEBI.Application.Services
                 TipoUsuario = usuario.GetType().Name
             };
         }
+
+        // Implementación de los métodos de actualización
+
+        public async Task ActualizarPorMatriculaAsync(string matricula, UsuarioUpdateRequestDTO dto)
+        {
+            // buscar el estudiante usando el método en el repositorio
+            var estudiante = await _repositorioUsuario.ObtenerPorMatriculaAsync(matricula);
+
+            if (estudiante == null)
+                throw new NegocioExeption("No se encontró ningún estudiante con esa matrícula.");
+
+            // actualizar los datos permitidos
+            estudiante.Nombre = dto.Nombre;
+            estudiante.Email = dto.Email;
+
+            // si el dto trae una nueva matricula, se actualiza, de lo contrario se mantiene la existente
+            if (!string.IsNullOrEmpty(dto.Matricula))
+            {
+                estudiante.Matricula = dto.Matricula;
+            }
+
+            // 3. Guardar cambios
+            await _repositorioUsuario.ActualizarAsync(estudiante);
+        }
+
+        public async Task ActualizarPorNumeroEmpleadoAsync(string numeroEmpleado, UsuarioUpdateRequestDTO dto)
+        {
+            // busucar usando el metodo en repositorio
+            var empleado = await _repositorioUsuario.ObtenerPorNumeroEmpleadoAsync(numeroEmpleado);
+
+            if (empleado == null)
+                throw new NegocioExeption("No se encontró ningún empleado con ese número.");
+
+            // actualizar los datos permitidos
+            empleado.Nombre = dto.Nombre;
+            empleado.Email = dto.Email;
+            empleado.NumeroEmpleado = dto.NumeroEmpleado;
+
+            // guardar cambios  
+            await _repositorioUsuario.ActualizarAsync(empleado);
+        }
+
+        public async Task ActualizarPorEmailAsync(string email, UsuarioUpdateRequestDTO dto)
+        {
+            var usuario = await _repositorioUsuario.ObtenerPorEmailAsync(email);
+
+            if (usuario == null)
+                throw new NegocioExeption("No se encontró ningún usuario con ese correo.");
+
+            usuario.Email = dto.Email;
+
+            {
+                usuario.NumeroEmpleado = dto.NumeroEmpleado;
+            }
+
+            if (usuario is Estudiante estudiante && !string.IsNullOrEmpty(dto.Matricula))
+            {
+                estudiante.Matricula = dto.Matricula;
+            }
+
+            await _repositorioUsuario.ActualizarAsync(usuario);
+        }
     }
 }

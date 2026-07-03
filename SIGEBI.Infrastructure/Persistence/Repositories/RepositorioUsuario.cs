@@ -31,5 +31,17 @@ namespace SIGEBI.Infrastructure.Repositories
             return await _dbSet
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
+
+        public async Task<Estudiante?> ObtenerPorMatriculaAsync(string matricula)
+        {
+            return await _context.Usuarios
+                                 .OfType<Estudiante>() // Filtra solo a los estudiantes
+                                 .FirstOrDefaultAsync(e => e.Matricula == matricula);
+        }
+
+        public async Task<Usuario?> ObtenerPorNumeroEmpleadoAsync(string numeroEmpleado)
+        {
+            return await _context.Usuarios.FirstOrDefaultAsync(u => u.NumeroEmpleado == numeroEmpleado);
+        }
     }
 }

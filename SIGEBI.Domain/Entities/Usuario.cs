@@ -12,6 +12,7 @@ namespace SIGEBI.Domain.Entities
         public string Email { get; set; } = string.Empty;
         public string Estado { get; set; } = "Activo";
         public string Password { get; set; } = string.Empty;
+        public string? NumeroEmpleado { get; set; } 
 
 
         public virtual ICollection<Notificacion> Notificaciones { get; set; } = new List<Notificacion>();
