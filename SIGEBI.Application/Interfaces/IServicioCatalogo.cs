@@ -6,7 +6,7 @@ namespace SIGEBI.Application.Interfaces
 {
     public interface IServicioCatalogo
     {
-        Task RegistrarLibroAsync(LibroRequestDTO dto, string IdUsuarioResponsable);
+        Task RegistrarLibroAsync(LibroRequestDTO dto, int IdUsuarioResponsable);
         Task<LibroResponseDTO?> BuscarPorIsbnAsync(string isbn);
         Task<IEnumerable<LibroResponseDTO>> ConsultarTodoAsync();
     }

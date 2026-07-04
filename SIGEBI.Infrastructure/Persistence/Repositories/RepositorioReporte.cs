@@ -14,6 +14,12 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         {
         }
 
+        public async Task<IEnumerable<Reporte>> ObtenerPendientes()
+        {
+            return await _dbSet
+                .
+        }
+
         public async Task<IEnumerable<Reporte>> ObtenerPorEstadoAsync(string estado)
         {
             return await _dbSet

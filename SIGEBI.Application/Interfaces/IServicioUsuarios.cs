@@ -7,14 +7,19 @@ namespace SIGEBI.Application.Interfaces
     public interface IServicioUsuarios
     {
         Task RegistrarUsuarioAsync(UsuarioRequestDTO dto);
-        Task SuspenderUsuarioAsync(string idUsuario);
-        Task<UsuarioResponseDTO?> ObtenerUsuarioPorIdAsync(string idUsuario);
+        
+        Task SuspenderUsuarioPorIdentificadorAsync(string identificador);
+
+        Task SuspenderUsuarioAsync(int idUsuario);
+        Task<UsuarioResponseDTO?> ObtenerPorMatriculaONumeroEmpleadoAsync(string identificador);
         Task<IEnumerable<UsuarioResponseDTO>> ConsultarTodosAsync();
         Task<LoginResponseDTO> AutenticarUsuarioAsync(LoginRequestDTO dto);
-       // Task ActualizarUsuarioAsync(UsuarioUpdateRequestDTO dto);
-        Task ActualizarPorEmailAsync(string email, UsuarioUpdateRequestDTO dto);
-        Task ActualizarPorMatriculaAsync(string matricula, UsuarioUpdateRequestDTO dto);
-        Task ActualizarPorNumeroEmpleadoAsync(string numeroEmpleado, UsuarioUpdateRequestDTO dto);
+
+        Task<UsuarioResponseDTO?> ObtenerUsuarioPorIdAsync(int idUsuario);
+
+        Task ActualizarUsuarioAsync(int idUsuario, UsuarioUpdateRequestDTO dto);
+
+        Task ActualizarPorIdentificadorAsync(string identificador, UsuarioUpdateRequestDTO dto);
     }
 
 }

@@ -17,16 +17,16 @@ namespace SIGEBI.Domain.Entities
         public bool Pagada { get; private set; }
 
         
-        public string IdUsuario { get; private set; }
+        public int IdUsuario { get; private set; }
         public Usuario Usuario { get; set; }
 
         
         protected Penalizacion() { }
 
         
-        public Penalizacion(string idUsuario, double monto, string motivo)
+        public Penalizacion(int idUsuario, double monto, string motivo)
         {
-            if (string.IsNullOrWhiteSpace(idUsuario))
+            if (idUsuario <= 0)
                 throw new NegocioExeption("La penalización debe estar asociada a un usuario.");
 
             if (monto <= 0)

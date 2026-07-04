@@ -9,28 +9,28 @@ namespace SIGEBI.Domain.Entities
     {
         public int IdReporte { get; private set; }
 
-        public string TipoReporte { get; private set; } // Ej: "PrestamosVencidos", "InventarioLibros"
+        public string TipoReporte { get; private set; } = string.Empty;    // Ej: "PrestamosVencidos", "InventarioLibros"
         public DateTime FechaSolicitud { get; private set; }
         public DateTime? FechaGeneracion { get; private set; } // Nullable porque al inicio no se ha generado
 
-        public string IdUsuarioSolicitante { get; private set; }
-        public string Estado { get; private set; } // "Pendiente", "Completado", "Fallido"
+        public int IdUsuarioSolicitante { get; private set; }
+        public string Estado { get; private set; } = string.Empty;// "Pendiente", "Completado", "Fallido"
 
-        public string RutaArchivo { get; private set; } // Ruta donde se guardó el PDF o Excel generado
+        public string RutaArchivo { get; private set; } = string.Empty;// Ruta donde se guardó el PDF o Excel generado
 
-        // Constructor vacío requerido por Entity Framework
+       
         protected Reporte() { }
 
         // El reporte nace cuando un usuario lo solicita
-        public Reporte(string tipoReporte, string idUsuarioSolicitante)
+        public Reporte(string tipoReporte, int idUsuarioSolicitante)
         {
             if (string.IsNullOrWhiteSpace(tipoReporte))
                 throw new NegocioExeption("Debe especificar el tipo de reporte a generar.");
 
-            if (string.IsNullOrWhiteSpace(idUsuarioSolicitante))
+            if (idUsuarioSolicitante <= 0)
                 throw new NegocioExeption("El reporte debe estar asociado al usuario que lo solicitó.");
 
-            TipoReporte = tipoReporte;
+            TipoReporte = tipoReporte.Trim();
             IdUsuarioSolicitante = idUsuarioSolicitante;
             FechaSolicitud = DateTime.Now;
             Estado = "Pendiente"; // Todo reporte inicia en pendiente

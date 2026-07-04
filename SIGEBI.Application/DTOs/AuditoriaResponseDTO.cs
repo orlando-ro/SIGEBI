@@ -7,7 +7,7 @@ namespace SIGEBI.Application.DTOs
     public class AuditoriaResponseDTO
     {
         public int IdRegistro { get; set; }
-        public string IdUsuarioActor { get; set; } = string.Empty;
+        public int IdUsuarioActor { get; set; }
         public DateTime FechaHora { get; set; }
         public string TipoAccion { get; set; } = string.Empty;
         public string EntidadAfectada { get; set; } = string.Empty;

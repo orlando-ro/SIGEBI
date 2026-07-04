@@ -10,7 +10,7 @@ namespace SIGEBI.Application.DTOs
         public DateTime FechaSolicitud { get; set; }
         public string Estado { get; set; } = string.Empty;
 
-        public string IdUsuario { get; set; } = string.Empty;
+        public int IdUsuario { get; set; } 
 
         // En lugar de devolver las entidades Libro completas, 
         // a la interfaz gráfica normalmente solo le importan los títulos.

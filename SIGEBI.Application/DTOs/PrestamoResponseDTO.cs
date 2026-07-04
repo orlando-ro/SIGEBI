@@ -15,7 +15,7 @@ namespace SIGEBI.Application.DTOs
         public int DiasRetraso { get; set; }
         public bool EstaVencido => DiasRetraso > 0;
 
-        public string IdUsuario { get; set; } = string.Empty;
+        public int IdUsuario { get; set; }
         public string NombreUsuario { get; set; } = string.Empty;
 
         public List<string> TitulosLibros { get; set; } = new List<string>();

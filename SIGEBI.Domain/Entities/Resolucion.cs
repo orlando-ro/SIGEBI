@@ -9,7 +9,7 @@ namespace SIGEBI.Domain.Entities
         public int IdResolucion { get; set; }
         public DateTime FechaResolucion { get; set; }
 
-        public string IdBibliotecario { get; set; }
+        public int IdBibliotecario { get; set; }
         public Usuario Bibliotecario { get; set; }
 
         public int IdSolicitud { get; set; }

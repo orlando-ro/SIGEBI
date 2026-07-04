@@ -1,13 +1,13 @@
+using SIGEBI.Domain.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
-using SIGEBI.Domain.Exceptions;
 
 
 namespace SIGEBI.Domain.Entities
 {
     public abstract class Usuario
     {
-        public string IdUsuario { get; set; } = string.Empty;
+        public int IdUsuario { get; set; }
         public string Nombre { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Estado { get; set; } = "Activo";
@@ -23,7 +23,9 @@ namespace SIGEBI.Domain.Entities
         
         public virtual ICollection<Prestamo> Prestamos { get; set; } = new List<Prestamo>();
 
-        
+        public virtual ICollection<Solicitud> Solicitudes { get; set; } = new List<Solicitud>();
+
+
         public bool VerificarPenalizaciones()
         {
             

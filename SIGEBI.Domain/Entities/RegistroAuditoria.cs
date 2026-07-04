@@ -12,7 +12,7 @@ namespace SIGEBI.Domain.Entities
         public int IdAuditoria { get; private set; }
 
         public DateTime FechaHora { get; private set; }
-        public string IdUsuario { get; private set; }
+        public int IdUsuario { get; private set; }
         public string Accion { get; private set; } // Ej: "Crear", "Actualizar", "Eliminar"
         public string EntidadAfectada { get; private set; } // Ej: "Prestamo", "Libro"
         public string Detalles { get; private set; } // Un JSON o texto con los cambios realizados
@@ -21,9 +21,9 @@ namespace SIGEBI.Domain.Entities
         protected RegistroAuditoria() { }
 
         
-        public RegistroAuditoria(string idUsuario, string accion, string entidadAfectada, string detalles)
+        public RegistroAuditoria(int idUsuario, string accion, string entidadAfectada, string detalles)
         {
-            if (string.IsNullOrWhiteSpace(idUsuario))
+            if (idUsuario <= 0)
                 throw new NegocioExeption("El registro de auditoría debe estar asociado a un usuario.");
 
             if (string.IsNullOrWhiteSpace(accion))

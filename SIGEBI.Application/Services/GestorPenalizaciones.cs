@@ -2,9 +2,6 @@
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Domain.Entities;
 using SIGEBI.Domain.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SIGEBI.Application.Services
 {
@@ -20,8 +17,15 @@ namespace SIGEBI.Application.Services
         }
 
         // Método automático llamado por GestorDevoluciones (CU-DEV-02)
-        public async Task GenerarMultaPorRetrasoAsync(string idUsuario, int diasRetraso)
+        public async Task GenerarMultaPorRetrasoAsync(int idUsuario, int diasRetraso)
         {
+
+            if (idUsuario <= 0)
+                throw new NegocioExeption("El usuario es obligatorio.");
+
+            if (diasRetraso <= 0)
+                throw new NegocioExeption("Los días de retraso deben ser mayores que cero.");
+
             double tarifaPorDia = 50.0;
             double montoTotal = diasRetraso * tarifaPorDia;
 
@@ -30,11 +34,19 @@ namespace SIGEBI.Application.Services
             await _repoPenalizacion.AgregarAsync(nuevaPenalizacion);
         }
 
-        // Método manual ejecutado por el Bibliotecario/Admin para resolver multas (CU-PEN-03)
-        // Sobrecargado para aceptar el DTO de entrada.
-        public async Task ProcesarPagoMultaAsync(PenalizacionRequestDTO peticion, string idUsuarioResolutor)
+        
+        public async Task ProcesarPagoMultaAsync(int idPenalizacion, PenalizacionRequestDTO peticion, int idUsuarioResolutor)
         {
-            var penalizacion = await _repoPenalizacion.ObtenerPorIdAsync(peticion.IdPenalizacion);
+            if (peticion == null)
+                throw new NegocioExeption("La petición no puede ser nula.");
+
+            if (idUsuarioResolutor <= 0)
+                throw new NegocioExeption("El usuario resolutor es obligatorio.");
+
+            var penalizacion = await _repoPenalizacion.ObtenerPendientePorIdYUsuarioAsync(
+                idPenalizacion,
+                peticion.MatriculaONumeroEmpleado
+            );
 
             if (penalizacion == null)
                 throw new NegocioExeption("La penalización indicada no existe.");
@@ -50,20 +62,20 @@ namespace SIGEBI.Application.Services
                 idUsuarioResolutor,
                 "Resolver Penalización",
                 "Penalizacion",
-                $"Penalización {peticion.IdPenalizacion} marcada como pagada. Motivo: {peticion.MotivoResolucion}"
+                $"La penalizacion del usuario con identificacion {peticion.MatriculaONumeroEmpleado} ha sido marcada como pagada. Motivo: {peticion.MotivoResolucion}"
             );
         }
 
-        // Mantenemos la firma de la interfaz original por retrocompatibilidad
-         public async Task ProcesarPagoMultaAsync(int idPenalizacion)
+        
+         public async Task ProcesarPagoMultaAsync(int penalizacion, string MatriculaONumeroEmpleado, int idUsuarioResolutor)
         {
-            // Reutiliza la lógica con un DTO básico si solo se provee el ID
+          
             var peticion = new PenalizacionRequestDTO
             {
-                IdPenalizacion = idPenalizacion,
+                MatriculaONumeroEmpleado = MatriculaONumeroEmpleado,
                 MotivoResolucion = "Pago estándar"
             };
-            await ProcesarPagoMultaAsync(peticion, "Sistema"); 
+            await ProcesarPagoMultaAsync(penalizacion, peticion, idUsuarioResolutor); 
         } 
     }
 }

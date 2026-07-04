@@ -11,6 +11,6 @@ namespace SIGEBI.Application.DTOs
         public int IdSolicitud { get; set; }
 
         [Required(ErrorMessage = "El identificador del bibliotecario es obligatorio.")]
-        public string IdBibliotecario { get; set; } = string.Empty;
+        public int IdBibliotecario { get; set; } 
     }
 }

@@ -12,6 +12,7 @@ namespace SIGEBI.Application.DTOs
         public DateTime FechaEmision { get; set; }
         public bool Pagada { get; set; }
 
-        public string IdUsuario { get; set; } = string.Empty;
+        public int IdUsuario { get; set; }
+
     }
 }
