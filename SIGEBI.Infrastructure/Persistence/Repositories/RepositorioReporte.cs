@@ -14,16 +14,29 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         {
         }
 
-        public async Task<IEnumerable<Reporte>> ObtenerPendientes()
+        public async Task<IEnumerable<Reporte>> ObtenerPendientesAsync()
         {
             return await _dbSet
-                .
+                .Where(r => r.Estado == "Pendiente")
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Reporte>> ObtenerPorEstadoAsync(string estado)
         {
+            if (string.IsNullOrWhiteSpace(estado))
+                return new List<Reporte>();
+
+            string estadoNormalizado = estado.Trim();
+
             return await _dbSet
-               .Where(r => r.Estado == estado)
+                .Where(r => r.Estado == estadoNormalizado)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Reporte>> ObtenerPorUsuarioAsync(int idusuario)
+        {
+            return await _dbSet
+               .Where(r => r.IdUsuarioSolicitante == idusuario)
                .ToListAsync();
         }
     }

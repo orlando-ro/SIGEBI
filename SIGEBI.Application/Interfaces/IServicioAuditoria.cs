@@ -11,6 +11,6 @@ namespace SIGEBI.Application.Interfaces
         Task RegistrarAccionAsync(int idUsuario, string tipoAccion, string entidadAfectada, string detalles = "");
 
         
-        Task<IEnumerable<AuditoriaResponseDTO>> ConsultarHistorialAsync(string? idUsuarioActor = null, string? entidadAfectada = null);
+        Task<IEnumerable<AuditoriaResponseDTO>> ConsultarHistorialAsync(int? idUsuarioActor = null, string? entidadAfectada = null);
     }
 }
