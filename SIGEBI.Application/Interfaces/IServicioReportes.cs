@@ -9,6 +9,15 @@ namespace SIGEBI.Application.Interfaces
 {
     public interface IServicioReportes
     {
-        Task SolicitarGeneracionReporteAsync(ReporteRequestDTO peticion);
+        Task<ReporteResponseDTO> SolicitarGeneracionReporteAsync(ReporteRequestDTO peticion);
+
+        Task<IEnumerable<ReporteResponseDTO>> ConsultarTodosAsync();
+
+        Task<IEnumerable<ReporteResponseDTO>> ConsultarPendientesAsync();
+
+        Task<IEnumerable<ReporteResponseDTO>> ConsultarPorEstadoAsync(string estado);
+
+        Task<IEnumerable<ReporteResponseDTO>> ConsultarPorSolicitanteAsync(string matriculaONumeroEmpleado);
+
     }
 }
