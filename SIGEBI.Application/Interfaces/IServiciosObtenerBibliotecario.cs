@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace SIGEBI.Application.Interfaces
 {
-    internal interface IServiciosObtenerPorUsuarios
+    internal interface IServiciosObtenerBibliotecario
     {
-        Task<Usuario> ObtenerUsuarioPorIdentificadorAsync(string matriculaONumeroEmpleado);
-
+        
         Task<Usuario> ObtenerBibliotecarioAsync(string matriculaONumeroEmpleadoBibliotecario);
     }
 }

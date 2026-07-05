@@ -8,7 +8,7 @@ using SIGEBI.Application.DTOs;
 
 namespace SIGEBI.Application.Services
 {
-    public class GestorSolicitudes : IServicioSolicitud, IServicioPoliticaNegocio, IServiciosObtenerPorUsuarios
+    public class GestorSolicitudes : IServicioSolicitud, IServicioPoliticaNegocio, IServiciosObtenerBibliotecario
     {
         private readonly IRepoSolicitud _repoSolicitud;
         private readonly IUsuarios _usuarios;
@@ -231,23 +231,11 @@ namespace SIGEBI.Application.Services
 
         }
 
-        public async Task<Usuario> ObtenerUsuarioPorIdentificadorAsync(string matriculaONumeroEmpleado)
-        {
-            if (string.IsNullOrWhiteSpace(matriculaONumeroEmpleado))
-                throw new NegocioExeption("Debe indicar la matrícula o número de empleado.");
-
-            var usuario = await _usuarios
-                .ObtenerPorMatriculaONumeroEmpleadoAsync(matriculaONumeroEmpleado);
-
-            if (usuario == null)
-                throw new NegocioExeption("No existe un usuario con esa matrícula o número de empleado.");
-
-            return usuario;
-        }
+      
 
         public async Task<Usuario> ObtenerBibliotecarioAsync(string matriculaONumeroEmpleadoBibliotecario)
         {
-            var usuario = await ObtenerUsuarioPorIdentificadorAsync(matriculaONumeroEmpleadoBibliotecario);
+            var usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(matriculaONumeroEmpleadoBibliotecario);
 
             if (usuario is not PersonalBibliotecario)
                 throw new NegocioExeption("Solo el personal bibliotecario puede aprobar, rechazar o registrar devoluciones.");
