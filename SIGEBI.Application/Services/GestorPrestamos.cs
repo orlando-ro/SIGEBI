@@ -171,42 +171,7 @@ namespace SIGEBI.Application.Services
 
 
         }
-        public async Task RechasarSolicitudAsync(RechazoSolicitudRequestDTO peticion)
-        {
-            if (peticion.idSolicitud <= 0)
-                throw new NegocioExeption("Debe indicar el identificador de la solicitud que va a rechazar");
-
-            if (string.IsNullOrWhiteSpace(peticion.MotivoRechazo))
-                throw new NegocioExeption("Debe especificar el motivo del rechazo");
-
-            var Bibliotecario = await ObtenerBibliotecarioAsync(peticion.MatriculaONumeroEmpleado);
-
-            if (Bibliotecario == null)
-                throw new NegocioExeption("Lo sentimos pero no encontramos un bibliotecario con ese identificador");
-
-            var solicitudARechazar = await _repoSolicitud.ObtenerSolicitudConDetallesAsync(peticion.idSolicitud);
-
-            if (solicitudARechazar == null)
-                throw new NegocioExeption(" no se encontro ninguna solicitud");
-
-            solicitudARechazar.Rechazar();
-
-            var rechazo = new Rechazo(
-                Bibliotecario.IdUsuario,
-                solicitudARechazar.IdSolicitud,
-                peticion.MotivoRechazo
-                );
-            await _repoSolicitud.ActualizarAsync(solicitudARechazar);
-
-            await _repoSolicitud.GuardarResolucionAsync(rechazo);
-
-            await _servicioAuditoria.RegistrarAccionAsync(
-                idUsuario: Bibliotecario.IdUsuario,
-                tipoAccion: "Rechazar solicitud",
-                entidadAfectada: "Solicitud",
-                detalles: $"El bibliotecario {Bibliotecario.Nombre} rechazó la solicitud #{solicitudARechazar.IdSolicitud}. Motivo: {peticion.MotivoRechazo}."
-            );
-        }
+        
 
         public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorIdentificadorAsync(string identificador) {
 

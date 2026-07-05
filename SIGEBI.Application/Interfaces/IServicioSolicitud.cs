@@ -10,6 +10,8 @@ namespace SIGEBI.Application.Interfaces
 {
     public interface IServicioSolicitud
     {
+
+        Task RechasarSolicitudAsync(RechazoSolicitudRequestDTO peticion);
         Task<SolicitudResponseDTO> CrearSolicitudAsync(SolicitudRequestDTO peticion);
 
         Task<SolicitudResponseDTO?> ObtenerPorIdAsync(int IdSolicitud);

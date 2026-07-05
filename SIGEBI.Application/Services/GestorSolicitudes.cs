@@ -8,7 +8,7 @@ using SIGEBI.Application.DTOs;
 
 namespace SIGEBI.Application.Services
 {
-    public class GestorSolicitudes : IServicioSolicitud, IServicioPoliticaNegocio
+    public class GestorSolicitudes : IServicioSolicitud, IServicioPoliticaNegocio, IServiciosObtenerPorUsuarios
     {
         private readonly IRepoSolicitud _repoSolicitud;
         private readonly IUsuarios _usuarios;
@@ -88,6 +88,44 @@ namespace SIGEBI.Application.Services
 
 
 
+        public async Task RechasarSolicitudAsync(RechazoSolicitudRequestDTO peticion)
+        {
+            if (peticion.idSolicitud <= 0)
+                throw new NegocioExeption("Debe indicar el identificador de la solicitud que va a rechazar");
+
+            if (string.IsNullOrWhiteSpace(peticion.MotivoRechazo))
+                throw new NegocioExeption("Debe especificar el motivo del rechazo");
+
+            var Bibliotecario = await ObtenerBibliotecarioAsync(peticion.MatriculaONumeroEmpleado);
+
+            if (Bibliotecario == null)
+                throw new NegocioExeption("Lo sentimos pero no encontramos un bibliotecario con ese identificador");
+
+            var solicitudARechazar = await _repoSolicitud.ObtenerSolicitudConDetallesAsync(peticion.idSolicitud);
+
+            if (solicitudARechazar == null)
+                throw new NegocioExeption(" no se encontro ninguna solicitud");
+
+            solicitudARechazar.Rechazar();
+
+            var rechazo = new Rechazo(
+                Bibliotecario.IdUsuario,
+                solicitudARechazar.IdSolicitud,
+                peticion.MotivoRechazo
+                );
+            await _repoSolicitud.ActualizarAsync(solicitudARechazar);
+
+            await _repoSolicitud.GuardarResolucionAsync(rechazo);
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+                idUsuario: Bibliotecario.IdUsuario,
+                tipoAccion: "Rechazar solicitud",
+                entidadAfectada: "Solicitud",
+                detalles: $"El bibliotecario {Bibliotecario.Nombre} rechazó la solicitud #{solicitudARechazar.IdSolicitud}. Motivo: {peticion.MotivoRechazo}."
+            );
+        }
+
+
 
         public async Task<SolicitudResponseDTO?> ObtenerPorIdAsync(int IdSolicitud)
         {
@@ -103,6 +141,8 @@ namespace SIGEBI.Application.Services
 
             
         }
+
+
 
         public async Task<IEnumerable<SolicitudResponseDTO>> ConsultarPendientesAsync()
         {
@@ -139,6 +179,8 @@ namespace SIGEBI.Application.Services
 
             return 2;
         }
+
+
 
         private async Task<List<Libro>> ObtenerLibrosSolicitadosAsync(List<string> Isbn)
         {
@@ -189,5 +231,28 @@ namespace SIGEBI.Application.Services
 
         }
 
+        public async Task<Usuario> ObtenerUsuarioPorIdentificadorAsync(string matriculaONumeroEmpleado)
+        {
+            if (string.IsNullOrWhiteSpace(matriculaONumeroEmpleado))
+                throw new NegocioExeption("Debe indicar la matrícula o número de empleado.");
+
+            var usuario = await _usuarios
+                .ObtenerPorMatriculaONumeroEmpleadoAsync(matriculaONumeroEmpleado);
+
+            if (usuario == null)
+                throw new NegocioExeption("No existe un usuario con esa matrícula o número de empleado.");
+
+            return usuario;
+        }
+
+        public async Task<Usuario> ObtenerBibliotecarioAsync(string matriculaONumeroEmpleadoBibliotecario)
+        {
+            var usuario = await ObtenerUsuarioPorIdentificadorAsync(matriculaONumeroEmpleadoBibliotecario);
+
+            if (usuario is not PersonalBibliotecario)
+                throw new NegocioExeption("Solo el personal bibliotecario puede aprobar, rechazar o registrar devoluciones.");
+
+            return usuario;
+        }
     }
 }
