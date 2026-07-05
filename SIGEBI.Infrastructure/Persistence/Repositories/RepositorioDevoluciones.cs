@@ -23,7 +23,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
 
         }
 
-        public async Task<IEnumerable<Devolucion?>> ConsultarHistorialPorUsuario(string IdUsuario)
+        public async Task<IEnumerable<Devolucion?>> ConsultarHistorialPorUsuario(int IdUsuario)
         {
             return await _dbSet
                 .Include(d => d.Prestamo)

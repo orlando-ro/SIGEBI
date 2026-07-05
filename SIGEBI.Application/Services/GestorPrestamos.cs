@@ -5,7 +5,7 @@ using SIGEBI.Domain.Entities;
 
 namespace SIGEBI.Application.Services
 {
-    public class GestorPrestamos : IservicioPrestamo, IServicioPoliticaNegocio
+    public class GestorPrestamos : IservicioPrestamo, IServicioPoliticaNegocio, IServiciosObtenerBibliotecario
     {
         private readonly IRepositorioPrestamo _repoPrestamo;
         private readonly IRepoSolicitud _repoSolicitud;
@@ -122,55 +122,7 @@ namespace SIGEBI.Application.Services
             return MapearPrestamoResponse(nuevoPrestamo, usuarioSolicitante);
         }
 
-        public async Task ProcesarDevolucionAsync(DevolucionRequestDTO devolucion)
-        {
-
-            if (devolucion == null)
-                throw new NegocioExeption("Los datos de la devolución son obligatorios.");
-
-            if (devolucion.IdPrestamo <= 0)
-                throw new NegocioExeption("El identificador del préstamo no es válido.");
-
-            if (string.IsNullOrWhiteSpace(devolucion.CondicionLibro))
-                throw new NegocioExeption("Debe indicar la condición física del libro devuelto.");
-
-            var bibliotecario = await ObtenerBibliotecarioAsync(
-                devolucion.MatriculaONumeroEmpleadoBibliotecario
-            );
-
-            var prestamo = await _repoPrestamo.obtenerPrestamoConDetalleAsync(devolucion.IdPrestamo);
-
-            if (prestamo == null)
-                throw new NegocioExeption("El préstamo no fue encontrado.");
-
-            int diasRetraso = prestamo.CalcularDiasRetraso();
-
-            prestamo.RegistrarDevolucion();
-
-            if (diasRetraso > 0)
-            {
-                await _servicioPenalizacion.GenerarMultaPorRetrasoAsync(
-                    prestamo.IdUsuario,
-                    diasRetraso
-                );
-            }
-
-            await _repoPrestamo.ActualizarAsync(prestamo);
-
-            await _servicioAuditoria.RegistrarAccionAsync(
-                idUsuario: bibliotecario.IdUsuario,
-                tipoAccion: "Registrar devolución",
-                entidadAfectada: "Prestamo",
-                detalles:
-                    $"El bibliotecario {bibliotecario.Nombre} registró la devolución del préstamo #{prestamo.IdPrestamo}. " +
-                    $"Condición: {devolucion.CondicionLibro}. " +
-                    $"Días de retraso: {diasRetraso}. " +
-                    $"Observaciones: {devolucion.Observaciones}"
-            );
-
-
-
-        }
+        
         
 
         public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorIdentificadorAsync(string identificador) {
@@ -234,29 +186,7 @@ namespace SIGEBI.Application.Services
             };
         }
 
-        private async Task<Usuario> ObtenerUsuarioPorIdentificadorAsync(string matriculaONumeroEmpleado)
-        {
-            if (string.IsNullOrWhiteSpace(matriculaONumeroEmpleado))
-                throw new NegocioExeption("Debe indicar la matrícula o número de empleado.");
-
-            var usuario = await _usuario
-                .ObtenerPorMatriculaONumeroEmpleadoAsync(matriculaONumeroEmpleado);
-
-            if (usuario == null)
-                throw new NegocioExeption("No existe un usuario con esa matrícula o número de empleado.");
-
-            return usuario;
-        }
-
-        private async Task<Usuario> ObtenerBibliotecarioAsync(string matriculaONumeroEmpleadoBibliotecario)
-        {
-            var usuario = await ObtenerUsuarioPorIdentificadorAsync(matriculaONumeroEmpleadoBibliotecario);
-
-            if (usuario is not PersonalBibliotecario)
-                throw new NegocioExeption("Solo el personal bibliotecario puede aprobar, rechazar o registrar devoluciones.");
-
-            return usuario;
-        }
+        
 
         private DateTime calcularFechaVencimiento(Usuario usuario, DateTime fechaInicio) {
 
@@ -276,6 +206,16 @@ namespace SIGEBI.Application.Services
 
             return 2;
                 
+        }
+
+        public async Task<Usuario> ObtenerBibliotecarioAsync(string matriculaONumeroEmpleadoBibliotecario)
+        {
+            var usuario = await _usuario.ObtenerPorMatriculaONumeroEmpleadoAsync(matriculaONumeroEmpleadoBibliotecario);
+
+            if (usuario is not PersonalBibliotecario)
+                throw new NegocioExeption("Solo el personal bibliotecario puede aprobar, rechazar o registrar devoluciones.");
+
+            return usuario;
         }
     }
 }

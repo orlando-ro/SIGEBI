@@ -5,23 +5,26 @@ using SIGEBI.Domain.Exceptions;
 
 namespace SIGEBI.Application.Services
 {
-    public class GestorDevoluciones : IServicioDevolucion
+    public class GestorDevoluciones : IServicioDevolucion, IServiciosObtenerBibliotecario
     {
         private readonly IRepositorioPrestamo _repoPrestamo;
         private readonly IRepositorioDevolucion _repoDevolucion;
         private readonly IServicioPenalizacion _servicioPenalizacion;
         private readonly IServicioAuditoria _servicioAuditoria;
+        private readonly IUsuarios _usuarios;
 
         public GestorDevoluciones(
             IRepositorioPrestamo repoPrestamo,
             IRepositorioDevolucion repoDevolucion,
             IServicioPenalizacion servicioPenalizacion,
-            IServicioAuditoria servicioAuditoria)
+            IServicioAuditoria servicioAuditoria,
+            IUsuarios usuario)
         {
             _repoPrestamo = repoPrestamo;
             _repoDevolucion = repoDevolucion;
             _servicioPenalizacion = servicioPenalizacion;
             _servicioAuditoria = servicioAuditoria;
+            _usuarios = usuario;
         }
 
         public async Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorRecurso(string isbnLibro)
@@ -31,61 +34,71 @@ namespace SIGEBI.Application.Services
             return devoluciones.Select(MapearDevolucionesResponse);
         }
 
-        public async Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorUsuario(int IdUsuario)
+        public async Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorUsuario(string matriculaONumeroEmpleado)
         {
-            var devoluciones = await _repoDevolucion.ConsultarHistorialPorUsuario(IdUsuario);
+            var Usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(matriculaONumeroEmpleado);
+
+            var devoluciones = await _repoDevolucion.ConsultarHistorialPorUsuario(Usuario.IdUsuario);
 
             return devoluciones.Select(MapearDevolucionesResponse);
         }
 
-        public async Task ProcesarDevolucionAsync(DevolucionRequestDTO peticion, int idBibliotecario)
+        public async Task<Usuario> ObtenerBibliotecarioAsync(string matriculaONumeroEmpleadoBibliotecario)
         {
-            
-            var prestamo = await _repoPrestamo.obtenerPrestamoConDetalleAsync(peticion.IdPrestamo);
+            var usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(matriculaONumeroEmpleadoBibliotecario);
+
+            if (usuario is not PersonalBibliotecario)
+                throw new NegocioExeption("Solo el personal bibliotecario puede aprobar, rechazar o registrar devoluciones.");
+
+            return usuario;
+        }
+
+        
+
+        public async Task ProcesarDevolucionAsync(DevolucionRequestDTO devolucion)
+        {
+
+            if (devolucion == null)
+                throw new NegocioExeption("Los datos de la devolución son obligatorios.");
+
+            if (devolucion.IdPrestamo <= 0)
+                throw new NegocioExeption("El identificador del préstamo no es válido.");
+
+            if (string.IsNullOrWhiteSpace(devolucion.CondicionLibro))
+                throw new NegocioExeption("Debe indicar la condición física del libro devuelto.");
+
+            var bibliotecario = await ObtenerBibliotecarioAsync(
+                devolucion.MatriculaONumeroEmpleadoBibliotecario
+            );
+
+            var prestamo = await _repoPrestamo.obtenerPrestamoConDetalleAsync(devolucion.IdPrestamo);
+
             if (prestamo == null)
-                throw new NegocioExeption("El préstamo indicado no existe.");
+                throw new NegocioExeption("El préstamo no fue encontrado.");
 
-            if (prestamo.Estado != "Activo")
-                throw new NegocioExeption(" El prestamo ya fue devuelto o no esta activo");
-
-            
             int diasRetraso = prestamo.CalcularDiasRetraso();
 
-            
             prestamo.RegistrarDevolucion();
 
-            
-            var devolucion = new Devolucion(peticion.IdPrestamo, peticion.CondicionLibro, peticion.Observaciones);
-
-            bool generoPenalizacion = false;
-
-            
             if (diasRetraso > 0)
             {
-                await _servicioPenalizacion.GenerarMultaPorRetrasoAsync(prestamo.IdUsuario, diasRetraso);
-
-                 generoPenalizacion = true;
+                await _servicioPenalizacion.GenerarMultaPorRetrasoAsync(
+                    prestamo.IdUsuario,
+                    diasRetraso
+                );
             }
 
-            if (devolucion.RequierePenalizacionPorDano())
-            {
-               
-                double tarifaDano = 500.0;
-                var nuevaMultaDano = new Penalizacion(prestamo.IdUsuario, tarifaDano, $"Recurso dañado o extraviado: {peticion.CondicionLibro}");
-
-                generoPenalizacion = true;
-            }
-
-           
-            await _repoDevolucion.AgregarAsync(devolucion);
             await _repoPrestamo.ActualizarAsync(prestamo);
 
-            
             await _servicioAuditoria.RegistrarAccionAsync(
-                idBibliotecario,
-                "Devolucion",
-                "prestamo",
-                $"Devolución procesada para Préstamo {peticion.IdPrestamo}. Retraso: {diasRetraso} días. Condición: {peticion.CondicionLibro}"
+                idUsuario: bibliotecario.IdUsuario,
+                tipoAccion: "Registrar devolución",
+                entidadAfectada: "Prestamo",
+                detalles:
+                    $"El bibliotecario {bibliotecario.Nombre} registró la devolución del préstamo #{prestamo.IdPrestamo}. " +
+                    $"Condición: {devolucion.CondicionLibro}. " +
+                    $"Días de retraso: {diasRetraso}. " +
+                    $"Observaciones: {devolucion.Observaciones}"
             );
         }
 
