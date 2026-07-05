@@ -59,7 +59,7 @@ namespace SIGEBI.Domain.Entities
 
             foreach (var libro in Libros)
             {
-                libro.IncrementarCopia();
+                libro.DevolverCopia();
             }
         }
     }

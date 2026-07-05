@@ -7,11 +7,14 @@ namespace SIGEBI.Application.DTOs
 {
     public class DevolucionRequestDTO
     {
-        [Required(ErrorMessage = "El ID del préstamo es obligatorio.")]
+        [Range(1, int.MaxValue, ErrorMessage = "El ID del préstamo es obligatorio y debe ser mayor a cero")]
         public int IdPrestamo { get; set; }
 
         [Required(ErrorMessage = "Debe especificar la condición física del libro devuelto.")]
         public string CondicionLibro { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Debe espesificar el identificador de la persona a quien pertenece la devolucion")]
+        public string MatriculaONumeroEmpleadoBibliotecario { get; set; } = string.Empty;
 
         public string Observaciones { get; set; } = string.Empty;
     }

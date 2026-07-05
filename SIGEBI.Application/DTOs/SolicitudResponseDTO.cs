@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SIGEBI.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,10 +11,15 @@ namespace SIGEBI.Application.DTOs
         public DateTime FechaSolicitud { get; set; }
         public string Estado { get; set; } = string.Empty;
 
-        public int IdUsuario { get; set; } 
+        public int IdUsuario { get; set; }
 
-        // En lugar de devolver las entidades Libro completas, 
-        // a la interfaz gráfica normalmente solo le importan los títulos.
-        public List<string> TitulosLibros { get; set; } = new List<string>();
+        public string NombreUsuarioSolicitante { get; set; } = string.Empty;
+
+        public string? Matricula { get; set; } = string.Empty;
+
+        public string? NumeroEmpleado { get; set; } = string.Empty;
+
+        public List<Libro> ISBN { get; set; } = new();
+        public List<string> TitulosLibros { get; set; } = new();
     }
 }

@@ -9,7 +9,9 @@ namespace SIGEBI.Application.Interfaces
 
     {
 
-        Task<Solicitud?> ObtenerSolicitudConDetallesAsync(int id);
+        Task<Solicitud?> ObtenerSolicitudConDetallesAsync(int idSolicitud);
+
+        Task<IEnumerable<Solicitud>> ObtenerPorUsuarioAsync(int idusuario);
 
         Task<IEnumerable<Solicitud>> ObtenerPendientesAsync();
 

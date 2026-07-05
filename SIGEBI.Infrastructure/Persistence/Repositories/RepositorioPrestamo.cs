@@ -14,14 +14,22 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         {
         }
 
-        public async Task<IEnumerable<Prestamo>> ObtenerActivoPorUsuarioAsync(string idUsuario)
+        public async Task<IEnumerable<Prestamo>> ObtenerActivoPorUsuarioAsync(int idUsuario)
         {
             return await _dbSet
+                .Include(p => p.IdPrestamo)
+                .Include(p => p.IdUsuario)
+                .Include(p => p.Libros)
                 .Where(p => p.IdUsuario == idUsuario && p.Estado == "Activo").ToListAsync();
         }
 
         public async Task<IEnumerable<Prestamo>> ObtenerActivosPorRecursoAsync(string isbn)
         {
+            if (string.IsNullOrWhiteSpace(isbn))
+                return new List<Prestamo>();
+
+            string NormalizarIsbn = isbn.Trim();
+
             return await _dbSet
                 .Include(p => p.Libros)
                 .Include(p => p.Usuario)
@@ -30,14 +38,19 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
 
         public async Task<IEnumerable<Prestamo>> ObtenerHistorialPorRecurso(string isbn)
         {
+            if (string.IsNullOrWhiteSpace(isbn))
+                return new List<Prestamo>();
+
+            string NormalizarIsbn = isbn.Trim();
+
             return await _dbSet
                 .Include(p => p.Libros)
                 .Include(p => p.Usuario)
-                .Where(p => p.Estado == "Activo" && p.Libros.Any(l => l.ISBN == isbn))
+                .Where(p => p.Estado == "Activo" && p.Libros.Any(l => l.ISBN == NormalizarIsbn))
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Prestamo>> ObtenerHistorialPorUsuarioAsync(string idUsuario)
+        public async Task<IEnumerable<Prestamo>> ObtenerHistorialPorUsuarioAsync(int idUsuario)
         {
             return await _dbSet
                 .Include(p => p.Libros)
@@ -51,6 +64,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         public async Task<Prestamo?> obtenerPrestamoConDetalleAsync(int id)
         {
             return await _dbSet
+               .Include(p => p.IdPrestamo)
                .Include(p => p.Libros)
                .Include(p => p.Usuario)
                .FirstOrDefaultAsync(p => p.IdPrestamo == id);
