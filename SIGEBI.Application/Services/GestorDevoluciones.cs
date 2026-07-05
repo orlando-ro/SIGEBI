@@ -31,14 +31,14 @@ namespace SIGEBI.Application.Services
             return devoluciones.Select(MapearDevolucionesResponse);
         }
 
-        public async Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorUsuario(string IdUsuario)
+        public async Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorUsuario(int IdUsuario)
         {
             var devoluciones = await _repoDevolucion.ConsultarHistorialPorUsuario(IdUsuario);
 
             return devoluciones.Select(MapearDevolucionesResponse);
         }
 
-        public async Task ProcesarDevolucionAsync(DevolucionRequestDTO peticion, string idBibliotecario)
+        public async Task ProcesarDevolucionAsync(DevolucionRequestDTO peticion, int idBibliotecario)
         {
             
             var prestamo = await _repoPrestamo.obtenerPrestamoConDetalleAsync(peticion.IdPrestamo);
