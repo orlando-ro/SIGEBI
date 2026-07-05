@@ -15,7 +15,7 @@ namespace SIGEBI.Infrastructure.Services
             _repoNoti = repoNoti;
         }
 
-        public async Task<IEnumerable<NotificacionResponseDTO>> ObtenerPendientesAsync(string idUsuario)
+        public async Task<IEnumerable<NotificacionResponseDTO>> ObtenerPendientesAsync(int idUsuario)
         {
             var pendientes = await _repoNoti.ObtenerNoLeidasPorUsuarioAsync(idUsuario);
 
