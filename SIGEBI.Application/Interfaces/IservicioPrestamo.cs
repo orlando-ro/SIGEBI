@@ -12,8 +12,6 @@ namespace SIGEBI.Application.Interfaces
     {
         Task<PrestamoResponseDTO> AprobarYRegistrarPrestamoAsync(PrestamoRequestDTO peticion);
 
-        Task RechasarSolicitudAsync(RechazoSolicitudRequestDTO rechazo);
-
         Task ProcesarDevolucionAsync(DevolucionRequestDTO peticion);
 
         Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorIdentificadorAsync(string identificador);
