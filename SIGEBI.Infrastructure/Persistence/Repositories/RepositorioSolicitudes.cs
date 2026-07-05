@@ -27,13 +27,32 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Solicitud>> ObtenerPendientesAsync()
         {
             return await _dbSet
+                .Include(s => s.IdSolicitud)
+                .Include(s => s.IdUsuario)
+                .Include(s => s.LibrosSolicitados)
                 .Where(s => s.Estado == "Pendiente")
                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Solicitud>> ObtenerPorUsuarioAsync(int idusuario)
+        {
+            return await _dbSet
+                .Include(s => s.IdSolicitud)
+                .Include(u => u.Usuario)
+                .Include(s => s.LibrosSolicitados)
+                .Where(s => s.IdUsuario == idusuario)
+                .OrderByDescending(s => s.FechaSolicitud)
+                .ToListAsync();
+
         }
 
         public async Task<Solicitud?> ObtenerSolicitudConDetallesAsync(int id)
         {
             return await _dbSet
+                .Include(s => s.IdSolicitud)
+                .Include(s => s.IdUsuario)
+                .Include(s => s.FechaSolicitud)
+                .Include(s => s.Estado)
                 .Include(s => s.LibrosSolicitados)
                 .FirstOrDefaultAsync(s => s.IdSolicitud == id);
         }

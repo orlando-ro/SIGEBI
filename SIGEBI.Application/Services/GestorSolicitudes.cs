@@ -4,19 +4,26 @@ using System.Collections.Generic;
 using System.Text;
 using SIGEBI.Domain.Exceptions;
 using SIGEBI.Domain.Entities;
+using SIGEBI.Application.DTOs;
 
 namespace SIGEBI.Application.Services
 {
-    public class GestorSolicitudes
+    public class GestorSolicitudes : IServicioSolicitud, IServicioPoliticaNegocio
     {
         private readonly IRepoSolicitud _repoSolicitud;
         private readonly IUsuarios _usuarios;
         private readonly IRepositorioLibro _repositorioLibro;
         private readonly IServicioAuditoria _servicioAuditoria;
         private readonly IRepositorioPrestamo _repositorioPrestamo;
+        
 
 
-        public GestorSolicitudes(IRepoSolicitud repoSolicitud, IUsuarios usuarios, IRepositorioLibro repositorioLibro, IServicioAuditoria servicioAuditoria, IRepositorioPrestamo repositorioPrestamo)
+        public GestorSolicitudes(IRepoSolicitud repoSolicitud, 
+            IUsuarios usuarios, 
+            IRepositorioLibro repositorioLibro, 
+            IServicioAuditoria servicioAuditoria, 
+            IRepositorioPrestamo repositorioPrestamo
+            )
         {
 
             _repoSolicitud = repoSolicitud;
@@ -24,71 +31,105 @@ namespace SIGEBI.Application.Services
             _repositorioLibro = repositorioLibro;
             _servicioAuditoria = servicioAuditoria;
             _repositorioPrestamo = repositorioPrestamo;
+            
         }
 
-        public async Task CrearSolicitudAsync(string idUsuario, List<string> isbnsLibros)
-        {
 
-            var usuario = await _usuarios.ObtenerPorIdAsync(idUsuario);
+
+        public async Task<SolicitudResponseDTO> CrearSolicitudAsync(SolicitudRequestDTO peticion)
+        {
+            if (peticion == null)
+                throw new NegocioExeption("Los datos de la solicitud son obligatorios ");
+
+            if (string.IsNullOrWhiteSpace(peticion.MatriculaONumeroEmpleado))
+                throw new NegocioExeption("Debe ingresar la matricula o el numero del usuario");
+
+            if (peticion.IsbnsLibros == null || !peticion.IsbnsLibros.Any())
+                throw new NegocioExeption("Debe solicitar al menos un libro.");
+
+            var usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(peticion.MatriculaONumeroEmpleado);
 
             if (usuario == null)
                 throw new NegocioExeption("El usuario no está registrado en el sistema.");
 
             usuario.ValidarElegibilidadParaPrestamo();
 
-            var prestamosActivos = await _repositorioPrestamo.ObtenerActivoPorUsuarioAsync(idUsuario);
-            int cantidadPrestamosActivos = prestamosActivos.Count();
+            int LimiteDePrestamos = ObtenerLimitePrestamosPorTipoUsuario(usuario);
 
-            int limitePrestamos = ObtenerLimitePrestamosPorTipoUsuario(usuario);
+            if (LimiteDePrestamos <= 0)
+               throw new NegocioExeption("Este usuario no puede solicitar prestamos ");
 
-            if (limitePrestamos <= 0)
-                throw new NegocioExeption("Este tipo de usuario no está autorizado para solicitar préstamos.");
+            var prestamosActivos =  await _repositorioPrestamo.ObtenerActivoPorUsuarioAsync(usuario.IdUsuario);
 
-            if (cantidadPrestamosActivos >= limitePrestamos)
-            {
-                throw new NegocioExeption(
-                    $"No puede solicitar más préstamos. " +
-                    $"Límite permitido: {limitePrestamos}. " +
-                    $"Préstamos activos actuales: {cantidadPrestamosActivos}.");
+            int RecursosActivos = prestamosActivos.Count();
+
+            var LibrosSolicitados = await ObtenerLibrosSolicitadosAsync(peticion.IsbnsLibros);
+
+            if (RecursosActivos + LibrosSolicitados.Count > LimiteDePrestamos) {
+
+                throw new NegocioExeption($"No puedes solicitar mas prestamos" +
+                    $"Limite permitido{LimiteDePrestamos}" +
+                    $"Recursos activos actuales {RecursosActivos}" +
+                    $"Libros Solicitados{LibrosSolicitados}" 
+                    );
             }
 
-            var librosSolicitados = new List<Libro>();
-
-            foreach (var isbn in isbnsLibros)
-            {
-                var libro = await _repositorioLibro.BuscarLibroPorIsbnAsync(isbn);
-
-                if (libro == null)
-                    throw new NegocioExeption($"El libro con ISBN {isbn} no existe.");
-
-                if (!libro.EstaDispinible())
-                    throw new NegocioExeption($"El libro {libro.Titulo} no tiene copias disponibles.");
-
-                librosSolicitados.Add(libro);
-            }
-
-            if (cantidadPrestamosActivos + librosSolicitados.Count > limitePrestamos)
-            {
-                throw new NegocioExeption(
-                    $"La solicitud excede el límite de préstamos. " +
-                    $"Límite permitido: {limitePrestamos}. " +
-                    $"Préstamos activos actuales: {cantidadPrestamosActivos}. " +
-                    $"Libros solicitados: {librosSolicitados.Count}.");
-            }
-
-            var nuevaSolicitud = new Solicitud(idUsuario, librosSolicitados);
-
-            await _repoSolicitud.AgregarAsync(nuevaSolicitud);
+            var nuevaSolicitud = new Solicitud(usuario.IdUsuario, LibrosSolicitados);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                idUsuario: idUsuario,
-                tipoAccion: "Solicitar préstamo",
-                entidadAfectada: "Solicitud",
-                detalles: $"El usuario {idUsuario} creó la solicitud #{nuevaSolicitud.IdSolicitud} para los libros: {string.Join(", ", isbnsLibros)}"
-            );
+                idUsuario: usuario.IdUsuario,
+                tipoAccion: "Solicitud para prestamos",
+                entidadAfectada: "solicitud, prestamos",
+                detalles: $"El usuario {usuario.IdUsuario} ha realizado una solicitud para los libros {LibrosSolicitados}"
+                );
+
+            return MapearSolicitudResponse(nuevaSolicitud, usuario);
+        }
+
+
+
+
+        public async Task<SolicitudResponseDTO?> ObtenerPorIdAsync(int IdSolicitud)
+        {
+            if (IdSolicitud <= 0)
+                throw new NegocioExeption("Debe ingresar el id del usuario para poder realizar la validacion");
+
+            var solicitud = await _repoSolicitud.ObtenerSolicitudConDetallesAsync(IdSolicitud);
+
+            if (solicitud == null)
+                return null;
+
+            return MapearSolicitudResponse(solicitud, solicitud.Usuario);
+
+            
+        }
+
+        public async Task<IEnumerable<SolicitudResponseDTO>> ConsultarPendientesAsync()
+        {
+            var solicitudes = await _repoSolicitud.ObtenerPendientesAsync();
+
+            return solicitudes.Select(s => MapearSolicitudResponse(s, s.Usuario));
+        }
+
+        public async Task<IEnumerable<SolicitudResponseDTO>> ConsultarPorUsuarioAsync(string MatriculaONUmeroEmpleado)
+        {
+            if (string.IsNullOrWhiteSpace(MatriculaONUmeroEmpleado))
+                throw new NegocioExeption("Debe ingresar el identificador del usuario");
+
+            var Usuarios = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(MatriculaONUmeroEmpleado);
+
+            if (Usuarios == null)
+                throw new NegocioExeption("El usuario no se encuentra registrado ");
+
+            var Solicitud = await _repoSolicitud.ObtenerPorUsuarioAsync(Usuarios.IdUsuario);
+
+            return Solicitud.Select(s => MapearSolicitudResponse(s, Usuarios));
 
         }
-        private int ObtenerLimitePrestamosPorTipoUsuario(Usuario usuario)
+
+
+
+        public int ObtenerLimitePrestamosPorTipoUsuario(Usuario usuario)
         {
             if (usuario is Estudiante)
                 return 3;
@@ -96,10 +137,57 @@ namespace SIGEBI.Application.Services
             if (usuario is Docente)
                 return 5;
 
-            return 0;
+            return 2;
         }
 
+        private async Task<List<Libro>> ObtenerLibrosSolicitadosAsync(List<string> Isbn)
+        {
+
+            var isbnNormalizados = Isbn
+                .Where(i => !string.IsNullOrWhiteSpace(i))
+                .Select(i => i.Trim())
+                .Distinct()
+                .ToList();
+
+            if (!isbnNormalizados.Any())
+                throw new NegocioExeption("Debe indicar al menos un libro");
+
+            var libros = new List<Libro>();
+
+            foreach (var isbn in isbnNormalizados) {
+
+                var libro = await _repositorioLibro.BuscarLibroPorIsbnAsync(isbn);
+
+                if (libros == null)
+                    throw new NegocioExeption($" No se encontro ningun libro con {isbn}");
+
+                if (!libro.EstaDisponible())
+                    throw new NegocioExeption("El libro no esta disponible, lo sentimos mucho selecciona otro de tu preferencia ");
+                libros.Add(libro);
+
+            }
+            return libros;
+
+
+        }
+
+        private static SolicitudResponseDTO MapearSolicitudResponse(Solicitud solicitud, Usuario? usuario)
+        {
+            return new SolicitudResponseDTO
+            {
+                IdSolicitud = solicitud.IdSolicitud,
+                FechaSolicitud = solicitud.FechaSolicitud,
+                Estado = solicitud.Estado,
+                IdUsuario = solicitud.IdUsuario,
+                NombreUsuarioSolicitante = usuario?.Nombre ?? string.Empty,
+                Matricula = usuario is Estudiante estudiante ? estudiante.Matricula : null,
+                NumeroEmpleado = usuario?.NumeroEmpleado,
+                TitulosLibros = solicitud.LibrosSolicitados.Select(l => l.ISBN).ToList(),
+
+            };
+
+
+        }
 
     }
-
-    }
+}
