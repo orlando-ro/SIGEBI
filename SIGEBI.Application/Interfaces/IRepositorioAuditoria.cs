@@ -9,7 +9,7 @@ namespace SIGEBI.Application.Interfaces
 {
     public interface IRepositorioAuditoria : IInmutableRepository<RegistroAuditoria>
     {
-        Task<IEnumerable<RegistroAuditoria>> ObtenerPorActorAsync(string idUsuarioActor);
+        Task<IEnumerable<RegistroAuditoria>> ObtenerPorActorAsync(int idUsuarioActor);
         Task<IEnumerable<RegistroAuditoria>> ObtenerPorEntidadAsync(string entidadAfectada);
     }
 }

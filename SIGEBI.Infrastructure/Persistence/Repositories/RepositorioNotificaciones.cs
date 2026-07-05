@@ -17,7 +17,7 @@ namespace SIGEBI.Infrastructure.Repositories
         {
         }
 
-        public async Task<IEnumerable<Notificacion>> ObtenerPorUsuarioAsync(string idUsuario)
+        public async Task<IEnumerable<Notificacion>> ObtenerPorUsuarioAsync(int idUsuario)
         {
             return await _dbSet
                 .Where(n => n.IdUsuario == idUsuario)
@@ -25,7 +25,7 @@ namespace SIGEBI.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Notificacion>> ObtenerNoLeidasPorUsuarioAsync(string idUsuario)
+        public async Task<IEnumerable<Notificacion>> ObtenerNoLeidasPorUsuarioAsync(int idUsuario)
         {
             return await _dbSet
                 .Where(n => n.IdUsuario == idUsuario && !n.Leida)

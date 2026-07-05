@@ -11,6 +11,6 @@ namespace SIGEBI.Application.DTOs
         public string TipoReporte { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El identificador del usuario que solicita el reporte es obligatorio.")]
-        public string IdUsuarioSolicitante { get; set; } = string.Empty;
+        public string  MatriculaONumeroEmpleado { get; set; } = string.Empty;
     }
 }

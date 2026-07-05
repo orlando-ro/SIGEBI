@@ -11,5 +11,9 @@ namespace SIGEBI.Application.Interfaces
 
     {
         Task<IEnumerable<Reporte>> ObtenerPorEstadoAsync(string estado);
+
+        Task<IEnumerable<Reporte>> ObtenerPendientesAsync();
+
+        Task<IEnumerable<Reporte>> ObtenerPorUsuarioAsync(int idusuario);
     }
 }

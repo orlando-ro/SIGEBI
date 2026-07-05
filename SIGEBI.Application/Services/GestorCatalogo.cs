@@ -20,7 +20,7 @@ namespace SIGEBI.Application.Services
             _servicioCategoria = servicioCategoria;
         }
 
-        public async Task RegistrarLibroAsync(LibroRequestDTO dto, string IdUsuarioResponsable)
+        public async Task RegistrarLibroAsync(LibroRequestDTO dto, int IdUsuarioResponsable)
         {
             if (await _repositorioLibro.ObtenerPorIdAsync(dto.ISBN) != null)
                 throw new NegocioExeption("El ISBN ya está registrado.");

@@ -13,15 +13,13 @@ namespace SIGEBI.Infrastructure.Services
             _repoAuditoria = repoAuditoria;
         }
 
-        public async Task<IEnumerable<AuditoriaResponseDTO>> ConsultarHistorialAsync(
-            string? idUsuarioActor = null,
-            string? entidadAfectada = null)
+        public async Task<IEnumerable<AuditoriaResponseDTO>> ConsultarHistorialAsync(int? idUsuarioActor = null, string? entidadAfectada = null)
         {
             IEnumerable<RegistroAuditoria> registros;
 
-            if (!string.IsNullOrWhiteSpace(idUsuarioActor))
+            if (idUsuarioActor.HasValue)
             {
-                registros = await _repoAuditoria.ObtenerPorActorAsync(idUsuarioActor);
+                registros = await _repoAuditoria.ObtenerPorActorAsync(idUsuarioActor.Value);
             }
             else if (!string.IsNullOrWhiteSpace(entidadAfectada))
             {
@@ -32,25 +30,22 @@ namespace SIGEBI.Infrastructure.Services
                 registros = await _repoAuditoria.ObtenerTodosAsync();
             }
 
-            registros = registros.OrderByDescending(r => r.FechaHora);
-
-            return registros.Select(r => new AuditoriaResponseDTO
-            {
-                IdRegistro = r.IdAuditoria,
-                IdUsuarioActor = r.IdUsuario,
-                FechaHora = r.FechaHora,
-                TipoAccion = r.Accion,
-                EntidadAfectada = r.EntidadAfectada,
-                DetallesAdicionales = r.Detalles
-            });
+            return registros
+                .OrderByDescending(r => r.FechaHora)
+                .Select(MapearAuditoriaResponse);
         }
 
         public async Task RegistrarAccionAsync(
-            string idUsuario,
+            int idUsuario,
             string tipoAccion,
             string entidadAfectada,
             string detalles = "")
         {
+
+            if (idUsuario <= 0)
+                throw new Exception("El usuario que realiza la accion no es valido");
+
+
             var nuevoRegistro = new RegistroAuditoria(
                 idUsuario,
                 tipoAccion,
@@ -60,5 +55,21 @@ namespace SIGEBI.Infrastructure.Services
 
             await _repoAuditoria.AgregarAsync(nuevoRegistro);
         }
+
+        private static AuditoriaResponseDTO MapearAuditoriaResponse(RegistroAuditoria registro) {
+
+            return new AuditoriaResponseDTO
+            {
+                IdAuditoria = registro.IdAuditoria,
+                IdUsuarioActor = registro.IdUsuario,
+                FechaHora = registro.FechaHora,
+                Accion = registro.Accion,
+                EntidadAfectada = registro.EntidadAfectada,
+                Detalles = registro.Detalles
+
+
+            };
+        }
+
     }
 }

@@ -10,7 +10,7 @@ namespace SIGEBI.Application.Interfaces
         Task<Devolucion?> ObtenerPorPrestamoAsync(int IdPrestamo);
 
 
-        Task<IEnumerable<Devolucion>> ConsultarHistorialPorUsuario(string IdUsuario);
+        Task<IEnumerable<Devolucion>> ConsultarHistorialPorUsuario(int IdUsuario);
 
         Task<IEnumerable<Devolucion>> ConsultarHistorialPorRecurso(string isbnLibro);
     }

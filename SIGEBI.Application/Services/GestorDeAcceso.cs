@@ -13,14 +13,19 @@ namespace SIGEBI.Application.Services
             _repositorioUsuario = repositorioUsuario;
         }
 
-        public async Task ValidarElegibilidadUsuarioAsync(string idUsuario)
+        public async Task ValidarElegibilidadPorIdentificadorAsync(string identificador)
         {
-            var usuario = await _repositorioUsuario.ObtenerUsuarioConDetallesAsync(idUsuario);
+            if (string.IsNullOrWhiteSpace(identificador))
+                throw new NegocioExeption("Debe indicar la matricula o el numero de empleado");
 
-            if (usuario == null) throw new NegocioExeption("El usuario no fue encontrado en el sistema.");
+            var usuario = await _repositorioUsuario.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
 
-            // Regla de negocio encapsulada en la entidad
+            if (usuario == null)
+                throw new NegocioExeption("El usuario no fue encontrado en el sistema.");
+
             usuario.ValidarElegibilidadParaPrestamo();
         }
+
+        
     }
 }

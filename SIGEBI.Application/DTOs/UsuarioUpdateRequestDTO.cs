@@ -9,8 +9,6 @@ namespace SIGEBI.Application.DTOs
 {
     public class UsuarioUpdateRequestDTO
     {
-        [Required(ErrorMessage = "El identificador es obligatorio.")]
-        public string IdUsuario { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El nombre es obligatorio.")]
         public string Nombre { get; set; } = string.Empty;
@@ -19,8 +17,10 @@ namespace SIGEBI.Application.DTOs
         [EmailAddress(ErrorMessage = "Formato de correo inválido.")]
         public string Email { get; set; } = string.Empty;
 
-        // campos opcionales por si cambiaron de matricula o numero de empleado
+
+        [StringLength(50, ErrorMessage = "La matricula no puede tener mas de 50 caracteres")]
         public string? Matricula { get; set; }
+        [StringLength(50, ErrorMessage = "El numero de empleado no puede tener mas de 50 caracteres")]
         public string? NumeroEmpleado { get; set; }
     }
 }

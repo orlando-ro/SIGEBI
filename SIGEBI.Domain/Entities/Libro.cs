@@ -67,7 +67,7 @@ namespace SIGEBI.Domain.Entities
             CopiasTotales++;
         }
 
-        public bool EstaDispinible() {
+        public bool EstaDisponible() {
 
             if (CopiasDisponibles <= 0) return false;
 

@@ -4,6 +4,7 @@ namespace SIGEBI.Application.Interfaces
 {
     public interface IServicioAcceso
     {
-        Task ValidarElegibilidadUsuarioAsync(string idUsuario);
+
+        Task ValidarElegibilidadPorIdentificadorAsync(string identificador);
     }
 }

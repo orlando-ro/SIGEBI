@@ -7,8 +7,6 @@ namespace SIGEBI.Application.DTOs
 {
     public class UsuarioRequestDTO
     {
-        [Required(ErrorMessage = "El ID/Matrícula del usuario es obligatorio.")]
-        public string IdUsuario { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El nombre del usuario es obligatorio.")]
         public string Nombre { get; set; } = string.Empty;
@@ -23,8 +21,11 @@ namespace SIGEBI.Application.DTOs
         [Required(ErrorMessage = "Debe agregar una contrasenia inicial al usuario (igual al numero de empleado o matricula).")]
         public string Password { get; set; } = string.Empty;
 
-        // los campos sigtes. no son Required porque dependen del TipoUsuario
-        public string Matricula { get; set; } = string.Empty;
-        public string NumeroEmpleado { get; set; } = string.Empty;
+
+        [StringLength(50, ErrorMessage = "La matricula no puede tener mas de 50 caracteres")]
+        public string? Matricula { get; set; } = string.Empty;
+
+        [StringLength(50, ErrorMessage = "El numero de usuario no puede tener mas de 50 caracteres")]
+        public string? NumeroEmpleado { get; set; } = string.Empty;
     }
 }

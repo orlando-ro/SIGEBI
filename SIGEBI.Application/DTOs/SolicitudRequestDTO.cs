@@ -8,7 +8,7 @@ namespace SIGEBI.Application.DTOs
     public class SolicitudRequestDTO
     {
         [Required(ErrorMessage = "El identificador del usuario es obligatorio.")]
-        public string IdUsuario { get; set; } = string.Empty;
+        public string MatriculaONumeroEmpleado { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Debe enviar la lista de libros solicitados.")]
         [MinLength(1, ErrorMessage = "La solicitud debe contener al menos un libro (ISBN).")]

@@ -6,7 +6,7 @@ namespace SIGEBI.Application.Interfaces
 {
     public interface IServicioNotificacion
     {
-        Task<IEnumerable<NotificacionResponseDTO>> ObtenerPendientesAsync(string idUsuario);
+        Task<IEnumerable<NotificacionResponseDTO>> ObtenerPendientesAsync(int idUsuario);
         Task MarcarComoLeidaAsync(int idNotificacion);
     }
 }

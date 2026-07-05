@@ -15,7 +15,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         }
 
         
-        public async Task<IEnumerable<RegistroAuditoria>> ObtenerPorActorAsync(string idUsuarioActor)
+        public async Task<IEnumerable<RegistroAuditoria>> ObtenerPorActorAsync(int idUsuarioActor)
         {
             return await _dbSet
                 .Where(r => r.IdUsuario == idUsuarioActor)
@@ -25,8 +25,13 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
 
         public async Task<IEnumerable<RegistroAuditoria>> ObtenerPorEntidadAsync(string entidadAfectada)
         {
+            if (string.IsNullOrWhiteSpace(entidadAfectada))
+                return new List<RegistroAuditoria>();
+
+            string entidadNormalizada = entidadAfectada.Trim();
+
             return await _dbSet
-                .Where(r => r.EntidadAfectada == entidadAfectada)
+                .Where(r => r.EntidadAfectada == entidadNormalizada)
                 .OrderByDescending(r => r.FechaHora)
                 .ToListAsync();
         }

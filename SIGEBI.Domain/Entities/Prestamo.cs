@@ -16,15 +16,15 @@ namespace SIGEBI.Domain.Entities
         
         public string Estado { get; private set; }
 
-        public string IdUsuario { get; private set; }
+        public int IdUsuario { get; private set; }
         public Usuario Usuario { get; set; }
         public ICollection<Libro> Libros { get; private set; } = new List<Libro>();
 
         protected Prestamo() { }
 
-        public Prestamo(string idUsuario, DateTime fechaInicio, DateTime fechaVencimiento, List<Libro> libros)
+        public Prestamo(int idUsuario, DateTime fechaInicio, DateTime fechaVencimiento, List<Libro> libros)
         {
-            if (string.IsNullOrWhiteSpace(idUsuario))
+            if (idUsuario <= 0)
                 throw new NegocioExeption("El préstamo debe estar asociado a un usuario.");
 
             if (libros == null || !libros.Any())
@@ -59,7 +59,7 @@ namespace SIGEBI.Domain.Entities
 
             foreach (var libro in Libros)
             {
-                libro.IncrementarCopia();
+                libro.DevolverCopia();
             }
         }
     }
