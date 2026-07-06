@@ -67,7 +67,7 @@ namespace SIGEBI.Application.Services
 
             if (RecursosActivos + LibrosSolicitados.Count > LimiteDePrestamos) {
 
-                throw new NegocioExeption($"No puedes solicitar mas prestamos" +
+                throw new NegocioExeption($"Exediste el limite de prestamos." +
                     $"Limite permitido{LimiteDePrestamos}" +
                     $"Recursos activos actuales {RecursosActivos}" +
                     $"Libros Solicitados{LibrosSolicitados}" 
