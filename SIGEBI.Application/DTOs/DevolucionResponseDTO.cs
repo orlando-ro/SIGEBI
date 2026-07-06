@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SIGEBI.Application.DTOs
 {
-    public class DevolucionResponseDTO
+    public record DevolucionResponseDTO
     {
         public int IdDevolucion { get; set; }
         public DateTime FechaDevolucion { get; set; }
