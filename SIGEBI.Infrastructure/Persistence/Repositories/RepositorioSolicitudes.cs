@@ -27,6 +27,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Solicitud>> ObtenerPendientesAsync()
         {
             return await _dbSet
+                .AsNoTracking()
                 .Include(s => s.IdSolicitud)
                 .Include(s => s.IdUsuario)
                 .Include(s => s.LibrosSolicitados)
@@ -37,6 +38,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Solicitud>> ObtenerPorUsuarioAsync(int idusuario)
         {
             return await _dbSet
+                .AsNoTracking()
                 .Include(s => s.IdSolicitud)
                 .Include(u => u.Usuario)
                 .Include(s => s.LibrosSolicitados)
@@ -49,6 +51,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         public async Task<Solicitud?> ObtenerSolicitudConDetallesAsync(int id)
         {
             return await _dbSet
+                .AsNoTracking()
                 .Include(s => s.IdSolicitud)
                 .Include(s => s.IdUsuario)
                 .Include(s => s.FechaSolicitud)

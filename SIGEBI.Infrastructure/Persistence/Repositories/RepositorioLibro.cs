@@ -19,13 +19,16 @@ namespace SIGEBI.Infrastructure.Repositories
         {
             //JOIN con la tabla Categorías
             return await _dbSet
+                .AsNoTracking()
                 .Include(l => l.Categoria)
                 .FirstOrDefaultAsync(l => l.ISBN == isbn);
         }
 
         public async Task<Libro?> BuscarLibroPorIsbnAsync(string isbn) {
 
-            return await _dbSet.FirstOrDefaultAsync(l => l.ISBN == isbn);
+            return await _dbSet
+                .AsNoTracking()
+                .FirstOrDefaultAsync(l => l.ISBN == isbn);
         }
     }
 

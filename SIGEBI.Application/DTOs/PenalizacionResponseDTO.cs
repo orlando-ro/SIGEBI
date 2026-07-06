@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SIGEBI.Application.DTOs
 {
-    public class PenalizacionResponseDTO
+    public record PenalizacionResponseDTO
     {
         public int IdPenalizacion { get; set; }
         public double Monto { get; set; }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SIGEBI.Application.DTOs
 {
-    public class LibroResponseDTO
+    public record LibroResponseDTO
     {
         public string ISBN { get; set; } = string.Empty;
         public string Titulo { get; set; } = string.Empty;

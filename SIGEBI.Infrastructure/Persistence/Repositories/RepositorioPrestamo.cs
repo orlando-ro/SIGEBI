@@ -17,6 +17,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Prestamo>> ObtenerActivoPorUsuarioAsync(int idUsuario)
         {
             return await _dbSet
+                .AsNoTracking()
                 .Include(p => p.IdPrestamo)
                 .Include(p => p.IdUsuario)
                 .Include(p => p.Libros)
@@ -31,6 +32,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
             string NormalizarIsbn = isbn.Trim();
 
             return await _dbSet
+                .AsNoTracking()
                 .Include(p => p.Libros)
                 .Include(p => p.Usuario)
                 .Where(p => p.Estado == "Activo" && p.Libros.Any(l => l.ISBN == isbn)).ToListAsync();
@@ -44,6 +46,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
             string NormalizarIsbn = isbn.Trim();
 
             return await _dbSet
+                .AsNoTracking()
                 .Include(p => p.Libros)
                 .Include(p => p.Usuario)
                 .Where(p => p.Estado == "Activo" && p.Libros.Any(l => l.ISBN == NormalizarIsbn))
@@ -53,6 +56,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Prestamo>> ObtenerHistorialPorUsuarioAsync(int idUsuario)
         {
             return await _dbSet
+                .AsNoTracking()
                 .Include(p => p.Libros)
                 .Include(p => p.Usuario)
                 .Where(p => p.IdUsuario == idUsuario)
@@ -64,6 +68,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         public async Task<Prestamo?> obtenerPrestamoConDetalleAsync(int id)
         {
             return await _dbSet
+                .AsNoTracking()
                .Include(p => p.IdPrestamo)
                .Include(p => p.Libros)
                .Include(p => p.Usuario)

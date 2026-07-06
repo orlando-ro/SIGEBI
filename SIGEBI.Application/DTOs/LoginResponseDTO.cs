@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SIGEBI.Application.DTOs
 {
-    public class LoginResponseDTO
+    public record LoginResponseDTO
     {
         public int IdUsuario { get; set; } 
         public string? Matricula { get; set; }

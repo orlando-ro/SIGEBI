@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SIGEBI.Application.DTOs
 {
-    public class ReporteResponseDTO
+    public record ReporteResponseDTO
     {
         public int IdReporte { get; set; }
 

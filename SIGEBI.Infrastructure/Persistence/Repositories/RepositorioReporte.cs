@@ -17,6 +17,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Reporte>> ObtenerPendientesAsync()
         {
             return await _dbSet
+                .AsNoTracking()
                 .Where(r => r.Estado == "Pendiente")
                 .ToListAsync();
         }
@@ -29,6 +30,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
             string estadoNormalizado = estado.Trim();
 
             return await _dbSet
+                .AsNoTracking()
                 .Where(r => r.Estado == estadoNormalizado)
                 .ToListAsync();
         }
@@ -36,6 +38,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Reporte>> ObtenerPorUsuarioAsync(int idusuario)
         {
             return await _dbSet
+                .AsNoTracking()
                .Where(r => r.IdUsuarioSolicitante == idusuario)
                .ToListAsync();
         }

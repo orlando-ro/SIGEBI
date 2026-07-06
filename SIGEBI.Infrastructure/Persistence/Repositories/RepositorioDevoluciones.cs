@@ -13,6 +13,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         {
 
             return await _dbSet
+                .AsNoTracking()
                 .Include(d => d.Prestamo)
                     .ThenInclude(p => p.Usuario)
                 .Include(d => d.Prestamo)
@@ -26,6 +27,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Devolucion?>> ConsultarHistorialPorUsuario(int IdUsuario)
         {
             return await _dbSet
+                .AsNoTracking()
                 .Include(d => d.Prestamo)
                 .ThenInclude(p => p.Usuario)
                 .Include(d => d.Prestamo)
@@ -39,6 +41,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         public async Task<Devolucion?> ObtenerPorPrestamoAsync(int IdPrestamo) {
 
             return await _dbSet
+                .AsNoTracking()
                 .Include(d => d.Prestamo)
                     .ThenInclude(p => p.Usuario)
                 .Include(d => d.Prestamo)
