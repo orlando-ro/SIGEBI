@@ -57,5 +57,23 @@ namespace SIGEBI.Domain.Entities
 
             Ejemplares.Add(ejemplar);
         }
+
+        // -------------- actualizacion de libros --------------------
+        public void ActualizarDatos(string titulo, string nombreAutor, int anioPublicacion, int idCategoria)
+        {
+            if (string.IsNullOrWhiteSpace(titulo))
+                throw new NegocioExeption("El título del libro no puede estar vacío.");
+            if (string.IsNullOrWhiteSpace(nombreAutor))
+                throw new NegocioExeption("El nombre del autor no puede estar vacío.");
+            if (anioPublicacion <= 0)
+                throw new NegocioExeption("El año de publicación debe ser un número positivo.");
+            if (idCategoria <= 0)
+                throw new NegocioExeption("La categoría del libro no es válida.");
+
+            Titulo = titulo;
+            NombreAutor = nombreAutor;
+            AnioPublicacion = anioPublicacion;
+            IdCategoria = idCategoria;
+        }
     }
 }
