@@ -32,6 +32,14 @@ namespace SIGEBI.Application.Services
             var nuevaPenalizacion = new Penalizacion(idUsuario, montoTotal, $"Retraso de {diasRetraso} días en devolución.");
 
             await _repoPenalizacion.AgregarAsync(nuevaPenalizacion);
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+                
+                idUsuario,
+                "Multa Por Retraso",
+                "Penalizacion",
+                $"El Usuario con el id: {idUsuario} harecivido una penalizacion por retraso de {diasRetraso} dias de la entrega del libro"
+                );
         }
 
         
@@ -67,15 +75,6 @@ namespace SIGEBI.Application.Services
         }
 
         
-         public async Task ProcesarPagoMultaAsync(int penalizacion, string MatriculaONumeroEmpleado, int idUsuarioResolutor)
-        {
-          
-            var peticion = new PenalizacionRequestDTO
-            {
-                MatriculaONumeroEmpleado = MatriculaONumeroEmpleado,
-                MotivoResolucion = "Pago estándar"
-            };
-            await ProcesarPagoMultaAsync(penalizacion, peticion, idUsuarioResolutor); 
-        } 
+        
     }
 }
