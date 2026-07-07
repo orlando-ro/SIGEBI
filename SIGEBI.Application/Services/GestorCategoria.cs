@@ -16,10 +16,9 @@ namespace SIGEBI.Application.Services
 
         public async Task RegistrarCategoriaAsync(CategoriaRequestDTO dto)
         {
-            var todas = await _repositorio.ObtenerTodosAsync();
-            if (todas.Any(c => c.Nombre.Equals(dto.Nombre, System.StringComparison.OrdinalIgnoreCase)))
+            var existe = await _repositorio.ObtenerPorNombreAsync(dto.Nombre);
+            if (existe != null)
                 throw new NegocioExeption("Ya existe esta categoría.");
-
             await _repositorio.AgregarAsync(new Categoria { Nombre = dto.Nombre });
         }
 
@@ -27,6 +26,20 @@ namespace SIGEBI.Application.Services
         {
             var cats = await _repositorio.ObtenerTodosAsync();
             return cats.Select(c => new CategoriaResponseDTO { IdCategoria = c.IdCategoria, Nombre = c.Nombre });
+        }
+
+        public async Task<CategoriaResponseDTO?> ObtenerPorIdAsync(int idCategoria)
+        {
+            var categoria = await _repositorio.ObtenerPorIdAsync(idCategoria);
+
+            if (categoria == null)
+                return null;
+
+            return new CategoriaResponseDTO
+            {
+                IdCategoria = categoria.IdCategoria,
+                Nombre = categoria.Nombre
+            };
         }
     }
 }

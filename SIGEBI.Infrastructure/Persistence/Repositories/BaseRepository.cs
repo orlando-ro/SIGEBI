@@ -39,8 +39,8 @@ namespace SIGEBI.Infrastructure.Repositories
 
         public async Task ActualizarAsync(T entidad)
         {
-            // Update no tiene versión asíncrona porque solo marca el estado en memoria,
-            // la operación de I/O (la que tarda) ocurre en el SaveChangesAsync.
+            // Update no tiene version asincrona porque solo marca el estado en memoria,
+            // la operación de I/O (la que tarda) ocurre en el SaveChangesAsync
             _dbSet.Update(entidad);
             await _context.SaveChangesAsync();
         }

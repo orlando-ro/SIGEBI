@@ -14,10 +14,11 @@ namespace SIGEBI.Application.Services
         private readonly IServicioCategoria _servicioCategoria;
         private readonly IServicioAuditoria _servicioAuditoria;
 
-        public GestorCatalogo(IRepositorioLibro repositorioLibro, IServicioCategoria servicioCategoria)
+        public GestorCatalogo(IRepositorioLibro repositorioLibro, IServicioCategoria servicioCategoria, IServicioAuditoria servicioAuditoria)
         {
             _repositorioLibro = repositorioLibro;
             _servicioCategoria = servicioCategoria;
+            _servicioAuditoria = servicioAuditoria;
         }
 
         public async Task RegistrarLibroAsync(LibroRequestDTO dto, int IdUsuarioResponsable)
@@ -25,8 +26,8 @@ namespace SIGEBI.Application.Services
             if (await _repositorioLibro.ObtenerPorIdAsync(dto.ISBN) != null)
                 throw new NegocioExeption("El ISBN ya está registrado.");
 
-            var categorias = await _servicioCategoria.ConsultarTodasAsync();
-            if (!categorias.Any(c => c.IdCategoria == dto.IdCategoria))
+            var categoria = await _servicioCategoria.ObtenerPorIdAsync(dto.IdCategoria);
+            if (categoria == null)
                 throw new NegocioExeption("La categoría no existe.");
 
             var libro = new Libro(dto.ISBN, dto.Titulo)
