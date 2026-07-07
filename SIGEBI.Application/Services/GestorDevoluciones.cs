@@ -1,6 +1,7 @@
 ﻿using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Domain.Entities;
+using SIGEBI.Domain.Enums;
 using SIGEBI.Domain.Exceptions;
 
 namespace SIGEBI.Application.Services
@@ -53,7 +54,7 @@ namespace SIGEBI.Application.Services
             return usuario;
         }
 
-        
+
 
         public async Task ProcesarDevolucionAsync(DevolucionRequestDTO devolucion)
         {
@@ -63,9 +64,6 @@ namespace SIGEBI.Application.Services
 
             if (devolucion.IdPrestamo <= 0)
                 throw new NegocioExeption("El identificador del préstamo no es válido.");
-
-            if (string.IsNullOrWhiteSpace(devolucion.CondicionLibro))
-                throw new NegocioExeption("Debe indicar la condición física del libro devuelto.");
 
             var bibliotecario = await ObtenerBibliotecarioAsync(
                 devolucion.MatriculaONumeroEmpleadoBibliotecario
@@ -78,7 +76,11 @@ namespace SIGEBI.Application.Services
 
             int diasRetraso = prestamo.CalcularDiasRetraso();
 
-            prestamo.RegistrarDevolucion();
+            var nuevaDevolucion = new Devolucion(
+                prestamo.IdPrestamo,
+                devolucion.CondicionLibro,
+                devolucion.Observaciones
+            );
 
             if (diasRetraso > 0)
             {
@@ -88,6 +90,29 @@ namespace SIGEBI.Application.Services
                 );
             }
 
+            if (nuevaDevolucion.RequierePenalizacionPorDano())
+            {
+                await _servicioPenalizacion.GenerarPenalizacionPorCondicionAsync(
+                    prestamo.IdUsuario,
+                    devolucion.CondicionLibro
+                );
+            }
+
+            foreach (var ejemplar in prestamo.EjemplaresAprestar)
+            {
+                if (devolucion.CondicionLibro == CondicionDevolucion.BuenEstado)
+                {
+                    ejemplar.HabilitarParaPrestamo();
+                }
+                else
+                {
+                    ejemplar.MarcarComoFueraDeServicio();
+                }
+            }
+
+            prestamo.RegistrarDevolucion();
+
+            await _repoDevolucion.AgregarAsync(nuevaDevolucion);
             await _repoPrestamo.ActualizarAsync(prestamo);
 
             await _servicioAuditoria.RegistrarAccionAsync(
@@ -106,15 +131,21 @@ namespace SIGEBI.Application.Services
 
             return new DevolucionResponseDTO
             {
-
                 IdDevolucion = devolucion.IdDevolucion,
                 IdPrestamo = devolucion.IdPrestamo,
                 FechaDevolucion = devolucion.FechaDevolucion,
-                CondicionLibro = devolucion.CondicionLibro,
+                CondicionLibro = devolucion.CondicionLibro.ToString(),
                 Observaciones = devolucion.Observaciones,
+
                 idusuario = devolucion.Prestamo.IdUsuario,
-                NombreUsuario = devolucion.Prestamo.Usuario != null ? devolucion.Prestamo.Usuario.Nombre : string.Empty,
-                TitulosLibros = devolucion.Prestamo.Libros.Select(l => l.Titulo).ToList()
+                NombreUsuario = devolucion.Prestamo.Usuario != null
+             ? devolucion.Prestamo.Usuario.Nombre
+             : string.Empty,
+
+                TitulosLibros = devolucion.Prestamo.EjemplaresAprestar
+             .Where(e => e.Libro != null)
+             .Select(e => e.Libro!.Titulo)
+             .ToList()
             };
         }
     }

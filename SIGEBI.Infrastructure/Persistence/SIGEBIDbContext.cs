@@ -13,7 +13,7 @@ namespace SIGEBI.Infrastructure.Persistence
         {
         }
 
-        public DbSet<Reporte> Reportes { get; set; }
+        
         public DbSet<RegistroAuditoria> RegistroAuditorias { get; set; }
 
         public DbSet<Prestamo> Prestamos { get; set; }
@@ -41,7 +41,6 @@ namespace SIGEBI.Infrastructure.Persistence
             ConfigurarPrestamos(modelBuilder);
             ConfigurarSolicitudes(modelBuilder);
             ConfigurarResoluciones(modelBuilder);
-            ConfigurarReportes(modelBuilder);
             ConfigurarRegistroAuditorias(modelBuilder);
             ConfigurarCategorias(modelBuilder);
             ConfigurarLibros(modelBuilder);
@@ -248,38 +247,8 @@ namespace SIGEBI.Infrastructure.Persistence
             });
         }
 
-        private static void ConfigurarReportes(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Reporte>(entity =>
-            {
-                entity.ToTable("Reportes");
-
-                entity.HasKey(r => r.IdReporte);
-
-                entity.Property(r => r.TipoReporte)
-                    .IsRequired();
-
-                entity.Property(r => r.FechaSolicitud)
-                    .IsRequired();
-
-                entity.Property(r => r.FechaGeneracion)
-                    .IsRequired(false);
-
-                entity.Property(r => r.IdUsuarioSolicitante)
-                    .IsRequired();
-
-                entity.Property(r => r.Estado)
-                    .IsRequired();
-
-                entity.Property(r => r.RutaArchivo)
-                    .IsRequired();
-
-                entity.HasOne<Usuario>()
-                    .WithMany()
-                    .HasForeignKey(r => r.IdUsuarioSolicitante)
-                    .OnDelete(DeleteBehavior.Restrict);
-            });
-        }
+       
+        
 
         private static void ConfigurarRegistroAuditorias(ModelBuilder modelBuilder)
         {

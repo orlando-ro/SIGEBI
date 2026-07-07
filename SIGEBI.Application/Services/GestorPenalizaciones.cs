@@ -1,6 +1,7 @@
 ﻿using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Domain.Entities;
+using SIGEBI.Domain.Enums;
 using SIGEBI.Domain.Exceptions;
 
 namespace SIGEBI.Application.Services
@@ -42,7 +43,32 @@ namespace SIGEBI.Application.Services
                 );
         }
 
-        
+        public async Task GenerarPenalizacionPorCondicionAsync(int idUsuario, CondicionDevolucion condicion)
+        {
+            double monto = condicion switch
+            {
+                CondicionDevolucion.Dañado => 500,
+                CondicionDevolucion.Extraviado => 1500,
+                _ => 0
+            };
+
+            if (monto <= 0)
+                return;
+
+            string motivo = condicion switch
+            {
+                CondicionDevolucion.Dañado => "Daño del recurso bibliográfico",
+                CondicionDevolucion.Extraviado => "Extravío del recurso bibliográfico",
+                _ => string.Empty
+            };
+
+            var penalizacion = new Penalizacion(
+                idUsuario,
+                monto,
+                motivo);
+            await _repoPenalizacion.AgregarAsync(penalizacion);
+        }
+
         public async Task ProcesarPagoMultaAsync(int idPenalizacion, PenalizacionRequestDTO peticion, int idUsuarioResolutor)
         {
             if (peticion == null)

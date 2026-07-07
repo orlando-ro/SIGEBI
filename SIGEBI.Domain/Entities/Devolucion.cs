@@ -1,4 +1,5 @@
-﻿using SIGEBI.Domain.Exceptions;
+﻿using SIGEBI.Domain.Enums;
+using SIGEBI.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +12,7 @@ namespace SIGEBI.Domain.Entities
 
         
         public DateTime FechaDevolucion { get; private set; }
-        public string CondicionLibro { get; private set; } // Ej: "Buen estado", "Dañado", "Extraviado"
+        public CondicionDevolucion CondicionLibro { get; private set; } // Ej: "Buen estado", "Dañado", "Extraviado"
         public string Observaciones { get; private set; }
 
         public int IdPrestamo { get; private set; }
@@ -21,13 +22,11 @@ namespace SIGEBI.Domain.Entities
         protected Devolucion() { }
 
        
-        public Devolucion(int idPrestamo, string condicionLibro, string observaciones = "")
+        public Devolucion(int idPrestamo, CondicionDevolucion condicionLibro, string observaciones = "")
         {
             if (idPrestamo <= 0)
                 throw new NegocioExeption("La devolución debe estar asociada a un préstamo válido.");
 
-            if (string.IsNullOrWhiteSpace(condicionLibro))
-                throw new NegocioExeption("Se debe especificar la condición física del recurso devuelto.");
 
             IdPrestamo = idPrestamo;
             CondicionLibro = condicionLibro;
@@ -39,8 +38,8 @@ namespace SIGEBI.Domain.Entities
         public bool RequierePenalizacionPorDano()
         {
             
-            return CondicionLibro.Equals("Dañado", StringComparison.OrdinalIgnoreCase) ||
-                   CondicionLibro.Equals("Extraviado", StringComparison.OrdinalIgnoreCase);
+            return CondicionLibro == CondicionDevolucion.Dañado ||
+                   CondicionLibro == CondicionDevolucion.Extraviado;
         }
     }
 }

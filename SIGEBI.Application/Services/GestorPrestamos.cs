@@ -2,6 +2,7 @@
 using SIGEBI.Application.DTOs;
 using SIGEBI.Domain.Exceptions;
 using SIGEBI.Domain.Entities;
+using SIGEBI.Domain.Enums;
 
 namespace SIGEBI.Application.Services
 {
@@ -13,6 +14,7 @@ namespace SIGEBI.Application.Services
         private readonly IServicioPenalizacion _servicioPenalizacion;
         private readonly IServicioAuditoria _servicioAuditoria;
         private readonly IUsuarios _usuario;
+        private readonly IRepositorioEjemplar _repositorioEjemplar;
 
         public GestorPrestamos(
             IRepositorioPrestamo repoPrestamo,
@@ -20,6 +22,7 @@ namespace SIGEBI.Application.Services
             IRepositorioLibro repoLibro,
             IServicioPenalizacion servicioPenalizacion,
             IServicioAuditoria servicioAuditoria,
+            IRepositorioEjemplar repositorioejemplar,
             IUsuarios usuario)
         {
             _repoPrestamo = repoPrestamo;
@@ -28,6 +31,7 @@ namespace SIGEBI.Application.Services
             _servicioPenalizacion = servicioPenalizacion;
             _servicioAuditoria = servicioAuditoria;
             _usuario = usuario;
+            _repositorioEjemplar = repositorioejemplar;
         }
 
         public async Task<PrestamoResponseDTO> AprobarYRegistrarPrestamoAsync(PrestamoRequestDTO peticion)
@@ -48,7 +52,7 @@ namespace SIGEBI.Application.Services
             if (solicitud.Estado != "Pendiente")
                 throw new NegocioExeption($"La solicitud no puede aprobarse porque está en estado '{solicitud.Estado}'.");
 
-            if (solicitud.LibrosSolicitados == null || !solicitud.LibrosSolicitados.Any())
+            if (solicitud.EjemplaresSolicitados == null || !solicitud.EjemplaresSolicitados.Any())
                 throw new NegocioExeption("La solicitud no contiene libros solicitados.");
 
             var usuarioSolicitante = await _usuario.ObtenerUsuarioConDetallesAsync(solicitud.IdUsuario);
@@ -67,35 +71,37 @@ namespace SIGEBI.Application.Services
                 .ObtenerActivoPorUsuarioAsync(usuarioSolicitante.IdUsuario);
             int recursos = recursosActivos.Count();
 
-            if (recursos + solicitud.LibrosSolicitados.Count > limitePrestamos)
+            if (recursos + solicitud.EjemplaresSolicitados.Count > limitePrestamos)
             {
                 throw new NegocioExeption(
                     $"No se puede aprobar la solicitud. " +
                     $"Límite permitido: {limitePrestamos}. " +
                     $"Recursos activos actuales: {recursosActivos}. " +
-                    $"Libros solicitados: {solicitud.LibrosSolicitados.Count}.");
+                    $"Libros solicitados: {solicitud.EjemplaresSolicitados.Count}.");
             }
 
-            foreach (var libro in solicitud.LibrosSolicitados)
+            foreach (var ejemplar in solicitud.EjemplaresSolicitados)
             {
-                if (!libro.EstaDisponible())
-                    throw new NegocioExeption($"No se puede aprobar la solicitud porque el libro '{libro.Titulo}' ya no tiene copias disponibles.");
+                if (ejemplar.Estado != EstadoEjemplar.Disponible
+                    && ejemplar.Estado != EstadoEjemplar.Reservado)
+                    throw new NegocioExeption($"No se puede aprobar la solicitud porque el Ejemplar '{ejemplar.CodigoFisico}' ya no esta disponible.");
             }
 
             DateTime fechaInicio = DateTime.Now;
             DateTime fechaVencimiento = calcularFechaVencimiento(usuarioSolicitante, fechaInicio);
 
+            var ejemplaresPrestamo = solicitud.EjemplaresSolicitados.ToList();
             var nuevoPrestamo = new Prestamo(
                 usuarioSolicitante.IdUsuario,
                 fechaInicio,
                 fechaVencimiento,
-                solicitud.LibrosSolicitados.ToList()
+                ejemplaresPrestamo
             );
 
-            foreach (var libro in solicitud.LibrosSolicitados)
+            foreach (var Ejemplares in ejemplaresPrestamo)
             {
-                libro.PrestarCopia();
-                await _repoLibro.ActualizarAsync(libro);
+                Ejemplares.AsignarAPrestamo();
+                await _repositorioEjemplar.ActualizarAsync(Ejemplares);
             }
 
             solicitud.Aprobar();
@@ -179,10 +185,10 @@ namespace SIGEBI.Application.Services
                 DiasRetraso = prestamo.CalcularDiasRetraso(),
                 IdUsuario = prestamo.IdUsuario,
                 NombreUsuario = prestamo.Usuario != null ? prestamo.Usuario.Nombre : string.Empty,
-                TitulosLibros = prestamo.Libros.Select(l => l.Titulo).ToList(),
+                TitulosLibros = prestamo.EjemplaresAprestar.Where(e => e.Libro != null).Select(e => e.Libro!.Titulo).ToList(),
                 Matricula = usuario is Estudiante estudiante ? estudiante.Matricula : null,
                 NumeroEmpleado = usuario?.NumeroEmpleado,
-                 ISBNs = prestamo.Libros.Select(l => l.ISBN).ToList()
+                 ISBNs = prestamo.EjemplaresAprestar.Select(l => l.ISBN).ToList()
             };
         }
 
