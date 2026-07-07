@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Domain.Entities;
 using SIGEBI.Infrastructure.Repositories;
@@ -8,39 +9,30 @@ using System.Text;
 
 namespace SIGEBI.Infrastructure.Persistence.Repositories
 {
-    internal class RepositorioReporte : BaseRepository<Reporte>, IRepositorioReporte
+    internal class RepositorioReporte : BaseRepository<IRepositorioReporte>
     {
         public RepositorioReporte(SIGEBIDbContext context) : base(context)
         {
         }
 
-        public async Task<IEnumerable<Reporte>> ObtenerPendientesAsync()
+        public Task<ReportePenalizacionesDTO> ObtenerPanalizacionesAsync(DateTime FechaInicio, DateTime FechaFin)
         {
-            return await _dbSet
-                .AsNoTracking()
-                .Where(r => r.Estado == "Pendiente")
-                .ToListAsync();
+            throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Reporte>> ObtenerPorEstadoAsync(string estado)
+        public Task<ReporteInventarioResponseDTO> ObtenerReporteInventarioAsync()
         {
-            if (string.IsNullOrWhiteSpace(estado))
-                return new List<Reporte>();
-
-            string estadoNormalizado = estado.Trim();
-
-            return await _dbSet
-                .AsNoTracking()
-                .Where(r => r.Estado == estadoNormalizado)
-                .ToListAsync();
+            throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Reporte>> ObtenerPorUsuarioAsync(int idusuario)
+        public Task<ReportePrestamosResponseDTO> ObtenerReportesPrestamosAsync(DateTime FechaInicio, DateTime FechaFin)
         {
-            return await _dbSet
-                .AsNoTracking()
-               .Where(r => r.IdUsuarioSolicitante == idusuario)
-               .ToListAsync();
+            throw new NotImplementedException();
+        }
+
+        public Task<ReporteCatalogoResponseDTO> ObtenerReporteUsoCatalogoAsync(DateTime FechaInicio, DateTime FechaFin)
+        {
+            throw new NotImplementedException();
         }
     }
 }
