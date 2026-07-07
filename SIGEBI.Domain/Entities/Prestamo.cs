@@ -36,7 +36,7 @@ namespace SIGEBI.Domain.Entities
             IdUsuario = idUsuario;
             FechaInicio = fechaInicio;
             FechaVencimiento = fechaVencimiento;
-            Estado = "Activo"; // Lo guardamos como texto
+            Estado = "Activo"; 
             Libros = libros;
         }
 
