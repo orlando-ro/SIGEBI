@@ -8,5 +8,8 @@ namespace SIGEBI.Application.Interfaces
     {
         Task RegistrarCategoriaAsync(CategoriaRequestDTO dto);
         Task<IEnumerable<CategoriaResponseDTO>> ConsultarTodasAsync();
+
+        // buscar una categoria por su ID
+        Task<CategoriaResponseDTO?> ObtenerPorIdAsync(int idCategoria);
     }
 }
