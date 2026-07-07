@@ -126,5 +126,26 @@ namespace SIGEBI.Application.Services
                 detalles: detallesAuditoria
             );
         }
+
+        public async Task EliminarLibroAsync(string isbn, int idUsuarioResponsable)
+        {
+            var libro = await _repositorioLibro.BuscarLibroPorIsbnAsync(isbn);
+
+            if (libro == null)
+                throw new NegocioExeption($"No se encontró ningún libro con el ISBN {isbn}.");
+
+            libro.Desactivar();
+
+            string tituloRetirado = libro.Titulo;
+
+            await _repositorioLibro.ActualizarAsync(libro);
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+                idUsuario: idUsuarioResponsable,
+                tipoAccion: "Retiro/eliminación de libro",
+                entidadAfectada: "Libro",
+                detalles: $"Se retiró/eliminó el libro '{tituloRetirado}' (ISBN: {isbn}) y todos sus ejemplares físicos."
+            );
+        }
     }
 }

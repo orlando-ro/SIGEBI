@@ -18,6 +18,8 @@ namespace SIGEBI.Domain.Entities
         public int IdCategoria { get; set; }
         public virtual Categoria? Categoria { get; set; }
 
+        public bool Activo { get; set; } = true;
+
         // la colección de ejemplares asociados a este libro
         public virtual ICollection<Ejemplar> Ejemplares { get; private set; } = new List<Ejemplar>();
 
@@ -74,6 +76,23 @@ namespace SIGEBI.Domain.Entities
             NombreAutor = nombreAutor;
             AnioPublicacion = anioPublicacion;
             IdCategoria = idCategoria;
+        }
+
+        // -------------- verificacion de compromiso --------------------
+        public bool TieneCompromisosActivos()
+        {
+            return Ejemplares.Any(e =>
+                e.Estado == EstadoEjemplar.Prestado ||
+                e.Estado == EstadoEjemplar.Reservado);
+        }
+
+        // -------------- desactivacion de libros --------------------
+        public void Desactivar()
+        {
+            if (TieneCompromisosActivos())
+                throw new NegocioExeption("No se puede retirar el recurso bibliográfico porque tiene copias en préstamo o reservadas.");
+
+            Activo = false;
         }
     }
 }

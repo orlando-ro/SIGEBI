@@ -4,7 +4,6 @@ using System.Text;
 using SIGEBI.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace SIGEBI.Infrastructure.Persistence
 {
     public class SIGEBIDbContext : DbContext
@@ -13,23 +12,19 @@ namespace SIGEBI.Infrastructure.Persistence
         {
         }
 
-        
         public DbSet<RegistroAuditoria> RegistroAuditorias { get; set; }
-
         public DbSet<Prestamo> Prestamos { get; set; }
         public DbSet<Solicitud> Solicitudes { get; set; }
         public DbSet<Resolucion> Resoluciones { get; set; }
         public DbSet<Aprobacion> Aprobaciones { get; set; }
         public DbSet<Rechazo> Rechazos { get; set; }
-
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Libro> Libros { get; set; }
-        public DbSet<Ejemplar> Ejemplares { get; set; } // <- nuevo DbSet
+        public DbSet<Ejemplar> Ejemplares { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Notificacion> Notificaciones { get; set; }
         public DbSet<Penalizacion> Penalizaciones { get; set; }
         public DbSet<Devolucion> Devoluciones { get; set; }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -44,7 +39,7 @@ namespace SIGEBI.Infrastructure.Persistence
             ConfigurarRegistroAuditorias(modelBuilder);
             ConfigurarCategorias(modelBuilder);
             ConfigurarLibros(modelBuilder);
-            ConfigurarEjemplares(modelBuilder); // <- llamada a la nueva configuarion
+            ConfigurarEjemplares(modelBuilder);
             ConfigurarDevoluciones(modelBuilder);
         }
 
@@ -159,7 +154,7 @@ namespace SIGEBI.Infrastructure.Persistence
                     .HasForeignKey(p => p.IdUsuario)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasMany(p => p.Libros)
+                entity.HasMany(p => p.EjemplaresAprestar)
                     .WithOne()
                     .HasForeignKey("PrestamoIdPrestamo")
                     .IsRequired(false)
@@ -186,7 +181,7 @@ namespace SIGEBI.Infrastructure.Persistence
                     .HasForeignKey(s => s.IdUsuario)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasMany(s => s.LibrosSolicitados)
+                entity.HasMany(s => s.EjemplaresSolicitados)
                     .WithOne()
                     .HasForeignKey("SolicitudIdSolicitud")
                     .IsRequired(false)
@@ -246,9 +241,6 @@ namespace SIGEBI.Infrastructure.Persistence
                     .IsRequired(false);
             });
         }
-
-       
-        
 
         private static void ConfigurarRegistroAuditorias(ModelBuilder modelBuilder)
         {
@@ -316,7 +308,11 @@ namespace SIGEBI.Infrastructure.Persistence
                 entity.Property(l => l.AnioPublicacion)
                     .IsRequired();
 
-                // Eliminados: CopiasTotales y CopiasDisponibles (ya no son propiedades persistentes)
+                entity.Property(l => l.Activo)
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
+                entity.HasQueryFilter(l => l.Activo);
 
                 entity.Property(l => l.UrlImagen)
                     .IsRequired(false);
@@ -328,7 +324,6 @@ namespace SIGEBI.Infrastructure.Persistence
             });
         }
 
-        // --- NUEVA CONFIGURACION PARA EJEMPLAR ---
         private static void ConfigurarEjemplares(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Ejemplar>(entity =>
@@ -341,17 +336,15 @@ namespace SIGEBI.Infrastructure.Persistence
                     .IsRequired()
                     .HasMaxLength(50);
 
-                // Forza al Enum se guarde como un String ("Disponible", "Prestado")
                 entity.Property(e => e.Estado)
                     .HasConversion<string>()
                     .HasMaxLength(30)
                     .IsRequired();
 
-                // Relación de 1 a Muchos: Un libro tiene muchos ejemplares físicos
                 entity.HasOne(e => e.Libro)
                     .WithMany(l => l.Ejemplares)
                     .HasForeignKey(e => e.ISBN)
-                    .OnDelete(DeleteBehavior.Cascade); // Si se borra un libro, se borran sus ejemplares
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
 
