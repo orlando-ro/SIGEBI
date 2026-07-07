@@ -17,19 +17,29 @@ namespace SIGEBI.Infrastructure.Repositories
 
         public async Task<Libro?> ObtenerLibroConCategoriaAsync(string isbn)
         {
-            //JOIN con la tabla Categorías
+            // JOIN con la tabla Categorías y la tabla Ejemplares
             return await _dbSet
                 .AsNoTracking()
                 .Include(l => l.Categoria)
+                .Include(l => l.Ejemplares) // <-- CLAVE
                 .FirstOrDefaultAsync(l => l.ISBN == isbn);
         }
 
-        public async Task<Libro?> BuscarLibroPorIsbnAsync(string isbn) {
-
+        public async Task<Libro?> BuscarLibroPorIsbnAsync(string isbn)
+        {
             return await _dbSet
                 .AsNoTracking()
+                .Include(l => l.Ejemplares) // <-- CLAVE
                 .FirstOrDefaultAsync(l => l.ISBN == isbn);
         }
-    }
 
+        public new async Task<IEnumerable<Libro>> ObtenerTodosAsync()
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .Include(l => l.Categoria)
+                .Include(l => l.Ejemplares) // <-- CLAVE
+                .ToListAsync();
+        }
+    }
 }
