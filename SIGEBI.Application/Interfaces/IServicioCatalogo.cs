@@ -9,5 +9,6 @@ namespace SIGEBI.Application.Interfaces
         Task RegistrarLibroAsync(LibroRequestDTO dto, int IdUsuarioResponsable);
         Task<LibroResponseDTO?> BuscarPorIsbnAsync(string isbn);
         Task<IEnumerable<LibroResponseDTO>> ConsultarTodoAsync();
+        Task ActualizarLibroAsync(string isbn, LibroUpdateDTO dto, int idUsuarioResponsable);
     }
 }

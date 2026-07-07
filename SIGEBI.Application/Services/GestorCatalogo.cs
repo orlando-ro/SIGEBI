@@ -82,5 +82,49 @@ namespace SIGEBI.Application.Services
                 Categoria = "N/A"
             });
         }
+
+        public async Task ActualizarLibroAsync(string isbn, LibroUpdateDTO dto, int idUsuarioResponsable)
+        {
+            var libro = await _repositorioLibro.ObtenerPorIdAsync(isbn);
+            if (libro == null)
+                throw new NegocioExeption($"No se encontró ningún libro con el ISBN {isbn}.");
+
+            if (libro.IdCategoria != dto.IdCategoria)
+            {
+                var categoria = await _servicioCategoria.ObtenerPorIdAsync(dto.IdCategoria);
+                if (categoria == null)
+                    throw new NegocioExeption("La nueva categoría asignada no existe en el sistema.");
+            }
+
+            var cambios = new List<string>();
+
+            if (libro.Titulo != dto.Titulo)
+                cambios.Add($"Título: '{libro.Titulo}' -> '{dto.Titulo}'");
+
+            if (libro.NombreAutor != dto.NombreAutor)
+                cambios.Add($"Autor: '{libro.NombreAutor}' -> '{dto.NombreAutor}'");
+
+            if (libro.AnioPublicacion != dto.AnioPublicacion)
+                cambios.Add($"Año: {libro.AnioPublicacion} -> {dto.AnioPublicacion}");
+
+            if (libro.IdCategoria != dto.IdCategoria)
+                cambios.Add($"Categoría ID: {libro.IdCategoria} -> {dto.IdCategoria}");
+
+            if (!cambios.Any())
+                return;
+
+            string detallesAuditoria = $"Cambios en ISBN {isbn}: " + string.Join(", ", cambios);
+
+            libro.ActualizarDatos(dto.Titulo, dto.NombreAutor, dto.AnioPublicacion, dto.IdCategoria);
+
+            await _repositorioLibro.ActualizarAsync(libro);
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+                idUsuario: idUsuarioResponsable,
+                tipoAccion: "Actualizacion de libro",
+                entidadAfectada: "Libro",
+                detalles: detallesAuditoria
+            );
+        }
     }
 }
