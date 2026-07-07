@@ -1,22 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using SIGEBI.Domain.Entities; 
+using SIGEBI.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 
 namespace SIGEBI.Infrastructure.Persistence
 {
-   public class SIGEBIDbContext : DbContext
-   {
-            
-            public SIGEBIDbContext(DbContextOptions<SIGEBIDbContext> options) : base(options)
-            {
+    public class SIGEBIDbContext : DbContext
+    {
+        public SIGEBIDbContext(DbContextOptions<SIGEBIDbContext> options) : base(options)
+        {
+        }
 
-                
-            }
-
-             
         public DbSet<Reporte> Reportes { get; set; }
         public DbSet<RegistroAuditoria> RegistroAuditorias { get; set; }
 
@@ -28,12 +24,11 @@ namespace SIGEBI.Infrastructure.Persistence
 
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Libro> Libros { get; set; }
+        public DbSet<Ejemplar> Ejemplares { get; set; } // <- nuevo DbSet
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Notificacion> Notificaciones { get; set; }
         public DbSet<Penalizacion> Penalizaciones { get; set; }
         public DbSet<Devolucion> Devoluciones { get; set; }
-
-
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -50,6 +45,7 @@ namespace SIGEBI.Infrastructure.Persistence
             ConfigurarRegistroAuditorias(modelBuilder);
             ConfigurarCategorias(modelBuilder);
             ConfigurarLibros(modelBuilder);
+            ConfigurarEjemplares(modelBuilder); // <- llamada a la nueva configuarion
             ConfigurarDevoluciones(modelBuilder);
         }
 
@@ -351,11 +347,7 @@ namespace SIGEBI.Infrastructure.Persistence
                 entity.Property(l => l.AnioPublicacion)
                     .IsRequired();
 
-                entity.Property(l => l.CopiasTotales)
-                    .IsRequired();
-
-                entity.Property(l => l.CopiasDisponibles)
-                    .IsRequired();
+                // Eliminados: CopiasTotales y CopiasDisponibles (ya no son propiedades persistentes)
 
                 entity.Property(l => l.UrlImagen)
                     .IsRequired(false);
@@ -364,6 +356,33 @@ namespace SIGEBI.Infrastructure.Persistence
                     .WithMany(c => c.Libros)
                     .HasForeignKey(l => l.IdCategoria)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+        }
+
+        // --- NUEVA CONFIGURACION PARA EJEMPLAR ---
+        private static void ConfigurarEjemplares(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Ejemplar>(entity =>
+            {
+                entity.ToTable("Ejemplares");
+
+                entity.HasKey(e => e.IdEjemplar);
+
+                entity.Property(e => e.CodigoFisico)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                // Forza al Enum se guarde como un String ("Disponible", "Prestado")
+                entity.Property(e => e.Estado)
+                    .HasConversion<string>()
+                    .HasMaxLength(30)
+                    .IsRequired();
+
+                // Relación de 1 a Muchos: Un libro tiene muchos ejemplares físicos
+                entity.HasOne(e => e.Libro)
+                    .WithMany(l => l.Ejemplares)
+                    .HasForeignKey(e => e.ISBN)
+                    .OnDelete(DeleteBehavior.Cascade); // Si se borra un libro, se borran sus ejemplares
             });
         }
 
@@ -390,12 +409,5 @@ namespace SIGEBI.Infrastructure.Persistence
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
-
-
-
-
     }
-    }
-
-
-
+}

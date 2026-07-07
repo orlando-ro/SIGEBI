@@ -34,17 +34,24 @@ namespace SIGEBI.Application.Services
             {
                 NombreAutor = dto.NombreAutor,
                 AnioPublicacion = dto.AnioPublicacion,
-                CopiasTotales = dto.CopiasTotales,
-                CopiasDisponibles = dto.CopiasTotales,
                 IdCategoria = dto.IdCategoria
             };
 
+            for (int i = 1; i <= dto.CopiasTotales; i++)
+            {
+                string codigoFisico = $"{dto.ISBN}-{i:D2}";
+                var ejemplar = new Ejemplar(dto.ISBN, codigoFisico);
+
+                libro.AgregarEjemplar(ejemplar);
+            }
+
             await _repositorioLibro.AgregarAsync(libro);
+
             await _servicioAuditoria.RegistrarAccionAsync(
                  idUsuario: IdUsuarioResponsable,
-                 tipoAccion: "Creacion de libro",
-                 entidadAfectada: "Libro",
-                 detalles: $" Se registro el libro: {libro.Titulo}"
+                 tipoAccion: "Creacion de libro y ejemplares",
+                 entidadAfectada: "Libro/Ejemplar",
+                 detalles: $"Se registró el libro: {libro.Titulo} con {dto.CopiasTotales} ejemplares físicos."
              );
         }
 
@@ -52,12 +59,12 @@ namespace SIGEBI.Application.Services
         {
             var libro = await _repositorioLibro.ObtenerLibroConCategoriaAsync(isbn);
             if (libro == null) return null;
+
             return new LibroResponseDTO
             {
                 ISBN = libro.ISBN,
                 Titulo = libro.Titulo,
                 NombreAutor = libro.NombreAutor,
-                CopiasDisponibles = libro.CopiasDisponibles,
                 Categoria = libro.Categoria?.Nombre ?? "N/A"
             };
         }
@@ -65,6 +72,7 @@ namespace SIGEBI.Application.Services
         public async Task<IEnumerable<LibroResponseDTO>> ConsultarTodoAsync()
         {
             var libros = await _repositorioLibro.ObtenerTodosAsync();
+
             return libros.Select(l => new LibroResponseDTO
             {
                 ISBN = l.ISBN,

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using SIGEBI.Domain.Enums;
 using SIGEBI.Domain.Exceptions;
 
 namespace SIGEBI.Domain.Entities
 {
     public class Libro
     {
-        
         public string ISBN { get; set; } = string.Empty;
         public string Titulo { get; set; } = string.Empty;
         public string NombreAutor { get; set; } = string.Empty;
@@ -15,63 +15,47 @@ namespace SIGEBI.Domain.Entities
 
         public string? UrlImagen { get; private set; }
 
-        
-        public int CopiasTotales { get; set; }
-        public int CopiasDisponibles { get; set; }
-
-        
         public int IdCategoria { get; set; }
         public virtual Categoria? Categoria { get; set; }
 
-        protected Libro() { } // este constructor es necesario para el EF Core
+        // la colección de ejemplares asociados a este libro
+        public virtual ICollection<Ejemplar> Ejemplares { get; private set; } = new List<Ejemplar>();
 
-        public Libro(string isbn, string titulo) {
+        protected Libro() { } // Requerido por Entity Framework
 
+        public Libro(string isbn, string titulo)
+        {
             ISBN = isbn;
             Titulo = titulo;
-
         }
 
-
-        public void AsignarImagen(string url) {
-
+        public void AsignarImagen(string url)
+        {
             if (string.IsNullOrWhiteSpace(url))
-                throw new NegocioExeption(" La ruta de la imagen no puede estar vacia. ");
+                throw new NegocioExeption("La ruta de la imagen no puede estar vacia.");
 
             UrlImagen = url;
         }
 
-        
+        // el total de copias es la cantidad de ejemplares asociados a este libro, sin importar su estado físico
+        public int CopiasTotales => Ejemplares.Count;
 
-        public void PrestarCopia()
+        // son los ejemplares que están disponibles para préstamo, su estado es "Disponible"
+        public int CopiasDisponibles => Ejemplares.Count(e => e.Estado == EstadoEjemplar.Disponible);
+
+        public bool EstaDisponible()
         {
-            if (CopiasDisponibles <= 0)
-            {
-                throw new NegocioExeption($"El libro '{Titulo}' no tiene copias disponibles para préstamo.");
-            }
-            CopiasDisponibles--;
+            return CopiasDisponibles > 0;
         }
 
-        public void DevolverCopia()
+        // _________gestion de ejemplares_________
+
+        public void AgregarEjemplar(Ejemplar ejemplar)
         {
-            if (CopiasDisponibles >= CopiasTotales)
-            {
-                throw new NegocioExeption($"Inconsistencia: No se pueden devolver más copias de las totales registradas para el libro '{Titulo}'.");
-            }
-            CopiasDisponibles++;
-        }
+            if (ejemplar == null)
+                throw new NegocioExeption("No se puede registrar un ejemplar nulo.");
 
-        public void IncrementarCopia()
-        {
-            CopiasDisponibles++;
-            CopiasTotales++;
-        }
-
-        public bool EstaDisponible() {
-
-            if (CopiasDisponibles <= 0) return false;
-
-            return true;
+            Ejemplares.Add(ejemplar);
         }
     }
 }
