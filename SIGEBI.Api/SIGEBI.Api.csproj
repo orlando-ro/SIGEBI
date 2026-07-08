@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.6" />
+    <PackageReference Include="QuestPDF" Version="2026.7.0" />
   </ItemGroup>
 
 	<!-- Referencias a los otros proyectos de tu solución -->

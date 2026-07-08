@@ -1,4 +1,5 @@
-﻿using SIGEBI.Domain.Exceptions;
+﻿using SIGEBI.Domain.Enums;
+using SIGEBI.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,7 +33,7 @@ namespace SIGEBI.Domain.Entities
             if (monto <= 0)
                 throw new NegocioExeption("El monto de la penalización debe ser mayor a cero.");
 
-            if (string.IsNullOrWhiteSpace(motivo))
+            if (motivo == null)
                 throw new NegocioExeption("Se debe especificar el motivo de la penalización (ej. Retraso, Daño).");
 
             IdUsuario = idUsuario;

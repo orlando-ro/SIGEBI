@@ -16,7 +16,7 @@ namespace SIGEBI.Application.Interfaces
 
         Task<ReporteCatalogoResponseDTO> ObtenerReporteUsoCatalogoAsync(DateTime FechaInicio, DateTime FechaFin);
 
-        Task<ReportePenalizacionesDTO> ObtenerPanalizacionesAsync(DateTime FechaInicio, DateTime FechaFin);
+        Task<ReportePenalizacionesDTO> ObtenerPenalizacionesAsync(DateTime FechaInicio, DateTime FechaFin);
         
     }
 }

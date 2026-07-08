@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SIGEBI.Application.Interfaces
 {
-    internal interface IPDFService
+    public interface IPDFService
     {
         byte[] GenerarReportePrestamosPDF(ReportePrestamosResponseDTO reporte);
         byte[] GenerarReporteInventarioPDF(ReporteInventarioResponseDTO reporte);
