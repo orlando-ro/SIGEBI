@@ -72,7 +72,6 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         public async Task<Prestamo?> obtenerPrestamoConDetalleAsync(int id)
         {
             return await _dbSet
-                .AsNoTracking()
                 .Include(p => p.Usuario)
                 .Include(p => p.EjemplaresAprestar)
                     .ThenInclude(e => e.Libro)

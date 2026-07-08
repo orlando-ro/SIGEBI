@@ -10,7 +10,7 @@ namespace SIGEBI.Application.Interfaces
 {
     public interface IServicioDevolucion
     {
-        Task ProcesarDevolucionAsync(DevolucionRequestDTO peticion);
+        Task<DevolucionResponseDTO> ProcesarDevolucionAsync(DevolucionRequestDTO devolucion);
 
         Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorUsuario(string matriculaONumeroEmpleado);
 

@@ -125,9 +125,33 @@ namespace SIGEBI.Infrastructure.Persistence
                 entity.Property(p => p.Pagada)
                     .IsRequired();
 
+                entity.Property(p => p.FechaResolucion)
+                    .IsRequired(false);
+
+                entity.Property(p => p.MotivoResolucion)
+                    .IsRequired(false);
+
+                entity.Property(p => p.IdPrestamo)
+                    .IsRequired(false);
+
+                entity.Property(p => p.IdUsuarioResolutor)
+                    .IsRequired(false);
+
                 entity.HasOne(p => p.Usuario)
                     .WithMany(u => u.Penalizaciones)
                     .HasForeignKey(p => p.IdUsuario)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(p => p.Prestamo)
+                    .WithMany()
+                    .HasForeignKey(p => p.IdPrestamo)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(p => p.UsuarioResolutor)
+                    .WithMany()
+                    .HasForeignKey(p => p.IdUsuarioResolutor)
+                    .IsRequired(false)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
@@ -360,14 +384,24 @@ namespace SIGEBI.Infrastructure.Persistence
                     .IsRequired();
 
                 entity.Property(d => d.CondicionLibro)
+                    .HasConversion<string>()
+                    .HasMaxLength(30)
                     .IsRequired();
 
                 entity.Property(d => d.Observaciones)
+                    .IsRequired(false);
+
+                entity.Property(d => d.IdBibliotecario)
                     .IsRequired();
 
                 entity.HasOne(d => d.Prestamo)
                     .WithMany()
                     .HasForeignKey(d => d.IdPrestamo)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(d => d.Bibliotecario)
+                    .WithMany()
+                    .HasForeignKey(d => d.IdBibliotecario)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
