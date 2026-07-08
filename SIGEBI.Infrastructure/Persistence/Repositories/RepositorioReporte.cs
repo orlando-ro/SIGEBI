@@ -12,7 +12,7 @@ using SIGEBI.Domain.Enums;
 
 namespace SIGEBI.Infrastructure.Persistence.Repositories
 {
-    internal class RepositorioReporte : IRepositorioReporte
+    public class RepositorioReporte : IRepositorioReporte
     {
         private readonly SIGEBIDbContext _context;
         public RepositorioReporte(SIGEBIDbContext context) 

@@ -6,7 +6,7 @@ using SIGEBI.Infrastructure.Repositories;
 
 namespace SIGEBI.Infrastructure.Persistence.Repositories
 {
-    internal class RepositorioPenalizacion : BaseRepository<Penalizacion>, IRepoPenalizacion
+    public class RepositorioPenalizacion : BaseRepository<Penalizacion>, IRepoPenalizacion
     {
         public RepositorioPenalizacion(SIGEBIDbContext context) : base(context)
         {

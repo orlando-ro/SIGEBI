@@ -5,7 +5,7 @@ using SIGEBI.Infrastructure.Repositories;
 
 namespace SIGEBI.Infrastructure.Persistence.Repositories
 {
-    internal class RepositorioDevoluciones : BaseRepository<Devolucion>, IRepositorioDevolucion
+    public class RepositorioDevoluciones : BaseRepository<Devolucion>, IRepositorioDevolucion
     {
         public RepositorioDevoluciones(SIGEBIDbContext context) : base(context) { }
 

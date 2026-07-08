@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
-using SIGEBI.Infrastructure.Persistence;
 using QuestPDF.Infrastructure;
+using SIGEBI.Application.Interfaces;
+using SIGEBI.Application.Services;
+using SIGEBI.Infrastructure.Persistence;
+using SIGEBI.Infrastructure.Services;
 
 namespace SIGEBI.Api
 {
@@ -19,9 +22,10 @@ namespace SIGEBI.Api
             builder.Services.AddControllers();
 
             //servicios 
+            builder.Services.AddScoped<IServicioAuditoria, ServicioAuditoria>();
+            builder.Services.AddScoped<IPDFService, GeneradorReportePDF>();
 
 
-            
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 

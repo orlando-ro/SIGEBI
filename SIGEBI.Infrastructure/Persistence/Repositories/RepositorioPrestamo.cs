@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SIGEBI.Infrastructure.Persistence.Repositories
 {
-    internal class RepositorioPrestamo : BaseRepository<Prestamo>, IRepositorioPrestamo
+    public class RepositorioPrestamo : BaseRepository<Prestamo>, IRepositorioPrestamo
     {
         public RepositorioPrestamo(SIGEBIDbContext context) : base(context)
         {

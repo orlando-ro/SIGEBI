@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SIGEBI.Infrastructure.Persistence.Repositories
 {
-    internal class RepositorioSolicitudes : BaseRepository<Solicitud>, IRepoSolicitud
+    public class RepositorioSolicitudes : BaseRepository<Solicitud>, IRepoSolicitud
     {
 
         
