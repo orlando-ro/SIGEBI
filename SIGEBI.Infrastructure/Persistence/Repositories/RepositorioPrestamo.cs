@@ -77,5 +77,12 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
                     .ThenInclude(e => e.Libro)
                 .FirstOrDefaultAsync(p => p.IdPrestamo == id);
         }
+
+        public async Task<IEnumerable<Prestamo>> ObtenerActivosPorFechaVencimientoAsync(DateTime fechaObjetivo)
+        {
+            return await _dbSet
+                .Where(p => p.Estado != "Devuelto" && p.FechaVencimiento.Date == fechaObjetivo.Date)
+                .ToListAsync();
+        }
     }
 }
