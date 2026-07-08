@@ -19,7 +19,7 @@ namespace SIGEBI.Application.DTOs
 
         public string? NumeroEmpleado { get; set; } = string.Empty;
 
-        public List<Libro> ISBN { get; set; } = new();
+        public List<string> ISBNs { get; set; } = new();
         public List<string> TitulosLibros { get; set; } = new();
     }
 }

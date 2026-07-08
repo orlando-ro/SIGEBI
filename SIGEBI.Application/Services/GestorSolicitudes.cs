@@ -43,51 +43,62 @@ namespace SIGEBI.Application.Services
         public async Task<SolicitudResponseDTO> CrearSolicitudAsync(SolicitudRequestDTO peticion)
         {
             if (peticion == null)
-                throw new NegocioExeption("Los datos de la solicitud son obligatorios ");
+                throw new NegocioExeption("Los datos de la solicitud son obligatorios.");
 
             if (string.IsNullOrWhiteSpace(peticion.MatriculaONumeroEmpleado))
-                throw new NegocioExeption("Debe ingresar la matricula o el numero del usuario");
+                throw new NegocioExeption("Debe ingresar la matrícula o el número del usuario.");
 
             if (peticion.IsbnsLibros == null || !peticion.IsbnsLibros.Any())
                 throw new NegocioExeption("Debe solicitar al menos un libro.");
 
-            var usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(peticion.MatriculaONumeroEmpleado);
+            var usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(
+                peticion.MatriculaONumeroEmpleado);
 
             if (usuario == null)
                 throw new NegocioExeption("El usuario no está registrado en el sistema.");
 
             usuario.ValidarElegibilidadParaPrestamo();
 
-            int LimiteDePrestamos = ObtenerLimitePrestamosPorTipoUsuario(usuario);
+            int limiteDePrestamos = ObtenerLimitePrestamosPorTipoUsuario(usuario);
 
-            if (LimiteDePrestamos <= 0)
-               throw new NegocioExeption("Este usuario no puede solicitar prestamos ");
+            if (limiteDePrestamos <= 0)
+                throw new NegocioExeption("Este usuario no puede solicitar préstamos.");
 
-            var prestamosActivos =  await _repositorioPrestamo.ObtenerActivoPorUsuarioAsync(usuario.IdUsuario);
+            var prestamosActivos = await _repositorioPrestamo
+                .ObtenerActivoPorUsuarioAsync(usuario.IdUsuario);
 
-            int RecursosActivos = prestamosActivos.Count();
+            int recursosActivos = prestamosActivos
+                .SelectMany(p => p.EjemplaresAprestar)
+                .Count();
 
-            var EjemplaresSolicitados = await ObtenerEjemplaresSolicitadosAsync(peticion.IsbnsLibros);
-           
+            var ejemplaresSolicitados = await ObtenerEjemplaresSolicitadosAsync(
+                peticion.IsbnsLibros);
 
-            if (RecursosActivos + EjemplaresSolicitados.Count > LimiteDePrestamos) {
-
-                throw new NegocioExeption($"Exediste el limite de prestamos." +
-                    $"Limite permitido{LimiteDePrestamos}" +
-                    $"Recursos activos actuales {RecursosActivos}" +
-                    $"Libros Solicitados{EjemplaresSolicitados}" 
-                    );
+            if (recursosActivos + ejemplaresSolicitados.Count > limiteDePrestamos)
+            {
+                throw new NegocioExeption(
+                    $"Excediste el límite de préstamos. " +
+                    $"Límite permitido: {limiteDePrestamos}. " +
+                    $"Recursos activos actuales: {recursosActivos}. " +
+                    $"Libros solicitados: {ejemplaresSolicitados.Count}.");
             }
 
-            var nuevaSolicitud = new Solicitud(usuario.IdUsuario, EjemplaresSolicitados);
-           
+            foreach (var ejemplar in ejemplaresSolicitados)
+            {
+                ejemplar.MarcarComoReservado();
+                await _repositorioEjemplar.ActualizarAsync(ejemplar);
+            }
+
+            var nuevaSolicitud = new Solicitud(usuario.IdUsuario, ejemplaresSolicitados);
+
+            await _repoSolicitud.AgregarAsync(nuevaSolicitud);
 
             await _servicioAuditoria.RegistrarAccionAsync(
                 idUsuario: usuario.IdUsuario,
-                tipoAccion: "Solicitud para prestamos",
-                entidadAfectada: "solicitud, prestamos",
-                detalles: $"El usuario {usuario.IdUsuario} ha realizado una solicitud para los libros {EjemplaresSolicitados}"
-                );
+                tipoAccion: "Solicitud de préstamo",
+                entidadAfectada: "Solicitud",
+                detalles: $"El usuario {usuario.IdUsuario} realizó la solicitud #{nuevaSolicitud.IdSolicitud}."
+            );
 
             return MapearSolicitudResponse(nuevaSolicitud, usuario);
         }
@@ -113,6 +124,15 @@ namespace SIGEBI.Application.Services
                 throw new NegocioExeption(" no se encontro ninguna solicitud");
 
             solicitudARechazar.Rechazar();
+
+            foreach (var ejemplar in solicitudARechazar.EjemplaresSolicitados)
+            {
+                if (ejemplar.Estado == EstadoEjemplar.Reservado)
+                {
+                    ejemplar.HabilitarParaPrestamo();
+                    await _repositorioEjemplar.ActualizarAsync(ejemplar);
+                }
+            }
 
             var rechazo = new Rechazo(
                 Bibliotecario.IdUsuario,
@@ -192,32 +212,36 @@ namespace SIGEBI.Application.Services
         {
 
             var isbnNormalizados = Isbn
-                .Where(i => !string.IsNullOrWhiteSpace(i))
-                .Select(i => i.Trim())
-                .Distinct()
-                .ToList();
+        .Where(i => !string.IsNullOrWhiteSpace(i))
+        .Select(i => i.Trim())
+        .Distinct()
+        .ToList();
 
             if (!isbnNormalizados.Any())
-                throw new NegocioExeption("Debe indicar al menos un libro");
+                throw new NegocioExeption("Debe indicar al menos un libro.");
 
-            var EjemplaresSeleccionados= new List<Ejemplar>();
+            var ejemplaresSeleccionados = new List<Ejemplar>();
 
-            foreach (var isbn in isbnNormalizados) {
+            foreach (var isbn in isbnNormalizados)
+            {
+                var ejemplaresDelLibro = (await _repositorioEjemplar
+                    .ObtenerEjemplaresPorIsbnAsync(isbn))
+                    .ToList();
 
-                var EjemplaresSolicitados = (await _repositorioEjemplar.ObtenerEjemplaresPorIsbnAsync(isbn)).ToList();
+                if (!ejemplaresDelLibro.Any())
+                    throw new NegocioExeption($"No se encontró ningún ejemplar del libro con ISBN {isbn}.");
 
-                if (EjemplaresSolicitados == null || EjemplaresSolicitados.Any())
-                    throw new NegocioExeption($" No se encontro ningun libro con {isbn}");
+                var ejemplarDisponible = ejemplaresDelLibro
+                    .FirstOrDefault(e => e.Estado == EstadoEjemplar.Disponible);
 
-                var EjemplaresDisponibles = EjemplaresSolicitados.FirstOrDefault(e => e.Estado == EstadoEjemplar.Disponible);
+                if (ejemplarDisponible == null)
+                    throw new NegocioExeption(
+                        $"El libro con ISBN {isbn} no está disponible actualmente.");
 
-                if (EjemplaresDisponibles == null)
-                    throw new NegocioExeption("El libro no esta disponible, lo sentimos mucho selecciona otro de tu preferencia ");
-
-                EjemplaresSeleccionados.Add(EjemplaresDisponibles);
-
+                ejemplaresSeleccionados.Add(ejemplarDisponible);
             }
-            return EjemplaresSeleccionados;
+
+            return ejemplaresSeleccionados;
 
 
         }
@@ -233,8 +257,15 @@ namespace SIGEBI.Application.Services
                 NombreUsuarioSolicitante = usuario?.Nombre ?? string.Empty,
                 Matricula = usuario is Estudiante estudiante ? estudiante.Matricula : null,
                 NumeroEmpleado = usuario?.NumeroEmpleado,
-                TitulosLibros = solicitud.EjemplaresSolicitados.Select(l => l.ISBN).ToList(),
 
+                ISBNs = solicitud.EjemplaresSolicitados
+            .Select(e => e.ISBN)
+            .ToList(),
+
+                TitulosLibros = solicitud.EjemplaresSolicitados
+            .Where(e => e.Libro != null)
+            .Select(e => e.Libro!.Titulo)
+            .ToList()
             };
 
 

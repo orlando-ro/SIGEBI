@@ -67,11 +67,14 @@ namespace SIGEBI.Application.Services
             if (limitePrestamos <= 0)
                 throw new NegocioExeption("Este tipo de usuario no está autorizado para recibir préstamos.");
 
-            var recursosActivos = await _repoPrestamo
-                .ObtenerActivoPorUsuarioAsync(usuarioSolicitante.IdUsuario);
-            int recursos = recursosActivos.Count();
+            var prestamosActivos = await _repoPrestamo
+     .ObtenerActivoPorUsuarioAsync(usuarioSolicitante.IdUsuario);
 
-            if (recursos + solicitud.EjemplaresSolicitados.Count > limitePrestamos)
+            int recursosActivos = prestamosActivos
+                .SelectMany(p => p.EjemplaresAprestar)
+                .Count();
+
+            if (recursosActivos + solicitud.EjemplaresSolicitados.Count > limitePrestamos)
             {
                 throw new NegocioExeption(
                     $"No se puede aprobar la solicitud. " +
