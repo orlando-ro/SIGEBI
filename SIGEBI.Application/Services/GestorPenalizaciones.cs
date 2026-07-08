@@ -18,11 +18,16 @@ namespace SIGEBI.Application.Services
         }
 
         // Método automático llamado por GestorDevoluciones (CU-DEV-02)
-        public async Task GenerarMultaPorRetrasoAsync(int idUsuario, int diasRetraso)
+        public async Task GenerarMultaPorRetrasoAsync(
+          int idUsuario,
+          int idPrestamo,
+          int diasRetraso)
         {
-
             if (idUsuario <= 0)
                 throw new NegocioExeption("El usuario es obligatorio.");
+
+            if (idPrestamo <= 0)
+                throw new NegocioExeption("El préstamo es obligatorio.");
 
             if (diasRetraso <= 0)
                 throw new NegocioExeption("Los días de retraso deben ser mayores que cero.");
@@ -30,20 +35,27 @@ namespace SIGEBI.Application.Services
             double tarifaPorDia = 50.0;
             double montoTotal = diasRetraso * tarifaPorDia;
 
-            var nuevaPenalizacion = new Penalizacion(idUsuario, montoTotal, $"Retraso de {diasRetraso} días en devolución.");
+            var nuevaPenalizacion = new Penalizacion(
+                idUsuario,
+                montoTotal,
+                $"Retraso de {diasRetraso} días en devolución.",
+                idPrestamo
+            );
 
             await _repoPenalizacion.AgregarAsync(nuevaPenalizacion);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                
                 idUsuario,
-                "Multa Por Retraso",
+                "Generar penalización por retraso",
                 "Penalizacion",
-                $"El Usuario con el id: {idUsuario} harecivido una penalizacion por retraso de {diasRetraso} dias de la entrega del libro"
-                );
+                $"El usuario con ID {idUsuario} recibió una penalización por retraso de {diasRetraso} días en el préstamo #{idPrestamo}."
+            );
         }
 
-        public async Task GenerarPenalizacionPorCondicionAsync(int idUsuario, CondicionDevolucion condicion)
+        public async Task GenerarPenalizacionPorCondicionAsync(
+          int idUsuario,
+          int idPrestamo,
+          CondicionDevolucion condicion)
         {
             double monto = condicion switch
             {
@@ -65,8 +77,18 @@ namespace SIGEBI.Application.Services
             var penalizacion = new Penalizacion(
                 idUsuario,
                 monto,
-                motivo);
+                motivo,
+                idPrestamo
+            );
+
             await _repoPenalizacion.AgregarAsync(penalizacion);
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+                idUsuario,
+                "Generar penalización por condición",
+                "Penalizacion",
+                $"El usuario con ID {idUsuario} recibió una penalización por condición del recurso. Motivo: {motivo}. Préstamo #{idPrestamo}."
+            );
         }
 
         public async Task ProcesarPagoMultaAsync(int idPenalizacion, PenalizacionRequestDTO peticion, int idUsuarioResolutor)
@@ -86,7 +108,10 @@ namespace SIGEBI.Application.Services
                 throw new NegocioExeption("La penalización indicada no existe.");
 
             // Lógica de Dominio
-            penalizacion.MarcarComoPagada();
+            penalizacion.MarcarComoPagada(
+            idUsuarioResolutor,
+            peticion.MotivoResolucion
+             );
 
             // Persistencia
             await _repoPenalizacion.ActualizarAsync(penalizacion);
