@@ -19,6 +19,8 @@ namespace SIGEBI.Application.Interfaces
 
         Task<IEnumerable<Prestamo>> ObtenerActivosPorRecursoAsync(string isbn);
 
+        Task<IEnumerable<Prestamo>> ObtenerActivosPorFechaVencimientoAsync(DateTime fechaObjetivo);
+
 
     }
 }

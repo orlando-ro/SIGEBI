@@ -1,6 +1,7 @@
 ﻿using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Domain.Entities;
+using SIGEBI.Domain.Enums;
 using SIGEBI.Domain.Exceptions;
 
 namespace SIGEBI.Application.Services
@@ -53,40 +54,87 @@ namespace SIGEBI.Application.Services
             return usuario;
         }
 
-        
 
-        public async Task ProcesarDevolucionAsync(DevolucionRequestDTO devolucion)
+
+        public async Task<DevolucionResponseDTO> ProcesarDevolucionAsync(DevolucionRequestDTO devolucion)
         {
-
             if (devolucion == null)
                 throw new NegocioExeption("Los datos de la devolución son obligatorios.");
 
             if (devolucion.IdPrestamo <= 0)
                 throw new NegocioExeption("El identificador del préstamo no es válido.");
 
-            if (string.IsNullOrWhiteSpace(devolucion.CondicionLibro))
-                throw new NegocioExeption("Debe indicar la condición física del libro devuelto.");
-
             var bibliotecario = await ObtenerBibliotecarioAsync(
                 devolucion.MatriculaONumeroEmpleadoBibliotecario
             );
 
-            var prestamo = await _repoPrestamo.obtenerPrestamoConDetalleAsync(devolucion.IdPrestamo);
+            var prestamo = await _repoPrestamo.obtenerPrestamoConDetalleAsync(
+                devolucion.IdPrestamo
+            );
 
             if (prestamo == null)
                 throw new NegocioExeption("El préstamo no fue encontrado.");
 
-            int diasRetraso = prestamo.CalcularDiasRetraso();
+            if (prestamo.Estado != "Activo")
+                throw new NegocioExeption("Solo se pueden devolver préstamos que estén activos.");
 
-            prestamo.RegistrarDevolucion();
+            var devolucionExistente = await _repoDevolucion.ObtenerPorPrestamoAsync(
+                devolucion.IdPrestamo
+            );
+
+            if (devolucionExistente != null)
+                throw new NegocioExeption("Este préstamo ya tiene una devolución registrada.");
+
+            if (prestamo.EjemplaresAprestar == null || !prestamo.EjemplaresAprestar.Any())
+                throw new NegocioExeption("El préstamo no tiene ejemplares asociados.");
+
+            int diasRetraso = prestamo.CalcularDiasRetraso();
+            bool generoPenalizacion = false;
+
+            var nuevaDevolucion = new Devolucion(
+              prestamo.IdPrestamo,
+              bibliotecario.IdUsuario,
+              devolucion.CondicionLibro,
+              devolucion.Observaciones
+             );
 
             if (diasRetraso > 0)
             {
                 await _servicioPenalizacion.GenerarMultaPorRetrasoAsync(
-                    prestamo.IdUsuario,
-                    diasRetraso
+                   prestamo.IdUsuario,
+                   prestamo.IdPrestamo,
+                   diasRetraso
                 );
+
+                generoPenalizacion = true;
             }
+
+            if (nuevaDevolucion.RequierePenalizacionPorDano())
+            {
+                await _servicioPenalizacion.GenerarPenalizacionPorCondicionAsync(
+                      prestamo.IdUsuario,
+                      prestamo.IdPrestamo,
+                      devolucion.CondicionLibro
+                );
+
+                generoPenalizacion = true;
+            }
+
+            foreach (var ejemplar in prestamo.EjemplaresAprestar)
+            {
+                if (devolucion.CondicionLibro == CondicionDevolucion.BuenEstado)
+                {
+                    ejemplar.HabilitarParaPrestamo();
+                }
+                else
+                {
+                    ejemplar.MarcarComoFueraDeServicio();
+                }
+            }
+
+            prestamo.RegistrarDevolucion();
+
+            await _repoDevolucion.AgregarAsync(nuevaDevolucion);
 
             await _repoPrestamo.ActualizarAsync(prestamo);
 
@@ -100,21 +148,57 @@ namespace SIGEBI.Application.Services
                     $"Días de retraso: {diasRetraso}. " +
                     $"Observaciones: {devolucion.Observaciones}"
             );
+
+            return MapearDevolucionesResponse(
+                nuevaDevolucion,
+                prestamo,
+                bibliotecario.IdUsuario,
+                generoPenalizacion,
+                diasRetraso
+            );
+        }
+        private DevolucionResponseDTO MapearDevolucionesResponse(Devolucion devolucion)
+        {
+            return MapearDevolucionesResponse(
+                devolucion,
+                devolucion.Prestamo,
+                0,
+                false,
+                0
+            );
         }
 
-        private DevolucionResponseDTO MapearDevolucionesResponse(Devolucion devolucion) {
-
+        private DevolucionResponseDTO MapearDevolucionesResponse(
+            Devolucion devolucion,
+            Prestamo prestamo,
+            int idBibliotecario,
+            bool generoPenalizacion,
+            int diasRetraso)
+        {
             return new DevolucionResponseDTO
             {
-
                 IdDevolucion = devolucion.IdDevolucion,
                 IdPrestamo = devolucion.IdPrestamo,
                 FechaDevolucion = devolucion.FechaDevolucion,
-                CondicionLibro = devolucion.CondicionLibro,
+                CondicionLibro = devolucion.CondicionLibro.ToString(),
                 Observaciones = devolucion.Observaciones,
-                idusuario = devolucion.Prestamo.IdUsuario,
-                NombreUsuario = devolucion.Prestamo.Usuario != null ? devolucion.Prestamo.Usuario.Nombre : string.Empty,
-                TitulosLibros = devolucion.Prestamo.Libros.Select(l => l.Titulo).ToList()
+
+                IdUsuario = prestamo.IdUsuario,
+
+                NombreUsuario = prestamo.Usuario != null
+                    ? prestamo.Usuario.Nombre
+                    : string.Empty,
+
+                IdBibliotecario = idBibliotecario,
+
+                GeneroPenalizacion = generoPenalizacion,
+
+                DiasRetraso = diasRetraso,
+
+                TitulosLibros = prestamo.EjemplaresAprestar
+                    .Where(e => e.Libro != null)
+                    .Select(e => e.Libro!.Titulo)
+                    .ToList()
             };
         }
     }

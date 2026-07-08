@@ -16,7 +16,7 @@ namespace SIGEBI.Domain.Entities
         
         public int IdUsuario { get; private set; }
         public Usuario Usuario { get; set; }
-        public ICollection<Libro> LibrosSolicitados { get; private set; } = new List<Libro>();
+        public ICollection<Ejemplar> EjemplaresSolicitados { get; private set; } = new List<Ejemplar>();
 
         
         public Resolucion Resolucion { get; private set; }
@@ -25,18 +25,18 @@ namespace SIGEBI.Domain.Entities
         protected Solicitud() { }
 
         
-        public Solicitud(int idUsuario, List<Libro> librosSolicitados)
+        public Solicitud(int idUsuario, List<Ejemplar> EjemplaresSolicitados)
         {
             if (idUsuario <= 0)
                 throw new NegocioExeption("La solicitud debe estar asociada a un usuario válido.");
 
-            if (librosSolicitados == null || !librosSolicitados.Any())
+            if (EjemplaresSolicitados == null || !EjemplaresSolicitados.Any())
                 throw new NegocioExeption("La solicitud debe contener al menos un libro.");
 
             IdUsuario = idUsuario;
             FechaSolicitud = DateTime.Now;
-            Estado = "Pendiente"; 
-            LibrosSolicitados = librosSolicitados;
+            Estado = "Pendiente";
+            EjemplaresSolicitados = EjemplaresSolicitados;
         }
 
         

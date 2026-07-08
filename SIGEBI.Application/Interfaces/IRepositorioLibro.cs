@@ -8,9 +8,11 @@ namespace SIGEBI.Application.Interfaces
 {
     public interface IRepositorioLibro : IBaseRepository<Libro>
     {
-        // metodo exclusivo para traer el libro con el nombre de su categoría
+        // metodo para traer el libro con el nombre de su categoria
         Task<Libro?> ObtenerLibroConCategoriaAsync(string isbn);
 
         Task<Libro?> BuscarLibroPorIsbnAsync(string isbn);
+
+        Task<IEnumerable<Libro>> ObtenerCatalogoFiltradoAsync(string? titulo, string? autor, int? idCategoria, bool soloDisponibles);
     }
 }

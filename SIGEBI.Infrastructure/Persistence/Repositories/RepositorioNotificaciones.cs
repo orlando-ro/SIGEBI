@@ -20,6 +20,7 @@ namespace SIGEBI.Infrastructure.Repositories
         public async Task<IEnumerable<Notificacion>> ObtenerPorUsuarioAsync(int idUsuario)
         {
             return await _dbSet
+                .AsNoTracking()
                 .Where(n => n.IdUsuario == idUsuario)
                 .OrderByDescending(n => n.FechaEnvio) 
                 .ToListAsync();
@@ -28,7 +29,16 @@ namespace SIGEBI.Infrastructure.Repositories
         public async Task<IEnumerable<Notificacion>> ObtenerNoLeidasPorUsuarioAsync(int idUsuario)
         {
             return await _dbSet
+                .AsNoTracking()
                 .Where(n => n.IdUsuario == idUsuario && !n.Leida)
+                .OrderByDescending(n => n.FechaEnvio)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Notificacion>> ObtenerTodoElHistorialAsync()
+        {
+            return await _dbSet
+                .AsNoTracking()
                 .OrderByDescending(n => n.FechaEnvio)
                 .ToListAsync();
         }

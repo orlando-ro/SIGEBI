@@ -77,6 +77,7 @@ namespace SIGEBI.Infrastructure.Repositories
             string emailNormalizado = email.Trim();
 
             return await _dbSet
+                .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Email == emailNormalizado);
         }
     }

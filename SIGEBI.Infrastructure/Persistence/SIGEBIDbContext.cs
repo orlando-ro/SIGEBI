@@ -1,40 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using SIGEBI.Domain.Entities; 
+using SIGEBI.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace SIGEBI.Infrastructure.Persistence
 {
-   public class SIGEBIDbContext : DbContext
-   {
-            
-            public SIGEBIDbContext(DbContextOptions<SIGEBIDbContext> options) : base(options)
-            {
+    public class SIGEBIDbContext : DbContext
+    {
+        public SIGEBIDbContext(DbContextOptions<SIGEBIDbContext> options) : base(options)
+        {
+        }
 
-                
-            }
-
-             
-        public DbSet<Reporte> Reportes { get; set; }
         public DbSet<RegistroAuditoria> RegistroAuditorias { get; set; }
-
         public DbSet<Prestamo> Prestamos { get; set; }
         public DbSet<Solicitud> Solicitudes { get; set; }
         public DbSet<Resolucion> Resoluciones { get; set; }
         public DbSet<Aprobacion> Aprobaciones { get; set; }
         public DbSet<Rechazo> Rechazos { get; set; }
-
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Libro> Libros { get; set; }
+        public DbSet<Ejemplar> Ejemplares { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Notificacion> Notificaciones { get; set; }
         public DbSet<Penalizacion> Penalizaciones { get; set; }
         public DbSet<Devolucion> Devoluciones { get; set; }
-
-
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -46,10 +36,10 @@ namespace SIGEBI.Infrastructure.Persistence
             ConfigurarPrestamos(modelBuilder);
             ConfigurarSolicitudes(modelBuilder);
             ConfigurarResoluciones(modelBuilder);
-            ConfigurarReportes(modelBuilder);
             ConfigurarRegistroAuditorias(modelBuilder);
             ConfigurarCategorias(modelBuilder);
             ConfigurarLibros(modelBuilder);
+            ConfigurarEjemplares(modelBuilder);
             ConfigurarDevoluciones(modelBuilder);
         }
 
@@ -135,9 +125,33 @@ namespace SIGEBI.Infrastructure.Persistence
                 entity.Property(p => p.Pagada)
                     .IsRequired();
 
+                entity.Property(p => p.FechaResolucion)
+                    .IsRequired(false);
+
+                entity.Property(p => p.MotivoResolucion)
+                    .IsRequired(false);
+
+                entity.Property(p => p.IdPrestamo)
+                    .IsRequired(false);
+
+                entity.Property(p => p.IdUsuarioResolutor)
+                    .IsRequired(false);
+
                 entity.HasOne(p => p.Usuario)
                     .WithMany(u => u.Penalizaciones)
                     .HasForeignKey(p => p.IdUsuario)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(p => p.Prestamo)
+                    .WithMany()
+                    .HasForeignKey(p => p.IdPrestamo)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(p => p.UsuarioResolutor)
+                    .WithMany()
+                    .HasForeignKey(p => p.IdUsuarioResolutor)
+                    .IsRequired(false)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
@@ -164,7 +178,7 @@ namespace SIGEBI.Infrastructure.Persistence
                     .HasForeignKey(p => p.IdUsuario)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasMany(p => p.Libros)
+                entity.HasMany(p => p.EjemplaresAprestar)
                     .WithOne()
                     .HasForeignKey("PrestamoIdPrestamo")
                     .IsRequired(false)
@@ -191,7 +205,7 @@ namespace SIGEBI.Infrastructure.Persistence
                     .HasForeignKey(s => s.IdUsuario)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasMany(s => s.LibrosSolicitados)
+                entity.HasMany(s => s.EjemplaresSolicitados)
                     .WithOne()
                     .HasForeignKey("SolicitudIdSolicitud")
                     .IsRequired(false)
@@ -249,39 +263,6 @@ namespace SIGEBI.Infrastructure.Persistence
             {
                 entity.Property(r => r.MotivoRechazo)
                     .IsRequired(false);
-            });
-        }
-
-        private static void ConfigurarReportes(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Reporte>(entity =>
-            {
-                entity.ToTable("Reportes");
-
-                entity.HasKey(r => r.IdReporte);
-
-                entity.Property(r => r.TipoReporte)
-                    .IsRequired();
-
-                entity.Property(r => r.FechaSolicitud)
-                    .IsRequired();
-
-                entity.Property(r => r.FechaGeneracion)
-                    .IsRequired(false);
-
-                entity.Property(r => r.IdUsuarioSolicitante)
-                    .IsRequired();
-
-                entity.Property(r => r.Estado)
-                    .IsRequired();
-
-                entity.Property(r => r.RutaArchivo)
-                    .IsRequired();
-
-                entity.HasOne<Usuario>()
-                    .WithMany()
-                    .HasForeignKey(r => r.IdUsuarioSolicitante)
-                    .OnDelete(DeleteBehavior.Restrict);
             });
         }
 
@@ -351,11 +332,11 @@ namespace SIGEBI.Infrastructure.Persistence
                 entity.Property(l => l.AnioPublicacion)
                     .IsRequired();
 
-                entity.Property(l => l.CopiasTotales)
-                    .IsRequired();
+                entity.Property(l => l.Activo)
+                    .IsRequired()
+                    .HasDefaultValue(true);
 
-                entity.Property(l => l.CopiasDisponibles)
-                    .IsRequired();
+                entity.HasQueryFilter(l => l.Activo);
 
                 entity.Property(l => l.UrlImagen)
                     .IsRequired(false);
@@ -364,6 +345,30 @@ namespace SIGEBI.Infrastructure.Persistence
                     .WithMany(c => c.Libros)
                     .HasForeignKey(l => l.IdCategoria)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+        }
+
+        private static void ConfigurarEjemplares(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Ejemplar>(entity =>
+            {
+                entity.ToTable("Ejemplares");
+
+                entity.HasKey(e => e.IdEjemplar);
+
+                entity.Property(e => e.CodigoFisico)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Estado)
+                    .HasConversion<string>()
+                    .HasMaxLength(30)
+                    .IsRequired();
+
+                entity.HasOne(e => e.Libro)
+                    .WithMany(l => l.Ejemplares)
+                    .HasForeignKey(e => e.ISBN)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
 
@@ -379,23 +384,26 @@ namespace SIGEBI.Infrastructure.Persistence
                     .IsRequired();
 
                 entity.Property(d => d.CondicionLibro)
+                    .HasConversion<string>()
+                    .HasMaxLength(30)
                     .IsRequired();
 
                 entity.Property(d => d.Observaciones)
+                    .IsRequired(false);
+
+                entity.Property(d => d.IdBibliotecario)
                     .IsRequired();
 
                 entity.HasOne(d => d.Prestamo)
                     .WithMany()
                     .HasForeignKey(d => d.IdPrestamo)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(d => d.Bibliotecario)
+                    .WithMany()
+                    .HasForeignKey(d => d.IdBibliotecario)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
         }
-
-
-
-
     }
-    }
-
-
-
+}

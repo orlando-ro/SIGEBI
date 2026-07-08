@@ -10,7 +10,8 @@ namespace SIGEBI.Domain.Entities
             RecordatorioPrestamo,
             AlertaRetraso,
             ConfirmacionDevolucion,
-            AvisoPenalizacion
+            AvisoPenalizacion,
+            PrestamoFormalizado
         }
 
         public class Notificacion

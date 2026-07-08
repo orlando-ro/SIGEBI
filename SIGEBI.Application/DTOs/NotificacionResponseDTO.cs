@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SIGEBI.Application.DTOs
 {
-    public class NotificacionResponseDTO
+    public record NotificacionResponseDTO
     {
         public int Id { get; set; }
         public string Mensaje { get; set; } = string.Empty;
