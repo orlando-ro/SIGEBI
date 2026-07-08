@@ -14,5 +14,8 @@ namespace SIGEBI.Application.Interfaces
 
         // traae solo las notificaciones que tienen Leida == false
         Task<IEnumerable<Notificacion>> ObtenerNoLeidasPorUsuarioAsync(int idUsuario);
+
+        // trae todo el historial completo
+        Task<IEnumerable<Notificacion>> ObtenerTodoElHistorialAsync();
     }
 }

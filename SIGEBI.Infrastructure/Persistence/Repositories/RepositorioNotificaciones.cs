@@ -34,5 +34,13 @@ namespace SIGEBI.Infrastructure.Repositories
                 .OrderByDescending(n => n.FechaEnvio)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Notificacion>> ObtenerTodoElHistorialAsync()
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .OrderByDescending(n => n.FechaEnvio)
+                .ToListAsync();
+        }
     }
 }

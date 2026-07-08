@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using SIGEBI.Application.DTOs;
+using SIGEBI.Domain.Entities;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using SIGEBI.Application.DTOs;
 
 namespace SIGEBI.Application.Interfaces
 {
@@ -8,5 +9,8 @@ namespace SIGEBI.Application.Interfaces
     {
         Task<IEnumerable<NotificacionResponseDTO>> ObtenerPendientesAsync(int idUsuario);
         Task MarcarComoLeidaAsync(int idNotificacion);
+        Task EnviarNotificacionAsync(int idUsuario, string mensaje, TipoNotificacion tipo);
+        Task GenerarNotificacionesDeVencimientoAsync(int diasAntelacion);
+        Task<IEnumerable<NotificacionResponseDTO>> ConsultarHistorialGlobalAsync();
     }
 }
