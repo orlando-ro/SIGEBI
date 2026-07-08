@@ -147,5 +147,28 @@ namespace SIGEBI.Application.Services
                 detalles: $"Se retiró/eliminó el libro '{tituloRetirado}' (ISBN: {isbn}) y todos sus ejemplares físicos."
             );
         }
+
+        public async Task<IEnumerable<LibroCatalogoResponseDTO>> ConsultarCatalogoAsync(FiltroCatalogoDTO filtros)
+        {
+            var libros = await _repositorioLibro.ObtenerCatalogoFiltradoAsync(
+                filtros.Titulo,
+                filtros.NombreAutor,
+                filtros.IdCategoria,
+                filtros.SoloDisponibles
+            );
+
+            var resultado = libros.Select(l => new LibroCatalogoResponseDTO
+            {
+                ISBN = l.ISBN,
+                Titulo = l.Titulo,
+                NombreAutor = l.NombreAutor,
+                AnioPublicacion = l.AnioPublicacion,
+                NombreCategoria = l.Categoria?.Nombre ?? "Sin categoría",
+                UrlImagen = l.UrlImagen,
+                CopiasDisponibles = l.Ejemplares.Count(e => e.Estado.ToString() == "Disponible")
+            }).ToList();
+
+            return resultado;
+        }
     }
 }
