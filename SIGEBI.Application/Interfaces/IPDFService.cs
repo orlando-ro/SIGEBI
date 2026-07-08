@@ -14,5 +14,7 @@ namespace SIGEBI.Application.Interfaces
 
         byte[] GenerarReporteUsoCatalogoPDF(ReporteCatalogoResponseDTO reporte);
         byte[] GenerarReportePenalizacionesPDF(ReportePenalizacionesDTO reporte);
+
+        byte[] GenerarReporteAuditoriaPDF(IEnumerable<AuditoriaResponseDTO> auditorias);
     }
 }
