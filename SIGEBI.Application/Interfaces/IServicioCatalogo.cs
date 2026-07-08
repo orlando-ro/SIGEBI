@@ -11,5 +11,7 @@ namespace SIGEBI.Application.Interfaces
         Task<IEnumerable<LibroResponseDTO>> ConsultarTodoAsync();
         Task ActualizarLibroAsync(string isbn, LibroUpdateDTO dto, int idUsuarioResponsable);
         Task EliminarLibroAsync(string isbn, int idUsuarioResponsable);
+
+        Task<IEnumerable<LibroCatalogoResponseDTO>> ConsultarCatalogoAsync(FiltroCatalogoDTO filtros);
     }
 }
