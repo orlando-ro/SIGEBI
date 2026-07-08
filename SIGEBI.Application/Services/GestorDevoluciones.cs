@@ -183,7 +183,7 @@ namespace SIGEBI.Application.Services
                 CondicionLibro = devolucion.CondicionLibro.ToString(),
                 Observaciones = devolucion.Observaciones,
 
-                idusuario = prestamo.IdUsuario,
+                IdUsuario = prestamo.IdUsuario,
 
                 NombreUsuario = prestamo.Usuario != null
                     ? prestamo.Usuario.Nombre
