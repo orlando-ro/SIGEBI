@@ -199,14 +199,14 @@ namespace SIGEBI.Application.Services
 
         
 
-        private PrestamoResponseDTO MapearPrestamoResponse(Prestamo prestamo, Usuario usuario)
+        private PrestamoResponseDTO MapearPrestamoResponse(Prestamo prestamo, Usuario? usuario)
         {
             return new PrestamoResponseDTO
             {
                 IdPrestamo = prestamo.IdPrestamo,
                 FechaInicio = prestamo.FechaInicio,
                 FechaVencimiento = prestamo.FechaVencimiento,
-                Estado = prestamo.Estado,
+                Estado = prestamo.Estado ?? string.Empty,
                 DiasRetraso = prestamo.CalcularDiasRetraso(),
                 IdUsuario = prestamo.IdUsuario,
                 NombreUsuario = prestamo.Usuario != null ? prestamo.Usuario.Nombre : string.Empty,
@@ -252,3 +252,4 @@ namespace SIGEBI.Application.Services
 
     }
 }
+ 

@@ -14,20 +14,20 @@ namespace SIGEBI.Domain.Entities
         public DateTime FechaVencimiento { get; private set; }
 
         
-        public string Estado { get; private set; }
+        public string? Estado { get; private set; }
 
         public int IdUsuario { get; private set; }
-        public Usuario Usuario { get; set; }
+        public Usuario? Usuario { get; set; }
         public ICollection<Ejemplar> EjemplaresAprestar { get; private set; } = new List<Ejemplar>();
 
         protected Prestamo() { }
 
-        public Prestamo(int idUsuario, DateTime fechaInicio, DateTime fechaVencimiento, List<Ejemplar> EjemplaresAprestar)
+        public Prestamo(int idUsuario, DateTime fechaInicio, DateTime fechaVencimiento, List<Ejemplar> ejemplaresAprestar)
         {
             if (idUsuario <= 0)
                 throw new NegocioExeption("El préstamo debe estar asociado a un usuario.");
 
-            if (EjemplaresAprestar == null || !EjemplaresAprestar.Any())
+            if (ejemplaresAprestar == null || !ejemplaresAprestar.Any())
                 throw new NegocioExeption("El préstamo debe contener al menos un recurso bibliográfico.");
 
             if (fechaVencimiento <= fechaInicio)
@@ -37,7 +37,7 @@ namespace SIGEBI.Domain.Entities
             FechaInicio = fechaInicio;
             FechaVencimiento = fechaVencimiento;
             Estado = "Activo";
-            EjemplaresAprestar = EjemplaresAprestar;
+            EjemplaresAprestar = ejemplaresAprestar;
         }
 
         public int CalcularDiasRetraso()
