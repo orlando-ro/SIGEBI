@@ -7,7 +7,7 @@ namespace SIGEBI.Domain.Entities
 {
      public class Rechazo : Resolucion
     {
-        public string MotivoRechazo { get; set; }
+        public string? MotivoRechazo { get; set; }
 
         protected Rechazo() { }
         

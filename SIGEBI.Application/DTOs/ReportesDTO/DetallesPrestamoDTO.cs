@@ -9,10 +9,10 @@ namespace SIGEBI.Application.DTOs.ReportesDTO
     public record DetallesPrestamoDTO
     {
         public int IdPrestamo { get; set; }
-        public string IdRecurso { get; set; }
+        public string? IdRecurso { get; set; }
         public DateTime FechaPrestamo { get; set; }
         public DateTime? FechaDevolucion { get; set; }
-        public string Estado { get; set; }
+        public string? Estado { get; set; }
 
     }
 }

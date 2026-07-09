@@ -252,7 +252,7 @@ namespace SIGEBI.Application.Services
             {
                 IdSolicitud = solicitud.IdSolicitud,
                 FechaSolicitud = solicitud.FechaSolicitud,
-                Estado = solicitud.Estado,
+                Estado = solicitud.Estado ?? string.Empty,
                 IdUsuario = solicitud.IdUsuario,
                 NombreUsuarioSolicitante = usuario?.Nombre ?? string.Empty,
                 Matricula = usuario is Estudiante estudiante ? estudiante.Matricula : null,
