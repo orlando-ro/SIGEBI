@@ -155,6 +155,9 @@ namespace SIGEBI.Application.Services
 
             var ObtenerUsuario = await _usuario.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
 
+            if (ObtenerUsuario == null)
+                throw new NegocioExeption("Este usuario no esta registrado en el sistema ");
+
             
             var prestamos = await _repoPrestamo.ObtenerActivoPorUsuarioAsync(ObtenerUsuario.IdUsuario);
 
@@ -185,6 +188,9 @@ namespace SIGEBI.Application.Services
         public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorUsuarioAsync(string identificador) {
 
             var ObtenerUsuario = await _usuario.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
+
+            if (ObtenerUsuario == null)
+                throw new NegocioExeption("Este usuario no esta registrado en el sistema ");
 
             var prestamos = await _repoPrestamo.ObtenerHistorialPorUsuarioAsync(ObtenerUsuario.IdUsuario);
 
@@ -242,5 +248,7 @@ namespace SIGEBI.Application.Services
 
             return usuario;
         }
+
+
     }
 }
