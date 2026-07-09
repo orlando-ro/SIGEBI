@@ -10,11 +10,12 @@ namespace SIGEBI.Application.Services
     {
         private readonly IRepoPenalizacion _repoPenalizacion;
         private readonly IServicioAuditoria _servicioAuditoria;
-
-        public GestorPenalizaciones(IRepoPenalizacion repoPenalizacion, IServicioAuditoria servicioAuditoria)
+        private readonly IServicioNotificacion _servicioNotificacion;
+        public GestorPenalizaciones(IRepoPenalizacion repoPenalizacion, IServicioAuditoria servicioAuditoria, IServicioNotificacion servicioNotificacion)
         {
             _repoPenalizacion = repoPenalizacion;
             _servicioAuditoria = servicioAuditoria;
+            _servicioNotificacion = servicioNotificacion;
         }
 
         // Método automático llamado por GestorDevoluciones (CU-DEV-02)
@@ -50,6 +51,14 @@ namespace SIGEBI.Application.Services
                 "Penalizacion",
                 $"El usuario con ID {idUsuario} recibió una penalización por retraso de {diasRetraso} días en el préstamo #{idPrestamo}."
             );
+
+            await _servicioNotificacion.EnviarNotificacionAsync(
+                idUsuario,
+                $"Se generó una penalización por retraso en el préstamo #{idPrestamo}. " +
+                $"Días de retraso: {diasRetraso}. " +
+                $"Monto: RD$ {montoTotal:N2}.",
+                TipoNotificacion.AvisoPenalizacion
+);
         }
 
         public async Task GenerarPenalizacionPorCondicionAsync(
@@ -89,6 +98,13 @@ namespace SIGEBI.Application.Services
                 "Penalizacion",
                 $"El usuario con ID {idUsuario} recibió una penalización por condición del recurso. Motivo: {motivo}. Préstamo #{idPrestamo}."
             );
+            await _servicioNotificacion.EnviarNotificacionAsync(
+               idUsuario,
+               $"Se generó una penalización asociada al préstamo #{idPrestamo}. " +
+               $"Motivo: {motivo}. " +
+               $"Monto: RD$ {monto:N2}.",
+               TipoNotificacion.AvisoPenalizacion                   
+);
         }
 
         public async Task ProcesarPagoMultaAsync(int idPenalizacion, PenalizacionRequestDTO peticion, int idUsuarioResolutor)
@@ -123,6 +139,12 @@ namespace SIGEBI.Application.Services
                 "Penalizacion",
                 $"La penalizacion del usuario con identificacion {peticion.MatriculaONumeroEmpleado} ha sido marcada como pagada. Motivo: {peticion.MotivoResolucion}"
             );
+            await _servicioNotificacion.EnviarNotificacionAsync(
+                 penalizacion.IdUsuario,
+                 $"Tu penalización #{penalizacion.IdPenalizacion} fue resuelta. " +
+                 $"Motivo de resolución: {peticion.MotivoResolucion}.",
+                 TipoNotificacion.penalizacionResuelta
+);
         }
 
         

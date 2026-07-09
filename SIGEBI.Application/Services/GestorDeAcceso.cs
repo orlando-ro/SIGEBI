@@ -25,7 +25,7 @@ namespace SIGEBI.Application.Services
 
             usuario.ValidarElegibilidadParaPrestamo();
         }
-
+        
         
     }
 }
