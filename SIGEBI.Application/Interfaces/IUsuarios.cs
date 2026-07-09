@@ -17,5 +17,7 @@ namespace SIGEBI.Application.Interfaces
 
         // dejamos el obtener por email para validar el login 
         Task<Usuario?> ObtenerPorEmailAsync(string email);
+
+        
     }
 }

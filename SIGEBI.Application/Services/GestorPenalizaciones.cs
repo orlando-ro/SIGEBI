@@ -10,7 +10,7 @@ namespace SIGEBI.Application.Services
     {
         private readonly IRepoPenalizacion _repoPenalizacion;
         private readonly IServicioAuditoria _servicioAuditoria;
-
+        
         public GestorPenalizaciones(IRepoPenalizacion repoPenalizacion, IServicioAuditoria servicioAuditoria)
         {
             _repoPenalizacion = repoPenalizacion;
