@@ -15,6 +15,7 @@ namespace SIGEBI.Application.Services
         private readonly IServicioAuditoria _servicioAuditoria;
         private readonly IUsuarios _usuario;
         private readonly IRepositorioEjemplar _repositorioEjemplar;
+        private readonly IServicioNotificacion _servicioNotificacion;
 
         public GestorPrestamos(
             IRepositorioPrestamo repoPrestamo,
@@ -23,6 +24,7 @@ namespace SIGEBI.Application.Services
             IServicioPenalizacion servicioPenalizacion,
             IServicioAuditoria servicioAuditoria,
             IRepositorioEjemplar repositorioejemplar,
+            IServicioNotificacion servicioNotificacion,
             IUsuarios usuario)
         {
             _repoPrestamo = repoPrestamo;
@@ -32,6 +34,7 @@ namespace SIGEBI.Application.Services
             _servicioAuditoria = servicioAuditoria;
             _usuario = usuario;
             _repositorioEjemplar = repositorioejemplar;
+            _servicioNotificacion = servicioNotificacion;
         }
 
         public async Task<PrestamoResponseDTO> AprobarYRegistrarPrestamoAsync(PrestamoRequestDTO peticion)
@@ -126,6 +129,19 @@ namespace SIGEBI.Application.Services
                 tipoAccion: "Aprobar préstamo",
                 entidadAfectada: "Prestamo",
                 detalles: $"El bibliotecario {bibliotecario.Nombre} aprobó la solicitud #{solicitud.IdSolicitud} y registró el préstamo #{nuevoPrestamo.IdPrestamo}."
+            );
+
+            var titulosPrestados = string.Join(", ",
+    nuevoPrestamo.EjemplaresAprestar
+        .Where(e => e.Libro != null)
+        .Select(e => e.Libro!.Titulo));
+
+            await _servicioNotificacion.EnviarNotificacionAsync(
+                usuarioSolicitante.IdUsuario,
+                $"Tu préstamo #{nuevoPrestamo.IdPrestamo} fue confirmado. " +
+                $"Fecha límite de devolución: {nuevoPrestamo.FechaVencimiento:dd/MM/yyyy}. " +
+                $"Recursos: {titulosPrestados}.",
+                TipoNotificacion.PrestamoFormalizado
             );
 
             return MapearPrestamoResponse(nuevoPrestamo, usuarioSolicitante);
