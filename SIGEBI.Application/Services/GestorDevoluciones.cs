@@ -13,12 +13,14 @@ namespace SIGEBI.Application.Services
         private readonly IServicioPenalizacion _servicioPenalizacion;
         private readonly IServicioAuditoria _servicioAuditoria;
         private readonly IUsuarios _usuarios;
+        private readonly IServicioNotificacion _servicioNotificacion;
 
         public GestorDevoluciones(
             IRepositorioPrestamo repoPrestamo,
             IRepositorioDevolucion repoDevolucion,
             IServicioPenalizacion servicioPenalizacion,
             IServicioAuditoria servicioAuditoria,
+            IServicioNotificacion servicioNotificacion,
             IUsuarios usuario)
         {
             _repoPrestamo = repoPrestamo;
@@ -26,6 +28,7 @@ namespace SIGEBI.Application.Services
             _servicioPenalizacion = servicioPenalizacion;
             _servicioAuditoria = servicioAuditoria;
             _usuarios = usuario;
+            _servicioNotificacion = servicioNotificacion;
         }
 
         public async Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorRecurso(string isbnLibro)
@@ -148,6 +151,15 @@ namespace SIGEBI.Application.Services
                     $"Días de retraso: {diasRetraso}. " +
                     $"Observaciones: {devolucion.Observaciones}"
             );
+            await _servicioNotificacion.EnviarNotificacionAsync(
+                bibliotecario.IdUsuario,
+                $"El bibliotecario {bibliotecario.Nombre} registró la devolución del préstamo #{prestamo.IdPrestamo}. " +
+                    $"Condición: {devolucion.CondicionLibro}. " +
+                    $"Días de retraso: {diasRetraso}. " +
+                    $"Observaciones: {devolucion.Observaciones}",
+                TipoNotificacion.ConfirmacionDevolucion
+
+                );
 
             return MapearDevolucionesResponse(
                 nuevaDevolucion,
@@ -156,6 +168,8 @@ namespace SIGEBI.Application.Services
                 generoPenalizacion,
                 diasRetraso
             );
+
+            
         }
         private DevolucionResponseDTO MapearDevolucionesResponse(Devolucion devolucion)
         {
