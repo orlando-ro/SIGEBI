@@ -20,12 +20,12 @@ namespace SIGEBI.Infrastructure.Services
             _repoNoti = repoNoti;
             _repoPrestamo = repoPrestamo;
         }
-
+        
         public async Task EnviarNotificacionAsync(int idUsuario, string mensaje, TipoNotificacion tipo)
         {
             var notificacion = new Notificacion
             {
-                IdUsuario = idUsuario,
+                IdUsuario = idUsuario, 
                 Mensaje = mensaje,
                 Tipo = tipo,
                 FechaEnvio = DateTime.Now,
