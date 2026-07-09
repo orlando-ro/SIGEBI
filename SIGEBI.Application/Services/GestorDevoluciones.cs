@@ -42,6 +42,9 @@ namespace SIGEBI.Application.Services
         {
             var Usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(matriculaONumeroEmpleado);
 
+            if (Usuario == null)
+                throw new NegocioExeption("El usuario no fue encontrado.");
+
             var devoluciones = await _repoDevolucion.ConsultarHistorialPorUsuario(Usuario.IdUsuario);
 
             return devoluciones.Select(MapearDevolucionesResponse);
@@ -173,6 +176,9 @@ namespace SIGEBI.Application.Services
         }
         private DevolucionResponseDTO MapearDevolucionesResponse(Devolucion devolucion)
         {
+            if (devolucion.Prestamo == null)
+                throw new NegocioExeption("La devolucion no tiene un prestamo asociado");
+
             return MapearDevolucionesResponse(
                 devolucion,
                 devolucion.Prestamo,

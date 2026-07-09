@@ -155,6 +155,9 @@ namespace SIGEBI.Application.Services
 
             var ObtenerUsuario = await _usuario.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
 
+            if (ObtenerUsuario == null)
+                throw new NegocioExeption("Este usuario no esta registrado en el sistema ");
+
             
             var prestamos = await _repoPrestamo.ObtenerActivoPorUsuarioAsync(ObtenerUsuario.IdUsuario);
 
@@ -186,6 +189,9 @@ namespace SIGEBI.Application.Services
 
             var ObtenerUsuario = await _usuario.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
 
+            if (ObtenerUsuario == null)
+                throw new NegocioExeption("Este usuario no esta registrado en el sistema ");
+
             var prestamos = await _repoPrestamo.ObtenerHistorialPorUsuarioAsync(ObtenerUsuario.IdUsuario);
 
             return prestamos.Select(p => MapearPrestamoResponse(p, p.Usuario));
@@ -193,14 +199,14 @@ namespace SIGEBI.Application.Services
 
         
 
-        private PrestamoResponseDTO MapearPrestamoResponse(Prestamo prestamo, Usuario usuario)
+        private PrestamoResponseDTO MapearPrestamoResponse(Prestamo prestamo, Usuario? usuario)
         {
             return new PrestamoResponseDTO
             {
                 IdPrestamo = prestamo.IdPrestamo,
                 FechaInicio = prestamo.FechaInicio,
                 FechaVencimiento = prestamo.FechaVencimiento,
-                Estado = prestamo.Estado,
+                Estado = prestamo.Estado ?? string.Empty,
                 DiasRetraso = prestamo.CalcularDiasRetraso(),
                 IdUsuario = prestamo.IdUsuario,
                 NombreUsuario = prestamo.Usuario != null ? prestamo.Usuario.Nombre : string.Empty,
@@ -242,5 +248,8 @@ namespace SIGEBI.Application.Services
 
             return usuario;
         }
+
+
     }
 }
+ 
