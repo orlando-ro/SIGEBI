@@ -6,7 +6,7 @@ using SIGEBI.Domain.Enums;
 
 namespace SIGEBI.Application.Services
 {
-    public class GestorPrestamos : IservicioPrestamo, IServicioPoliticaNegocio, IServiciosObtenerBibliotecario
+    public class GestorPrestamos : IservicioPrestamo
     {
         private readonly IRepositorioPrestamo _repoPrestamo;
         private readonly IRepoSolicitud _repoSolicitud;
@@ -16,8 +16,11 @@ namespace SIGEBI.Application.Services
         private readonly IUsuarios _usuario;
         private readonly IRepositorioEjemplar _repositorioEjemplar;
         private readonly IServicioNotificacion _servicioNotificacion;
+        private readonly IServicioPoliticaNegocio _servicioPoliticaNegocio;
+        private readonly IServiciosObtenerBibliotecario _serviciosObtenerBibliotecario;
 
         public GestorPrestamos(
+           
             IRepositorioPrestamo repoPrestamo,
             IRepoSolicitud repoSolicitud,
             IRepositorioLibro repoLibro,
@@ -25,6 +28,8 @@ namespace SIGEBI.Application.Services
             IServicioAuditoria servicioAuditoria,
             IRepositorioEjemplar repositorioejemplar,
             IServicioNotificacion servicioNotificacion,
+            IServiciosObtenerBibliotecario serviciosObtenerBibliotecario,
+            IServicioPoliticaNegocio servicioPoliticaNegocio,
             IUsuarios usuario)
         {
             _repoPrestamo = repoPrestamo;
@@ -35,6 +40,9 @@ namespace SIGEBI.Application.Services
             _usuario = usuario;
             _repositorioEjemplar = repositorioejemplar;
             _servicioNotificacion = servicioNotificacion;
+            _serviciosObtenerBibliotecario = serviciosObtenerBibliotecario;
+            _servicioPoliticaNegocio = servicioPoliticaNegocio;
+           
         }
 
         public async Task<PrestamoResponseDTO> AprobarYRegistrarPrestamoAsync(PrestamoRequestDTO peticion)
@@ -43,7 +51,7 @@ namespace SIGEBI.Application.Services
             if (peticion == null)
                 throw new NegocioExeption("Los datos de aprobación son obligatorios.");
 
-            var bibliotecario = await ObtenerBibliotecarioAsync(
+            var bibliotecario = await _serviciosObtenerBibliotecario.ObtenerBibliotecarioAsync(
                 peticion.MatriculaOnumeroEmpleado
             );
 
@@ -65,7 +73,7 @@ namespace SIGEBI.Application.Services
 
             usuarioSolicitante.ValidarElegibilidadParaPrestamo();
 
-            int limitePrestamos = ObtenerLimitePrestamosPorTipoUsuario(usuarioSolicitante);
+            int limitePrestamos = _servicioPoliticaNegocio.ObtenerLimitePrestamosPorTipoUsuario(usuarioSolicitante);
 
             if (limitePrestamos <= 0)
                 throw new NegocioExeption("Este tipo de usuario no está autorizado para recibir préstamos.");
@@ -226,30 +234,6 @@ namespace SIGEBI.Application.Services
 
             return fechaInicio.AddDays(7);
         }
-
-        public int ObtenerLimitePrestamosPorTipoUsuario(Usuario usuario)
-        {
-            if (usuario is Docente)
-                return 5;
-
-            if (usuario is Estudiante)
-                return 3;
-
-            return 2;
-                
-        }
-
-        public async Task<Usuario> ObtenerBibliotecarioAsync(string matriculaONumeroEmpleadoBibliotecario)
-        {
-            var usuario = await _usuario.ObtenerPorMatriculaONumeroEmpleadoAsync(matriculaONumeroEmpleadoBibliotecario);
-
-            if (usuario is not PersonalBibliotecario)
-                throw new NegocioExeption("Solo el personal bibliotecario puede aprobar, rechazar o registrar devoluciones.");
-
-            return usuario;
-        }
-
-
     }
 }
  

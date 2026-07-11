@@ -9,7 +9,7 @@ using SIGEBI.Domain.Enums;
 
 namespace SIGEBI.Application.Services
 {
-    public class GestorSolicitudes : IServicioSolicitud, IServicioPoliticaNegocio, IServiciosObtenerBibliotecario
+    public class GestorSolicitudes : IServicioSolicitud
     {
         private readonly IRepoSolicitud _repoSolicitud;
         private readonly IUsuarios _usuarios;
@@ -17,7 +17,9 @@ namespace SIGEBI.Application.Services
         private readonly IServicioAuditoria _servicioAuditoria;
         private readonly IRepositorioPrestamo _repositorioPrestamo;
         private readonly IRepositorioEjemplar _repositorioEjemplar;
-        
+        private readonly IServicioPoliticaNegocio _servicioPoliticaNegocio;
+        private readonly IServiciosObtenerBibliotecario _serviciosObtenerBibliotecario;
+       
 
 
         public GestorSolicitudes(IRepoSolicitud repoSolicitud, 
@@ -25,6 +27,9 @@ namespace SIGEBI.Application.Services
             IRepositorioLibro repositorioLibro, 
             IServicioAuditoria servicioAuditoria, 
             IRepositorioPrestamo repositorioPrestamo,
+            IServicioNotificacion servicioNotificacion,
+            IServicioPoliticaNegocio servicioPoliticaNegocio,
+            IServiciosObtenerBibliotecario serviciosObtenerBibliotecario,
             IRepositorioEjemplar repositorioEjemplar
             )
         {
@@ -35,7 +40,9 @@ namespace SIGEBI.Application.Services
             _servicioAuditoria = servicioAuditoria;
             _repositorioPrestamo = repositorioPrestamo;
             _repositorioEjemplar = repositorioEjemplar;
-            
+            _servicioPoliticaNegocio = servicioPoliticaNegocio;
+            _serviciosObtenerBibliotecario = serviciosObtenerBibliotecario;
+          
         }
 
 
@@ -59,7 +66,7 @@ namespace SIGEBI.Application.Services
 
             usuario.ValidarElegibilidadParaPrestamo();
 
-            int limiteDePrestamos = ObtenerLimitePrestamosPorTipoUsuario(usuario);
+            int limiteDePrestamos =  _servicioPoliticaNegocio.ObtenerLimitePrestamosPorTipoUsuario(usuario);
 
             if (limiteDePrestamos <= 0)
                 throw new NegocioExeption("Este usuario no puede solicitar préstamos.");
@@ -113,7 +120,7 @@ namespace SIGEBI.Application.Services
             if (string.IsNullOrWhiteSpace(peticion.MotivoRechazo))
                 throw new NegocioExeption("Debe especificar el motivo del rechazo");
 
-            var Bibliotecario = await ObtenerBibliotecarioAsync(peticion.MatriculaONumeroEmpleado);
+            var Bibliotecario = await _serviciosObtenerBibliotecario.ObtenerBibliotecarioAsync(peticion.MatriculaONumeroEmpleado);
 
             if (Bibliotecario == null)
                 throw new NegocioExeption("Lo sentimos pero no encontramos un bibliotecario con ese identificador");
@@ -195,19 +202,6 @@ namespace SIGEBI.Application.Services
 
 
 
-        public int ObtenerLimitePrestamosPorTipoUsuario(Usuario usuario)
-        {
-            if (usuario is Estudiante)
-                return 3;
-
-            if (usuario is Docente)
-                return 5;
-
-            return 2;
-        }
-
-
-
         private async Task<List<Ejemplar>> ObtenerEjemplaresSolicitadosAsync(List<string> Isbn)
         {
 
@@ -273,14 +267,6 @@ namespace SIGEBI.Application.Services
 
       
 
-        public async Task<Usuario> ObtenerBibliotecarioAsync(string matriculaONumeroEmpleadoBibliotecario)
-        {
-            var usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(matriculaONumeroEmpleadoBibliotecario);
-
-            if (usuario is not PersonalBibliotecario)
-                throw new NegocioExeption("Solo el personal bibliotecario puede aprobar, rechazar o registrar devoluciones.");
-
-            return usuario;
-        }
+       
     }
 }
