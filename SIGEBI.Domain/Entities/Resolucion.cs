@@ -11,10 +11,10 @@ namespace SIGEBI.Domain.Entities
         public DateTime FechaResolucion { get; set; }
 
         public int IdBibliotecario { get; set; }
-        public Usuario Bibliotecario { get; set; }
+        public Usuario? Bibliotecario { get; set; }
 
         public int IdSolicitud { get; set; }
-        public Solicitud Solicitud { get; set; }
+        public Solicitud? Solicitud { get; set; }
 
         protected Resolucion() { }
         protected Resolucion(int idBibliotecario, int idSolicitud)

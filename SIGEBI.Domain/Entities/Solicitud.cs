@@ -11,32 +11,32 @@ namespace SIGEBI.Domain.Entities
         public DateTime FechaSolicitud { get; private set; }
 
         
-        public string Estado { get; private set; }
+        public string? Estado { get; private set; }
 
         
         public int IdUsuario { get; private set; }
-        public Usuario Usuario { get; set; }
+        public Usuario? Usuario { get; set; }
         public ICollection<Ejemplar> EjemplaresSolicitados { get; private set; } = new List<Ejemplar>();
 
         
-        public Resolucion Resolucion { get; private set; }
+        public Resolucion? Resolucion { get; private set; }
 
         
         protected Solicitud() { }
 
         
-        public Solicitud(int idUsuario, List<Ejemplar> EjemplaresSolicitados)
+        public Solicitud(int idUsuario, List<Ejemplar> ejemplaresSolicitados)
         {
             if (idUsuario <= 0)
                 throw new NegocioExeption("La solicitud debe estar asociada a un usuario válido.");
 
-            if (EjemplaresSolicitados == null || !EjemplaresSolicitados.Any())
+            if (ejemplaresSolicitados == null || !ejemplaresSolicitados.Any())
                 throw new NegocioExeption("La solicitud debe contener al menos un libro.");
 
             IdUsuario = idUsuario;
             FechaSolicitud = DateTime.Now;
             Estado = "Pendiente";
-            EjemplaresSolicitados = EjemplaresSolicitados;
+            EjemplaresSolicitados = ejemplaresSolicitados;
         }
 
         

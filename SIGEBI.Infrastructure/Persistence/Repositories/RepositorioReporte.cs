@@ -51,7 +51,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         {
             var Ejemplares = await _context.Ejemplares
                  .Include(e => e.Libro)
-                 .ThenInclude(l => l.Categoria)
+                 .ThenInclude(l => l!.Categoria)
                  .ToListAsync();
 
             return new ReporteInventarioResponseDTO
@@ -114,7 +114,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
                             IdRecurso = e.ISBN,
                             FechaPrestamo = p.FechaInicio,
                             FechaDevolucion = devolucion?.FechaDevolucion,
-                            Estado = p.Estado
+                            Estado = p.Estado ?? string.Empty
                         };
                     }))
                     .ToList()
@@ -126,7 +126,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
             var prestamos = await _context.Prestamos
                  .Include(p => p.EjemplaresAprestar)
                      .ThenInclude(e => e.Libro)
-                         .ThenInclude(l => l.Categoria)
+                         .ThenInclude(l => l!.Categoria)
                  .Where(p => p.FechaInicio >= FechaInicio &&
                              p.FechaInicio <= FechaFin)
                  .ToListAsync();

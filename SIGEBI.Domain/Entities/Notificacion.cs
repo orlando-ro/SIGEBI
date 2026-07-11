@@ -25,7 +25,7 @@ namespace SIGEBI.Domain.Entities
             public TipoNotificacion Tipo { get; set; }
 
             
-            public virtual Usuario Usuario { get; set; }
+            public virtual Usuario? Usuario { get; set; }
 
             
             public void MarcarComoLeida()

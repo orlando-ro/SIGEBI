@@ -11,7 +11,7 @@ namespace SIGEBI.Application.DTOs.ReportesDTO
     {
         public int IdUsuario {get; set;}
 
-        public string Motivo { get; set; }
+        public string? Motivo { get; set; }
 
         public double Monto { get; set; }
         public DateTime Fecha { get; set; }

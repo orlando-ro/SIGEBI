@@ -21,12 +21,12 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
             return await _dbSet
                 .AsNoTracking()
                 .Include(d => d.Prestamo)
-                    .ThenInclude(p => p.Usuario)
+                    .ThenInclude(p => p!.Usuario)
                 .Include(d => d.Prestamo)
-                    .ThenInclude(p => p.EjemplaresAprestar)
+                    .ThenInclude(p => p!.EjemplaresAprestar)
                         .ThenInclude(e => e.Libro)
-                .Where(d => d.Prestamo.EjemplaresAprestar
-                    .Any(e => e.ISBN == isbnNormalizado))
+                .Where(d => d.Prestamo != null &&
+                            d.Prestamo.EjemplaresAprestar.Any(e => e.ISBN == isbnNormalizado))
                 .OrderByDescending(d => d.FechaDevolucion)
                 .ToListAsync();
         }
@@ -36,11 +36,12 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
             return await _dbSet
                 .AsNoTracking()
                 .Include(d => d.Prestamo)
-                    .ThenInclude(p => p.Usuario)
+                    .ThenInclude(p => p!.Usuario)
                 .Include(d => d.Prestamo)
-                    .ThenInclude(p => p.EjemplaresAprestar)
+                    .ThenInclude(p => p!.EjemplaresAprestar)
                         .ThenInclude(e => e.Libro)
-                .Where(d => d.Prestamo.IdUsuario == idUsuario)
+                .Where(d => d.Prestamo != null &&
+                            d.Prestamo.IdUsuario == idUsuario)
                 .OrderByDescending(d => d.FechaDevolucion)
                 .ToListAsync();
         }
@@ -49,9 +50,9 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         {
             return await _dbSet
                 .Include(d => d.Prestamo)
-                    .ThenInclude(p => p.Usuario)
+                    .ThenInclude(p => p!.Usuario)
                 .Include(d => d.Prestamo)
-                    .ThenInclude(p => p.EjemplaresAprestar)
+                    .ThenInclude(p => p!.EjemplaresAprestar)
                         .ThenInclude(e => e.Libro)
                 .FirstOrDefaultAsync(d => d.IdPrestamo == idPrestamo);
         }
