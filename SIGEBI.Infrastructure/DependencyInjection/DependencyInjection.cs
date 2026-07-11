@@ -31,7 +31,7 @@ namespace SIGEBI.Infrastructure.DependencyInjection
             services.AddScoped<IRepositorioLibro, RepositorioLibro>();
             services.AddScoped<IRepositorioEjemplar, RepositorioEjemplar>();
             services.AddScoped<IRepositorioCategoria, RepositorioCategoria>();
-
+            services.AddScoped<IRepositorioNotificacion, RepositorioNotificaciones>();
 
 
 
@@ -39,6 +39,7 @@ namespace SIGEBI.Infrastructure.DependencyInjection
             services.AddScoped<IPDFService, GeneradorReportePDF>();
             services.AddScoped<IServicioAuditoria, ServicioAuditoria>();
             services.AddScoped<IStorageService, LocalStorageService>();
+            services.AddScoped<IServicioNotificacion, ServicioNotificaciones>();
 
 
             return services;
