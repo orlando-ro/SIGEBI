@@ -6,7 +6,7 @@ using SIGEBI.Domain.Exceptions;
 
 namespace SIGEBI.Application.Services
 {
-    public class GestorDevoluciones : IServicioDevolucion, IServiciosObtenerBibliotecario
+    public class GestorDevoluciones : IServicioDevolucion
     {
         private readonly IRepositorioPrestamo _repoPrestamo;
         private readonly IRepositorioDevolucion _repoDevolucion;
@@ -14,7 +14,8 @@ namespace SIGEBI.Application.Services
         private readonly IServicioAuditoria _servicioAuditoria;
         private readonly IUsuarios _usuarios;
         private readonly IServicioNotificacion _servicioNotificacion;
-       
+        private readonly IServiciosObtenerBibliotecario _serviciosObtenerBibliotecario;
+
 
         public GestorDevoluciones(
             IRepositorioPrestamo repoPrestamo,
@@ -22,6 +23,7 @@ namespace SIGEBI.Application.Services
             IServicioPenalizacion servicioPenalizacion,
             IServicioAuditoria servicioAuditoria,
             IServicioNotificacion servicioNotificacion,
+            IServiciosObtenerBibliotecario serviciosObtenerBibliotecario,
             IUsuarios usuario)
         {
             _repoPrestamo = repoPrestamo;
@@ -30,6 +32,7 @@ namespace SIGEBI.Application.Services
             _servicioAuditoria = servicioAuditoria;
             _usuarios = usuario;
             _servicioNotificacion = servicioNotificacion;
+            _serviciosObtenerBibliotecario = serviciosObtenerBibliotecario;
         }
 
         public async Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorRecurso(string isbnLibro)
@@ -51,16 +54,6 @@ namespace SIGEBI.Application.Services
             return devoluciones.Select(MapearDevolucionesResponse);
         }
 
-        public async Task<Usuario> ObtenerBibliotecarioAsync(string matriculaONumeroEmpleadoBibliotecario)
-        {
-            var usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(matriculaONumeroEmpleadoBibliotecario);
-
-            if (usuario is not PersonalBibliotecario)
-                throw new NegocioExeption("Solo el personal bibliotecario puede aprobar, rechazar o registrar devoluciones.");
-
-            return usuario;
-        }
-
 
 
         public async Task<DevolucionResponseDTO> ProcesarDevolucionAsync(DevolucionRequestDTO devolucion)
@@ -71,7 +64,7 @@ namespace SIGEBI.Application.Services
             if (devolucion.IdPrestamo <= 0)
                 throw new NegocioExeption("El identificador del préstamo no es válido.");
 
-            var bibliotecario = await ObtenerBibliotecarioAsync(
+            var bibliotecario = await _serviciosObtenerBibliotecario.ObtenerBibliotecarioAsync(
                 devolucion.MatriculaONumeroEmpleadoBibliotecario
             );
 
