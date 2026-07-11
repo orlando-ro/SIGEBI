@@ -20,6 +20,9 @@ namespace SIGEBI.Infrastructure.DependencyInjection
             // Repositorios
             services.AddScoped<IRepositorioPrestamo, RepositorioPrestamo>();
             services.AddScoped<IRepoSolicitud, RepositorioSolicitudes>();
+            services.AddScoped<IRepositorioDevolucion, RepositorioDevoluciones>();
+            services.AddScoped<IRepoPenalizacion, RepositorioPenalizacion>();
+
 
 
             // Servicios de Infraestructura

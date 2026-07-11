@@ -8,12 +8,12 @@ namespace SIGEBI.Application.DependencyInyeccion
     {
         public static IServiceCollection AddApplication(this IServiceCollection service) {
 
-            //Gestor Prestamo
+            // Gestores
             service.AddScoped<IservicioPrestamo, GestorPrestamos>();
-            
-
-            //Gestor Solicitud
             service.AddScoped<IServicioSolicitud, GestorSolicitudes>();
+            service.AddScoped<IServicioDevolucion, GestorDevoluciones>();
+            service.AddScoped<IServicioPenalizacion, GestorPenalizaciones>();
+
 
             // Servicios
             service.AddScoped<IServicioPoliticaNegocio, ServicioPoliticaNegocio>();
