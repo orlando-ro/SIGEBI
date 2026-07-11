@@ -6,6 +6,8 @@ using SIGEBI.Infrastructure.Persistence.Repositories;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Infrastructure.Services;
 using SIGEBI.Application.Services;
+using SIGEBI.Infrastructure.Repositories.SIGEBI.Infrastructure.Repositories;
+using SIGEBI.Infrastructure.Repositories;
 
 namespace SIGEBI.Infrastructure.DependencyInjection
 {
@@ -25,6 +27,11 @@ namespace SIGEBI.Infrastructure.DependencyInjection
             services.AddScoped<IRepoPenalizacion, RepositorioPenalizacion>();
             services.AddScoped<IRepositorioAuditoria, RepositorioAuditoria>();
             services.AddScoped<IRepositorioReporte, RepositorioReporte>();
+            services.AddScoped<IUsuarios, RepositorioUsuario>();
+            services.AddScoped<IRepositorioLibro, RepositorioLibro>();
+            services.AddScoped<IRepositorioEjemplar, RepositorioEjemplar>();
+            services.AddScoped<IRepositorioCategoria, RepositorioCategoria>();
+            services.AddScoped<IRepositorioNotificacion, RepositorioNotificaciones>();
 
 
 
@@ -32,6 +39,7 @@ namespace SIGEBI.Infrastructure.DependencyInjection
             services.AddScoped<IPDFService, GeneradorReportePDF>();
             services.AddScoped<IServicioAuditoria, ServicioAuditoria>();
             services.AddScoped<IStorageService, LocalStorageService>();
+            services.AddScoped<IServicioNotificacion, ServicioNotificaciones>();
 
 
             return services;

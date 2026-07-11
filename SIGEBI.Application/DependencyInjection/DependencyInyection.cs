@@ -13,6 +13,11 @@ namespace SIGEBI.Application.DependencyInyeccion
             service.AddScoped<IServicioSolicitud, GestorSolicitudes>();
             service.AddScoped<IServicioDevolucion, GestorDevoluciones>();
             service.AddScoped<IServicioPenalizacion, GestorPenalizaciones>();
+            service.AddScoped<IServicioUsuarios, GestorUsuarios>();
+            service.AddScoped<IServicioAcceso, GestorDeAcceso>();
+            service.AddScoped<IServicioCatalogo, GestorCatalogo>();
+            service.AddScoped<IServicioCategoria, GestorCategoria>();
+
 
 
 
