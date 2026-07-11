@@ -6,6 +6,8 @@ using SIGEBI.Infrastructure.Persistence.Repositories;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Infrastructure.Services;
 using SIGEBI.Application.Services;
+using SIGEBI.Infrastructure.Repositories.SIGEBI.Infrastructure.Repositories;
+using SIGEBI.Infrastructure.Repositories;
 
 namespace SIGEBI.Infrastructure.DependencyInjection
 {
@@ -25,6 +27,8 @@ namespace SIGEBI.Infrastructure.DependencyInjection
             services.AddScoped<IRepoPenalizacion, RepositorioPenalizacion>();
             services.AddScoped<IRepositorioAuditoria, RepositorioAuditoria>();
             services.AddScoped<IRepositorioReporte, RepositorioReporte>();
+            services.AddScoped<IUsuarios, RepositorioUsuario>();
+            
 
 
 
