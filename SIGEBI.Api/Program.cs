@@ -7,6 +7,8 @@ using SIGEBI.Application.Interfaces;
 using SIGEBI.Application.Services;
 using SIGEBI.Infrastructure.Persistence;
 using SIGEBI.Infrastructure.Services;
+using SIGEBI.Application.DependencyInyeccion;
+using SIGEBI.Infrastructure.DependencyInjection;
 
 namespace SIGEBI.Api
 {
@@ -21,17 +23,12 @@ namespace SIGEBI.Api
 
             builder.Services.AddControllers();
 
-            //servicios 
-            builder.Services.AddScoped<IServicioAuditoria, ServicioAuditoria>();
-            builder.Services.AddScoped<IPDFService, GeneradorReportePDF>();
 
-
+            builder.Services.AddApplication();
+            builder.Services.AddInfrastructure(builder.Configuration);
+          
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
-            // Conexión a Base de Datos
-            builder.Services.AddDbContext<SIGEBIDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
@@ -42,8 +39,7 @@ namespace SIGEBI.Api
                 context.Database.EnsureCreated();
             }
 
-           
-
+          
             if (app.Environment.IsDevelopment())
                 {
                     app.UseSwagger();
@@ -52,6 +48,7 @@ namespace SIGEBI.Api
 
             app.UseAuthorization();
             app.MapControllers();
+            app.UseHttpsRedirection();
 
             app.Run();
         }
