@@ -28,7 +28,10 @@ namespace SIGEBI.Infrastructure.DependencyInjection
             services.AddScoped<IRepositorioAuditoria, RepositorioAuditoria>();
             services.AddScoped<IRepositorioReporte, RepositorioReporte>();
             services.AddScoped<IUsuarios, RepositorioUsuario>();
-            
+            services.AddScoped<IRepositorioLibro, RepositorioLibro>();
+            services.AddScoped<IRepositorioEjemplar, RepositorioEjemplar>();
+            services.AddScoped<IRepositorioCategoria, RepositorioCategoria>();
+
 
 
 
