@@ -9,6 +9,7 @@ using SIGEBI.Infrastructure.Persistence;
 using SIGEBI.Infrastructure.Services;
 using SIGEBI.Application.DependencyInyeccion;
 using SIGEBI.Infrastructure.DependencyInjection;
+using SIGEBI.Api.Middleware;
 
 namespace SIGEBI.Api
 {
@@ -22,6 +23,7 @@ namespace SIGEBI.Api
             QuestPDF.Settings.License = LicenseType.Community;
 
             builder.Services.AddControllers();
+            
 
 
             builder.Services.AddApplication();
@@ -32,6 +34,8 @@ namespace SIGEBI.Api
 
             var app = builder.Build();
 
+          
+
             using (var scope = app.Services.CreateScope()) {
 
                 var services = scope.ServiceProvider;
@@ -39,16 +43,20 @@ namespace SIGEBI.Api
                 context.Database.EnsureCreated();
             }
 
-          
+            app.UseMiddleware<ManejadorExcepcionesMiddleware>();
+
+
             if (app.Environment.IsDevelopment())
                 {
                     app.UseSwagger();
                     app.UseSwaggerUI();
-                }
+              
+            }
 
             app.UseAuthorization();
             app.MapControllers();
             app.UseHttpsRedirection();
+           
 
             app.Run();
         }
