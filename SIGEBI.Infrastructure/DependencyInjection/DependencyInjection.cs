@@ -31,6 +31,7 @@ namespace SIGEBI.Infrastructure.DependencyInjection
             // Servicios de Infraestructura
             services.AddScoped<IPDFService, GeneradorReportePDF>();
             services.AddScoped<IServicioAuditoria, ServicioAuditoria>();
+            services.AddScoped<IStorageService, LocalStorageService>();
 
 
             return services;
