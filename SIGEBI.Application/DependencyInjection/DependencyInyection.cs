@@ -15,6 +15,7 @@ namespace SIGEBI.Application.DependencyInyeccion
             service.AddScoped<IServicioPenalizacion, GestorPenalizaciones>();
 
 
+
             // Servicios
             service.AddScoped<IServicioPoliticaNegocio, ServicioPoliticaNegocio>();
             service.AddScoped<IServiciosObtenerBibliotecario, ServicioObtenerBibliotecario>();
