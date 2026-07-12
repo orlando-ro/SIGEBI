@@ -8,17 +8,17 @@ namespace SIGEBI.Application.Interfaces
     public interface IServicioAuditoria
     {
         
-        Task RegistrarAccionAsync(int idUsuario, 
+        Task RegistrarAccionAsync(int? idResponsable, 
             string tipoAccion, 
             string entidadAfectada, 
             string detalles = "");
 
         
-        Task<IEnumerable<AuditoriaResponseDTO>> ConsultarHistorialAsync(int? idUsuarioActor = null, 
+        Task<IEnumerable<AuditoriaResponseDTO>> ConsultarHistorialAsync(int? idResponsable = null, 
             string? entidadAfectada = null);
 
         Task<byte[]> ExportarHistorialPDFAsync(
-           int? idUsuarioActor = null,
+           int? idResponsable = null,
            string? entidadAfectada = null);
     }
 }

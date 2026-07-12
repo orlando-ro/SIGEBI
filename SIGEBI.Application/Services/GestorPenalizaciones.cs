@@ -51,10 +51,10 @@ namespace SIGEBI.Application.Services
             await _repoPenalizacion.AgregarAsync(nuevaPenalizacion);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                idUsuario,
-                "Generar penalización por retraso",
-                "Penalizacion",
-                $"El usuario con ID {idUsuario} recibió una penalización por retraso de {diasRetraso} días en el préstamo #{idPrestamo}."
+                idResponsable: idUsuario,
+                tipoAccion: "Generar penalización por retraso",
+                entidadAfectada: "Penalizacion",
+                detalles: $"El usuario con ID {idUsuario} recibió una penalización por retraso de {diasRetraso} días en el préstamo #{idPrestamo}."
             );
 
             await _servicioNotificacion.EnviarNotificacionAsync(
@@ -98,10 +98,10 @@ namespace SIGEBI.Application.Services
             await _repoPenalizacion.AgregarAsync(penalizacion);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                idUsuario,
-                "Generar penalización por condición",
-                "Penalizacion",
-                $"El usuario con ID {idUsuario} recibió una penalización por condición del recurso. Motivo: {motivo}. Préstamo #{idPrestamo}."
+                idResponsable: idUsuario,
+                tipoAccion: "Generar penalización por condición",
+                entidadAfectada: "Penalizacion",
+                detalles: $"El usuario con ID {idUsuario} recibió una penalización por condición del recurso. Motivo: {motivo}. Préstamo #{idPrestamo}."
             );
             await _servicioNotificacion.EnviarNotificacionAsync(
                idUsuario,

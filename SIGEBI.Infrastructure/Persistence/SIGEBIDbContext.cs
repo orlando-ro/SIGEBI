@@ -306,7 +306,8 @@ namespace SIGEBI.Infrastructure.Persistence
             });
         }
 
-        private static void ConfigurarRegistroAuditorias(ModelBuilder modelBuilder)
+        private static void ConfigurarRegistroAuditorias(
+     ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RegistroAuditoria>(entity =>
             {
@@ -317,8 +318,9 @@ namespace SIGEBI.Infrastructure.Persistence
                 entity.Property(r => r.FechaHora)
                     .IsRequired();
 
-                entity.Property(r => r.IdUsuario)
-                    .IsRequired();
+                entity.Property(r => r.IdResponsable)
+                    .HasColumnName("IdResponsable")
+                    .IsRequired(false);
 
                 entity.Property(r => r.Accion)
                     .IsRequired();
@@ -331,7 +333,8 @@ namespace SIGEBI.Infrastructure.Persistence
 
                 entity.HasOne<Usuario>()
                     .WithMany()
-                    .HasForeignKey(r => r.IdUsuario)
+                    .HasForeignKey(r => r.IdResponsable)
+                    .IsRequired(false)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
