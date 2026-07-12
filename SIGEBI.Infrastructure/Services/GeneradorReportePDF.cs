@@ -380,7 +380,7 @@ namespace SIGEBI.Application.Services
             var totalRegistros = registros.Count;
 
             var totalUsuarios = registros
-                .Select(a => a.IdUsuarioActor)
+                .Select(a => a.IdResponsable)
                 .Distinct()
                 .Count();
 
@@ -465,7 +465,7 @@ namespace SIGEBI.Application.Services
                                 foreach (var registro in registros)
                                 {
                                     CrearCeldaTexto(table, registro.IdAuditoria.ToString());
-                                    CrearCeldaTexto(table, registro.IdUsuarioActor.ToString());
+                                    CrearCeldaTexto(table, registro.IdResponsable.ToString());
                                     CrearCeldaTexto(table, FormatearFechaHora(registro.FechaHora));
                                     CrearCeldaTexto(table, registro.Accion);
                                     CrearCeldaTexto(table, registro.EntidadAfectada);
