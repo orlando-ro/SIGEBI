@@ -104,7 +104,7 @@ namespace SIGEBI.Application.Services
                 idUsuario: usuario.IdUsuario,
                 tipoAccion: "Solicitud de préstamo",
                 entidadAfectada: "Solicitud",
-                detalles: $"El usuario {usuario.IdUsuario} realizó la solicitud #{nuevaSolicitud.IdSolicitud}."
+                detalles: $"El usuario {usuario.Nombre} realizó la solicitud con id #{nuevaSolicitud.IdSolicitud}."
             );
 
             return MapearSolicitudResponse(nuevaSolicitud, usuario);
