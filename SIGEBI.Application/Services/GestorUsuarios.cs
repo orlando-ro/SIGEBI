@@ -53,6 +53,8 @@ namespace SIGEBI.Application.Services
 
             if (usuario == null)
                 throw new NegocioExeption("El usuario no fue encontrado.");
+            if (usuario.Estado == "Inactivo") 
+                throw new NegocioExeption("El usuario ya se encuentra suspendido.");
 
             usuario.Estado = "Inactivo";
 
@@ -72,6 +74,7 @@ namespace SIGEBI.Application.Services
 
             if (usuario == null)
                 throw new NegocioExeption("No se encontró ningún usuario con ese identificador.");
+            
 
             await SuspenderUsuarioAsync(usuario.IdUsuario);
         }

@@ -1,18 +1,96 @@
 using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Mvc;
+using SIGEBI.Application.DTOs;
+using SIGEBI.Application.Interfaces;
+using SIGEBI.Infrastructure.DependencyInjection;
+using SIGEBI.Application.DependencyInyeccion;
 
-// En proyectos de estilo SDK como este, varios atributos de ensamblado que definían
-// en este archivo se agregan ahora automáticamente durante la compilación y se rellenan
-// con valores definidos en las propiedades del proyecto. Para obtener detalles acerca
-// de los atributos que se incluyen y cómo personalizar este proceso, consulte https://aka.ms/assembly-info-properties
+namespace SIGEBI.Api.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UsuarioController : ControllerBase
+    {
+        private readonly IServicioUsuarios _GestorUsuarios;
+
+        public UsuarioController(IServicioUsuarios GestorUsuarios)
+        {
+            _GestorUsuarios = GestorUsuarios;
+        }
+
+        // GET: api/usuarios/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> ObtenerPorId(int id)
+        {
+            var usuario = await _GestorUsuarios.ObtenerUsuarioPorIdAsync(id);
+
+            if (usuario == null)
+                return NotFound("El usuario no fue encontrado.");
+
+            return Ok(usuario);
+        }
+
+        // GET: api/usuarios/identificador/EMP-001
+        [HttpGet("identificador/{identificador}")]
+        public async Task<IActionResult> ObtenerPorIdentificador(string identificador)
+        {
+            var usuario = await _GestorUsuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
+
+            if (usuario == null)
+                return NotFound("No se encontró ningún usuario con ese identificador.");
+
+            return Ok(usuario);
+        }
+
+        // POST: api/usuarios/registrar
+        [HttpPost("registrar")]
+        public async Task<IActionResult> RegistrarUsuario([FromBody] UsuarioRequestDTO request)
+        {
+            await _GestorUsuarios.RegistrarUsuarioAsync(request);
+            return Ok(new {Mensaje = "Usuario Creado exitosamente"}); // 201 Created
+        }
+
+        // POST: api/usuarios/login
+        [HttpPost("login")]
+        public async Task<IActionResult> Autenticar([FromBody] LoginRequestDTO request)
+        {
+            var response = await _GestorUsuarios.AutenticarUsuarioAsync(request);
+            return Ok(response);
+        }
+
+        // PUT: api/usuarios/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ActualizarUsuario(int id, [FromBody] UsuarioUpdateRequestDTO request)
+        {
+            await _GestorUsuarios.ActualizarUsuarioAsync(id, request);
+            return NoContent(); // 204 No Content
+        }
+
+        // PUT: api/usuarios/identificador/EMP-001
+        [HttpPut("identificador/{identificador}")]
+        public async Task<IActionResult> ActualizarPorIdentificador(string identificador, [FromBody] UsuarioUpdateRequestDTO request)
+        {
+            await _GestorUsuarios.ActualizarPorIdentificadorAsync(identificador, request);
+            return NoContent();
+        }
+
+        // PUT: api/usuarios/5/suspender
+        [HttpPut("{id}/suspender")]
+        public async Task<IActionResult> SuspenderUsuario(int id)
+        {
+            await _GestorUsuarios.SuspenderUsuarioAsync(id);
+            return NoContent();
+        }
+
+        // PUT: api/usuarios/identificador/EMP-001/suspender
+        [HttpPut("identificador/{identificador}/suspender")]
+        public async Task<IActionResult> SuspenderPorIdentificador(string identificador)
+        {
+            await _GestorUsuarios.SuspenderUsuarioPorIdentificadorAsync(identificador);
+            return NoContent();
+        }
+    }
+}
 
 
-// Al establecer ComVisible en false, se consigue que los tipos de este ensamblado
-// no sean visibles para los componentes COM. Si tiene que acceder a un tipo en este
-// ensamblado desde COM, establezca el atributo ComVisible en true en ese tipo.
 
-[assembly: ComVisible(false)]
-
-// El siguiente GUID es para el identificador de typelib, si este proyecto se expone
-// en COM.
-
-[assembly: Guid("a7fdd03d-210f-41ba-aef5-956fc78b8d41")]
