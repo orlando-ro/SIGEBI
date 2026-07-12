@@ -12,14 +12,16 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         {
         }
 
-        public async Task<IEnumerable<Penalizacion>> ObtenerPendientesPorUsuariosAsync(string matriculaONumeroEmpleado)
+        public async Task<IEnumerable<Penalizacion>>
+     ObtenerPendientesPorUsuarioAsync(int idUsuario)
         {
-            int idUsuario = await ObtenerIdUsuarioPorIdentificadorAsync(matriculaONumeroEmpleado);
-
             return await _dbSet
                 .AsNoTracking()
                 .Include(p => p.Usuario)
-                .Where(p => p.IdUsuario == idUsuario && !p.Pagada)
+                .Where(p =>
+                    p.IdUsuario == idUsuario &&
+                    !p.Pagada)
+                .OrderByDescending(p => p.FechaEmision)
                 .ToListAsync();
         }
 

@@ -11,11 +11,16 @@ namespace SIGEBI.Application.Services
         private readonly IRepoPenalizacion _repoPenalizacion;
         private readonly IServicioAuditoria _servicioAuditoria;
         private readonly IServicioNotificacion _servicioNotificacion;
-        public GestorPenalizaciones(IRepoPenalizacion repoPenalizacion, IServicioAuditoria servicioAuditoria, IServicioNotificacion servicioNotificacion)
+        private readonly IUsuarios _usuarios;
+        public GestorPenalizaciones(IRepoPenalizacion repoPenalizacion, 
+            IServicioAuditoria servicioAuditoria, 
+            IServicioNotificacion servicioNotificacion,
+            IUsuarios usuarios)
         {
             _repoPenalizacion = repoPenalizacion;
             _servicioAuditoria = servicioAuditoria;
             _servicioNotificacion = servicioNotificacion;
+            _usuarios = usuarios;
         }
 
         // Método automático llamado por GestorDevoluciones (CU-DEV-02)
@@ -107,6 +112,26 @@ namespace SIGEBI.Application.Services
 );
         }
 
+        public async Task<IEnumerable<PenalizacionResponseDTO>> ObtenerPendientesPorUsuariosAsync(string MatriculaONumeroEmpleado)
+        {
+            if (string.IsNullOrWhiteSpace(MatriculaONumeroEmpleado))
+                throw new NegocioExeption("Debe indicar la matrícula o el número de empleado.");
+           
+            var identificador = MatriculaONumeroEmpleado.Trim();
+
+            var usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
+
+            if(usuario == null)
+                throw new NegocioExeption("No existe un usuario con esa matrícula o número de empleado.");
+
+            var penalizacionesPendientes = await _repoPenalizacion.ObtenerPendientesPorUsuarioAsync(usuario.IdUsuario);
+
+            if (penalizacionesPendientes == null || !penalizacionesPendientes.Any())
+                throw new NegocioExeption("No se encontraron penalizaciones pendientes para el usuario especificado.");
+
+            return penalizacionesPendientes.Select(p => MapearPenalizacionResponse(p, usuario));
+        }
+
         public async Task ProcesarPagoMultaAsync(int idPenalizacion, PenalizacionRequestDTO peticion, int idUsuarioResolutor)
         {
             if (peticion == null)
@@ -149,5 +174,48 @@ namespace SIGEBI.Application.Services
 
         
         
+        private static PenalizacionResponseDTO MapearPenalizacionResponse(Penalizacion penalizacion, Usuario usuario)
+        {
+            return new PenalizacionResponseDTO
+            {
+                IdPenalizacion =
+            penalizacion.IdPenalizacion,
+
+                IdUsuario =
+            penalizacion.IdUsuario,
+
+                NombreUsuario =
+            usuario.Nombre,
+
+                Matricula =
+            usuario is Estudiante estudiante
+                ? estudiante.Matricula
+                : null,
+
+                NumeroEmpleado =
+            usuario.NumeroEmpleado,
+
+                Monto =
+            penalizacion.Monto,
+
+                Motivo =
+            penalizacion.Motivo,
+
+                FechaEmision =
+            penalizacion.FechaEmision,
+
+                Pagada =
+            penalizacion.Pagada,
+
+                IdPrestamo =
+            penalizacion.IdPrestamo,
+
+                FechaResolucion =
+            penalizacion.FechaResolucion,
+
+                MotivoResolucion =
+            penalizacion.MotivoResolucion
+            };
+        }
     }
 }

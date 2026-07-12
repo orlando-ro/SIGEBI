@@ -21,5 +21,11 @@
         public int? IdUsuarioResolutor { get; set; }
 
         public string MotivoResolucion { get; set; } = string.Empty;
+
+        public string? NombreUsuario { get; set; } = string.Empty;
+
+        public string? Matricula { get; set; } = string.Empty;
+
+        public string? NumeroEmpleado { get; set; } = string.Empty;
     }
 }
