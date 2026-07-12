@@ -4,7 +4,7 @@ namespace SIGEBI.Application.Interfaces
 {
     public interface IRepoPenalizacion : IBaseRepository<Penalizacion>
     {
-        Task<IEnumerable<Penalizacion>> ObtenerPendientesPorUsuariosAsync(string MatriculaONumeroEmpleado);
+        Task<IEnumerable<Penalizacion>> ObtenerPendientesPorUsuarioAsync(int idUsuario);
 
         Task<Penalizacion?> ObtenerPendientePorIdYUsuarioAsync(
            int idPenalizacion,

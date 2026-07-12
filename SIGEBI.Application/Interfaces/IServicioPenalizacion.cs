@@ -1,4 +1,5 @@
 ﻿using SIGEBI.Application.DTOs;
+using SIGEBI.Domain.Entities;
 using SIGEBI.Domain.Enums;
 
 namespace SIGEBI.Application.Interfaces
@@ -19,6 +20,8 @@ namespace SIGEBI.Application.Interfaces
             int idPenalizacion,
             PenalizacionRequestDTO peticion,
             int idUsuarioResolutor);
+
+        Task<IEnumerable<PenalizacionResponseDTO>> ObtenerPendientesPorUsuariosAsync(string MatriculaONumeroEmpleado);
     }
 }
 

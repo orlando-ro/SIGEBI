@@ -39,6 +39,9 @@ namespace SIGEBI.Application.Services
         {
             var devoluciones =  await _repoDevolucion.ConsultarHistorialPorRecurso(isbnLibro);
 
+            if(devoluciones == null || !devoluciones.Any())
+                throw new NegocioExeption("No se encontraron devoluciones para el recurso especificado.");
+
             return devoluciones.Select(MapearDevolucionesResponse);
         }
 
@@ -50,6 +53,9 @@ namespace SIGEBI.Application.Services
                 throw new NegocioExeption("El usuario no fue encontrado.");
 
             var devoluciones = await _repoDevolucion.ConsultarHistorialPorUsuario(Usuario.IdUsuario);
+
+            if (devoluciones == null || !devoluciones.Any())
+                throw new NegocioExeption("No se encontraron devoluciones para el usuario especificado.");
 
             return devoluciones.Select(MapearDevolucionesResponse);
         }
