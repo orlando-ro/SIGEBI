@@ -169,6 +169,12 @@ namespace SIGEBI.Application.Services
             
             var prestamos = await _repoPrestamo.ObtenerActivoPorUsuarioAsync(ObtenerUsuario.IdUsuario);
 
+            if (prestamos.Count() == 0)
+            {
+                throw new NegocioExeption(
+                    "Este usuario no tiene préstamos activos.");
+            }
+
             return prestamos.Select(p => MapearPrestamoResponse(p, p.Usuario));
         }
 
@@ -178,6 +184,9 @@ namespace SIGEBI.Application.Services
                 throw new NegocioExeption("Debe ingresar el identificador (isbn) de algun libro");
 
             var prestamos = await _repoPrestamo.ObtenerActivosPorRecursoAsync(isbnLibro);
+
+            if (prestamos.Count() == 0)
+                throw new NegocioExeption("No se encontro el prestamo, revise el isbn ingrado");
 
 
             return prestamos.Select(p => MapearPrestamoResponse(p, p.Usuario));
@@ -190,6 +199,9 @@ namespace SIGEBI.Application.Services
 
             var prestamos = await _repoPrestamo.ObtenerHistorialPorRecurso(isbnLibro);
 
+            if (prestamos.Count() == 0)
+                throw new NegocioExeption("Este libro no pertenece a ningun prestamo");
+
             return prestamos.Select(p => MapearPrestamoResponse(p, p.Usuario));
         }
 
@@ -201,6 +213,9 @@ namespace SIGEBI.Application.Services
                 throw new NegocioExeption("Este usuario no esta registrado en el sistema ");
 
             var prestamos = await _repoPrestamo.ObtenerHistorialPorUsuarioAsync(ObtenerUsuario.IdUsuario);
+
+            if (prestamos.Count() == 0)
+                throw new NegocioExeption("Este usuario no tiene ningun historial de prestamos ");
 
             return prestamos.Select(p => MapearPrestamoResponse(p, p.Usuario));
         }

@@ -17,8 +17,9 @@ namespace SIGEBI.Infrastructure.Repositories
         public async Task<IEnumerable<Ejemplar>> ObtenerEjemplaresPorIsbnAsync(string isbn)
         {
             return await _context.Ejemplares
-                .Where(e => e.ISBN == isbn)
-                .ToListAsync();
+       .Include(e => e.Libro)
+       .Where(e => e.ISBN == isbn)
+       .ToListAsync();
         }
     }
 }

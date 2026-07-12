@@ -168,7 +168,7 @@ namespace SIGEBI.Application.Services
             var solicitud = await _repoSolicitud.ObtenerSolicitudConDetallesAsync(IdSolicitud);
 
             if (solicitud == null)
-                return null;
+                throw new NegocioExeption($"No se encontro la solicitud con id {IdSolicitud}");
 
             return MapearSolicitudResponse(solicitud, solicitud.Usuario);
 
