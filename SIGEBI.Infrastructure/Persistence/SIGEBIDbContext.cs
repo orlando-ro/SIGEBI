@@ -179,10 +179,30 @@ namespace SIGEBI.Infrastructure.Persistence
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasMany(p => p.EjemplaresAprestar)
-                    .WithOne()
-                    .HasForeignKey("PrestamoIdPrestamo")
-                    .IsRequired(false)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .WithMany()
+                    .UsingEntity<Dictionary<string, object>>(
+                        "DetallePrestamo",
+
+                        relacion => relacion
+                            .HasOne<Ejemplar>()
+                            .WithMany()
+                            .HasForeignKey("IdEjemplar")
+                            .OnDelete(DeleteBehavior.Restrict),
+
+                        relacion => relacion
+                            .HasOne<Prestamo>()
+                            .WithMany()
+                            .HasForeignKey("IdPrestamo")
+                            .OnDelete(DeleteBehavior.Cascade),
+
+                        relacion =>
+                        {
+                            relacion.ToTable("DetallePrestamo");
+
+                            relacion.HasKey(
+                                "IdPrestamo",
+                                "IdEjemplar");
+                        });
             });
         }
 
@@ -206,10 +226,30 @@ namespace SIGEBI.Infrastructure.Persistence
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasMany(s => s.EjemplaresSolicitados)
-                    .WithOne()
-                    .HasForeignKey("SolicitudIdSolicitud")
-                    .IsRequired(false)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .WithMany()
+                    .UsingEntity<Dictionary<string, object>>(
+                        "DetalleSolicitud",
+
+                        relacion => relacion
+                            .HasOne<Ejemplar>()
+                            .WithMany()
+                            .HasForeignKey("IdEjemplar")
+                            .OnDelete(DeleteBehavior.Restrict),
+
+                        relacion => relacion
+                            .HasOne<Solicitud>()
+                            .WithMany()
+                            .HasForeignKey("IdSolicitud")
+                            .OnDelete(DeleteBehavior.Cascade),
+
+                        relacion =>
+                        {
+                            relacion.ToTable("DetalleSolicitud");
+
+                            relacion.HasKey(
+                                "IdSolicitud",
+                                "IdEjemplar");
+                        });
 
                 entity.HasOne(s => s.Resolucion)
                     .WithOne(r => r.Solicitud)
