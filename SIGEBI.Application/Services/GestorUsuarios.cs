@@ -37,7 +37,7 @@ namespace SIGEBI.Application.Services
             await _repositorioUsuario.AgregarAsync(nuevoUsuario);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                idUsuario: nuevoUsuario.IdUsuario,
+                idResponsable: null, // Aquí podrías pasar el ID del usuario que realiza la acción si está disponible
                 tipoAccion: "Registrar usuario",
                 entidadAfectada: "Usuario",
                 detalles: $"Se ha registrado el usuario {nuevoUsuario.Nombre} con ID {nuevoUsuario.IdUsuario}."
@@ -61,7 +61,7 @@ namespace SIGEBI.Application.Services
             await _repositorioUsuario.ActualizarAsync(usuario);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                idUsuario: idUsuario,
+                idResponsable: null, // Aquí podrías pasar el ID del usuario que realiza la acción si está disponible
                 tipoAccion: "Suspender usuario",
                 entidadAfectada: "Usuario",
                 detalles: $"Se ha suspendido el usuario con ID {idUsuario}."

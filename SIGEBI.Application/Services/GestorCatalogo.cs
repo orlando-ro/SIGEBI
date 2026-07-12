@@ -48,7 +48,7 @@ namespace SIGEBI.Application.Services
             await _repositorioLibro.AgregarAsync(libro);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                 idUsuario: IdUsuarioResponsable,
+                 idResponsable: IdUsuarioResponsable,
                  tipoAccion: "Creacion de libro y ejemplares",
                  entidadAfectada: "Libro/Ejemplar",
                  detalles: $"Se registró el libro: {libro.Titulo} con {dto.CopiasTotales} ejemplares físicos."
@@ -120,7 +120,7 @@ namespace SIGEBI.Application.Services
             await _repositorioLibro.ActualizarAsync(libro);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                idUsuario: idUsuarioResponsable,
+                idResponsable: idUsuarioResponsable,
                 tipoAccion: "Actualizacion de libro",
                 entidadAfectada: "Libro",
                 detalles: detallesAuditoria
@@ -141,7 +141,7 @@ namespace SIGEBI.Application.Services
             await _repositorioLibro.ActualizarAsync(libro);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                idUsuario: idUsuarioResponsable,
+                idResponsable: idUsuarioResponsable,
                 tipoAccion: "Retiro/eliminación de libro",
                 entidadAfectada: "Libro",
                 detalles: $"Se retiró/eliminó el libro '{tituloRetirado}' (ISBN: {isbn}) y todos sus ejemplares físicos."
