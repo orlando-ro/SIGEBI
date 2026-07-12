@@ -1,40 +1,50 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Domain.Entities;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SIGEBI.Infrastructure.Persistence.Repositories
 {
-    
-    public class RepositorioAuditoria : InmutableRepository<RegistroAuditoria>, IRepositorioAuditoria
+    public class RepositorioAuditoria
+        : InmutableRepository<RegistroAuditoria>,
+          IRepositorioAuditoria
     {
-        public RepositorioAuditoria(SIGEBIDbContext context) : base(context)
+        public RepositorioAuditoria(
+            SIGEBIDbContext context)
+            : base(context)
         {
         }
 
-        
-        public async Task<IEnumerable<RegistroAuditoria>> ObtenerPorActorAsync(int idUsuarioActor)
+        public async Task<IEnumerable<RegistroAuditoria>>
+            ConsultarHistorialAsync(
+                int? idResponsable = null,
+                string? entidadAfectada = null)
         {
-            return await _dbSet
-                .AsNoTracking()
-                .Where(r => r.IdUsuario == idUsuarioActor)
-                .OrderByDescending(r => r.FechaHora)
-                .ToListAsync();
-        }
+            IQueryable<RegistroAuditoria> consulta =
+                _dbSet.AsNoTracking();
 
-        public async Task<IEnumerable<RegistroAuditoria>> ObtenerPorEntidadAsync(string entidadAfectada)
-        {
-            if (string.IsNullOrWhiteSpace(entidadAfectada))
-                return new List<RegistroAuditoria>();
+            if (idResponsable.HasValue)
+            {
+                consulta = consulta.Where(
+                    registro =>
+                        registro.IdResponsable ==
+                        idResponsable.Value);
+            }
 
-            string entidadNormalizada = entidadAfectada.Trim();
+            if (!string.IsNullOrWhiteSpace(
+                entidadAfectada))
+            {
+                string entidadNormalizada =
+                    entidadAfectada.Trim();
 
-            return await _dbSet
-                .AsNoTracking()
-                .Where(r => r.EntidadAfectada == entidadNormalizada)
-                .OrderByDescending(r => r.FechaHora)
+                consulta = consulta.Where(
+                    registro =>
+                        registro.EntidadAfectada ==
+                        entidadNormalizada);
+            }
+
+            return await consulta
+                .OrderByDescending(
+                    registro => registro.FechaHora)
                 .ToListAsync();
         }
     }

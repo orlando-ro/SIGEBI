@@ -101,7 +101,7 @@ namespace SIGEBI.Application.Services
             await _repoSolicitud.AgregarAsync(nuevaSolicitud);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                idUsuario: usuario.IdUsuario,
+                idResponsable: usuario.IdUsuario,
                 tipoAccion: "Solicitud de préstamo",
                 entidadAfectada: "Solicitud",
                 detalles: $"El usuario {usuario.Nombre} realizó la solicitud con id #{nuevaSolicitud.IdSolicitud}."
@@ -151,7 +151,7 @@ namespace SIGEBI.Application.Services
             await _repoSolicitud.GuardarResolucionAsync(rechazo);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                idUsuario: Bibliotecario.IdUsuario,
+                idResponsable: Bibliotecario.IdUsuario,
                 tipoAccion: "Rechazar solicitud",
                 entidadAfectada: "Solicitud",
                 detalles: $"El bibliotecario {Bibliotecario.Nombre} rechazó la solicitud #{solicitudARechazar.IdSolicitud}. Motivo: {peticion.MotivoRechazo}."

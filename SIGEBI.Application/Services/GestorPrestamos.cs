@@ -133,7 +133,7 @@ namespace SIGEBI.Application.Services
             await _repoSolicitud.GuardarResolucionAsync(aprobacion);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                idUsuario: bibliotecario.IdUsuario,
+                idResponsable: bibliotecario.IdUsuario,
                 tipoAccion: "Aprobar préstamo",
                 entidadAfectada: "Prestamo",
                 detalles: $"El bibliotecario {bibliotecario.Nombre} aprobó la solicitud #{solicitud.IdSolicitud} y registró el préstamo #{nuevoPrestamo.IdPrestamo}."

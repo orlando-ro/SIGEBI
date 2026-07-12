@@ -18,14 +18,14 @@ namespace SIGEBI.Infrastructure.Services
         }
 
         public async Task<IEnumerable<AuditoriaResponseDTO>> ConsultarHistorialAsync(
-            int? idUsuarioActor = null,
+            int? idResponsable = null,
             string? entidadAfectada = null)
         {
             IEnumerable<RegistroAuditoria> registros;
 
-            if (idUsuarioActor.HasValue)
+            if (idResponsable.HasValue)
             {
-                registros = await _repoAuditoria.ObtenerPorActorAsync(idUsuarioActor.Value);
+                registros = await _repoAuditoria.ConsultarHistorialAsync(idResponsable.Value);
 
                 if (!string.IsNullOrWhiteSpace(entidadAfectada))
                 {
@@ -38,7 +38,7 @@ namespace SIGEBI.Infrastructure.Services
             }
             else if (!string.IsNullOrWhiteSpace(entidadAfectada))
             {
-                registros = await _repoAuditoria.ObtenerPorEntidadAsync(entidadAfectada.Trim());
+                registros = await _repoAuditoria.ConsultarHistorialAsync(entidadAfectada: entidadAfectada.Trim());
             }
             else
             {
@@ -63,12 +63,12 @@ namespace SIGEBI.Infrastructure.Services
         }
 
         public async Task RegistrarAccionAsync(
-            int idUsuario,
+            int? idResponsable,
             string tipoAccion,
             string entidadAfectada,
             string detalles = "")
         {
-            if (idUsuario <= 0)
+            if (idResponsable.HasValue && idResponsable <= 0)
                 throw new Exception("El usuario que realiza la acción no es válido.");
 
             if (string.IsNullOrWhiteSpace(tipoAccion))
@@ -78,7 +78,7 @@ namespace SIGEBI.Infrastructure.Services
                 throw new Exception("La entidad afectada es obligatoria.");
 
             var nuevoRegistro = new RegistroAuditoria(
-                idUsuario,
+                idResponsable,
                 tipoAccion,
                 entidadAfectada,
                 detalles
@@ -93,7 +93,7 @@ namespace SIGEBI.Infrastructure.Services
             return new AuditoriaResponseDTO
             {
                 IdAuditoria = registro.IdAuditoria,
-                IdUsuarioActor = registro.IdUsuario,
+                IdResponsable = registro.IdResponsable,
                 FechaHora = registro.FechaHora,
                 Accion = registro.Accion,
                 EntidadAfectada = registro.EntidadAfectada,

@@ -145,7 +145,7 @@ namespace SIGEBI.Application.Services
             await _repoPrestamo.ActualizarAsync(prestamo);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                idUsuario: bibliotecario.IdUsuario,
+                idResponsable: bibliotecario.IdUsuario,
                 tipoAccion: "Registrar devolución",
                 entidadAfectada: "Prestamo",
                 detalles:
