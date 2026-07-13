@@ -38,15 +38,13 @@ namespace SIGEBI.Application.Services
             string tipoUsuario = usuario.GetType().Name;
 
             string? matricula = null;
-            string identificador = usuario.NumeroEmpleado ?? string.Empty;
 
             if (usuario is Estudiante estudiante)
             {
                 matricula = estudiante.Matricula;
-                identificador = estudiante.Matricula ?? string.Empty;
             }
 
-            string tokenString = _servicioJwt.GenerarToken(identificador, usuario.Email, tipoUsuario);
+            string tokenString = _servicioJwt.GenerarToken(usuario.IdUsuario, usuario.Email, tipoUsuario);
 
             return new LoginResponseDTO
             {
