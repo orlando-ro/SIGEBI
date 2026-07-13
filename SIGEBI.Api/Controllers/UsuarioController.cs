@@ -47,7 +47,7 @@ namespace SIGEBI.Api.Controllers
 
         // POST: api/usuarios/registrar
         [HttpPost("registrar")]
-        [Authorize(Roles = "Administrador,PersonalBibliotecario")] // Restringido
+        [Authorize(Roles = "Administrador")] // Restringido
         public async Task<IActionResult> RegistrarUsuario([FromBody] UsuarioRequestDTO request)
         {
             int idResponsable = ObtenerIdResponsable();
@@ -57,7 +57,7 @@ namespace SIGEBI.Api.Controllers
 
         // PUT: api/usuarios/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Administrador,PersonalBibliotecario")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ActualizarUsuario(int id, [FromBody] UsuarioUpdateRequestDTO request)
         {
             int idResponsable = ObtenerIdResponsable();
@@ -67,7 +67,7 @@ namespace SIGEBI.Api.Controllers
 
         // PUT: api/usuarios/identificador/EMP-001
         [HttpPut("identificador/{identificador}")]
-        [Authorize(Roles = "Administrador,PersonalBibliotecario")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ActualizarPorIdentificador(string identificador, [FromBody] UsuarioUpdateRequestDTO request)
         {
             int idResponsable = ObtenerIdResponsable();
@@ -77,7 +77,7 @@ namespace SIGEBI.Api.Controllers
 
         // PUT: api/usuarios/5/suspender
         [HttpPut("{id}/suspender")]
-        [Authorize(Roles = "Administrador,PersonalBibliotecario")] 
+        [Authorize(Roles = "Administrador")] 
         public async Task<IActionResult> SuspenderUsuario(int id)
         {
             int idResponsable = ObtenerIdResponsable();
