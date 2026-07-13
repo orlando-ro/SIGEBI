@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace SIGEBI.Application.DTOs
 {
@@ -24,5 +22,7 @@ namespace SIGEBI.Application.DTOs
 
         [Required(ErrorMessage = "Debe especificar el ID de la categoría a la que pertenece.")]
         public int IdCategoria { get; set; }
+
+        public IFormFile? Imagen { get; set; }
     }
 }

@@ -1,20 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SIGEBI.Application.DependencyInyeccion;
 using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
-using SIGEBI.Application.Services;
-using SIGEBI.Domain.Entities;
-using SIGEBI.Infrastructure.DependencyInjection;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace SIGEBI.Api.Controllers
-
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriaController : ControllerBase
+    [Authorize] // Protegemos el controlador completo
+    public class CategoriaController : BaseController // Usamos el controlador base
     {
         private readonly IServicioCategoria _GestorCategoria;
 
@@ -25,6 +20,7 @@ namespace SIGEBI.Api.Controllers
 
         //GET: api/categoria
         [HttpGet]
+        [AllowAnonymous] // Permitimos a cualquier usuario listar las categorías
         public async Task<IActionResult> ConsultarTodas()
         {
             var categorias = await _GestorCategoria.ConsultarTodasAsync();
@@ -33,6 +29,7 @@ namespace SIGEBI.Api.Controllers
 
         //GET: api/categoria/{id}
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> ObtenerPorId(int id)
         {
             var categoria = await _GestorCategoria.ObtenerPorIdAsync(id);
@@ -45,10 +42,22 @@ namespace SIGEBI.Api.Controllers
 
         //POST: api/categoria/registrar
         [HttpPost("registrar")]
+        [Authorize(Roles = "Administrador,PersonalBibliotecario")]
         public async Task<IActionResult> RegistrarCategoria([FromBody] CategoriaRequestDTO request)
         {
-            await _GestorCategoria.RegistrarCategoriaAsync(request);
-            return Ok(); // 201
+            int idResponsable = ObtenerIdResponsable();
+            await _GestorCategoria.RegistrarCategoriaAsync(request, idResponsable);
+            return Ok(new { Mensaje = "Categoría creada exitosamente" });
+        }
+
+        //PUT: api/categoria/{id}
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador,PersonalBibliotecario")]
+        public async Task<IActionResult> ActualizarCategoria(int id, [FromBody] CategoriaRequestDTO request)
+        {
+            int idResponsable = ObtenerIdResponsable();
+            await _GestorCategoria.ActualizarCategoriaAsync(id, request, idResponsable);
+            return NoContent();
         }
     }
 }

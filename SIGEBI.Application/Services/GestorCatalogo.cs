@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SIGEBI.Application.DTOs;
@@ -13,12 +14,18 @@ namespace SIGEBI.Application.Services
         private readonly IRepositorioLibro _repositorioLibro;
         private readonly IServicioCategoria _servicioCategoria;
         private readonly IServicioAuditoria _servicioAuditoria;
+        private readonly IStorageService _storageService;
 
-        public GestorCatalogo(IRepositorioLibro repositorioLibro, IServicioCategoria servicioCategoria, IServicioAuditoria servicioAuditoria)
+        public GestorCatalogo(
+            IRepositorioLibro repositorioLibro,
+            IServicioCategoria servicioCategoria,
+            IServicioAuditoria servicioAuditoria,
+            IStorageService storageService)
         {
             _repositorioLibro = repositorioLibro;
             _servicioCategoria = servicioCategoria;
             _servicioAuditoria = servicioAuditoria;
+            _storageService = storageService;
         }
 
         public async Task RegistrarLibroAsync(LibroRequestDTO dto, int IdUsuarioResponsable)
@@ -30,12 +37,25 @@ namespace SIGEBI.Application.Services
             if (categoria == null)
                 throw new NegocioExeption("La categoría no existe.");
 
+            string urlImagen = string.Empty;
+            if (dto.Imagen != null && dto.Imagen.Length > 0)
+            {
+                using var stream = dto.Imagen.OpenReadStream();
+                string extension = Path.GetExtension(dto.Imagen.FileName);
+                urlImagen = await _storageService.GuardarImagenAsync(stream, extension, "images/libros");
+            }
+
             var libro = new Libro(dto.ISBN, dto.Titulo)
             {
                 NombreAutor = dto.NombreAutor,
                 AnioPublicacion = dto.AnioPublicacion,
                 IdCategoria = dto.IdCategoria
             };
+
+            if (!string.IsNullOrWhiteSpace(urlImagen))
+            {
+                libro.AsignarImagen(urlImagen);
+            }
 
             for (int i = 1; i <= dto.CopiasTotales; i++)
             {
@@ -79,7 +99,7 @@ namespace SIGEBI.Application.Services
                 Titulo = l.Titulo,
                 NombreAutor = l.NombreAutor,
                 CopiasDisponibles = l.CopiasDisponibles,
-                Categoria = "N/A"
+                Categoria = l.Categoria != null ? l.Categoria.Nombre : "N/A"
             });
         }
 
