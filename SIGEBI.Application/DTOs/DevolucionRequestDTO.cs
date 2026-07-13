@@ -1,8 +1,5 @@
 ﻿using SIGEBI.Domain.Enums;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace SIGEBI.Application.DTOs
 {
@@ -13,9 +10,6 @@ namespace SIGEBI.Application.DTOs
 
         [Required(ErrorMessage = "Debe especificar la condición física del libro devuelto.")]
         public CondicionDevolucion CondicionLibro { get; set; }
-
-        [Required(ErrorMessage = "Debe espesificar el identificador de la persona a quien pertenece la devolucion")]
-        public string MatriculaONumeroEmpleadoBibliotecario { get; set; } = string.Empty;
 
         public string Observaciones { get; set; } = string.Empty;
     }

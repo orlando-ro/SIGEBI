@@ -3,6 +3,9 @@ using SIGEBI.Application.Interfaces;
 using SIGEBI.Domain.Entities;
 using SIGEBI.Domain.Enums;
 using SIGEBI.Domain.Exceptions;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SIGEBI.Application.Services
 {
@@ -14,8 +17,6 @@ namespace SIGEBI.Application.Services
         private readonly IServicioAuditoria _servicioAuditoria;
         private readonly IUsuarios _usuarios;
         private readonly IServicioNotificacion _servicioNotificacion;
-        private readonly IServiciosObtenerBibliotecario _serviciosObtenerBibliotecario;
-
 
         public GestorDevoluciones(
             IRepositorioPrestamo repoPrestamo,
@@ -23,7 +24,6 @@ namespace SIGEBI.Application.Services
             IServicioPenalizacion servicioPenalizacion,
             IServicioAuditoria servicioAuditoria,
             IServicioNotificacion servicioNotificacion,
-            IServiciosObtenerBibliotecario serviciosObtenerBibliotecario,
             IUsuarios usuario)
         {
             _repoPrestamo = repoPrestamo;
@@ -32,14 +32,13 @@ namespace SIGEBI.Application.Services
             _servicioAuditoria = servicioAuditoria;
             _usuarios = usuario;
             _servicioNotificacion = servicioNotificacion;
-            _serviciosObtenerBibliotecario = serviciosObtenerBibliotecario;
         }
 
         public async Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorRecurso(string isbnLibro)
         {
-            var devoluciones =  await _repoDevolucion.ConsultarHistorialPorRecurso(isbnLibro);
+            var devoluciones = await _repoDevolucion.ConsultarHistorialPorRecurso(isbnLibro);
 
-            if(devoluciones == null || !devoluciones.Any())
+            if (devoluciones == null || !devoluciones.Any())
                 throw new NegocioExeption("No se encontraron devoluciones para el recurso especificado.");
 
             return devoluciones.Select(MapearDevolucionesResponse);
@@ -60,9 +59,7 @@ namespace SIGEBI.Application.Services
             return devoluciones.Select(MapearDevolucionesResponse);
         }
 
-
-
-        public async Task<DevolucionResponseDTO> ProcesarDevolucionAsync(DevolucionRequestDTO devolucion)
+        public async Task<DevolucionResponseDTO> ProcesarDevolucionAsync(DevolucionRequestDTO devolucion, int idBibliotecarioResponsable)
         {
             if (devolucion == null)
                 throw new NegocioExeption("Los datos de la devolución son obligatorios.");
@@ -70,13 +67,12 @@ namespace SIGEBI.Application.Services
             if (devolucion.IdPrestamo <= 0)
                 throw new NegocioExeption("El identificador del préstamo no es válido.");
 
-            var bibliotecario = await _serviciosObtenerBibliotecario.ObtenerBibliotecarioAsync(
-                devolucion.MatriculaONumeroEmpleadoBibliotecario
-            );
+            var bibliotecario = await _usuarios.ObtenerUsuarioConDetallesAsync(idBibliotecarioResponsable);
 
-            var prestamo = await _repoPrestamo.obtenerPrestamoConDetalleAsync(
-                devolucion.IdPrestamo
-            );
+            if (bibliotecario == null || bibliotecario is not PersonalBibliotecario)
+                throw new NegocioExeption("Solo el personal bibliotecario puede registrar devoluciones.");
+
+            var prestamo = await _repoPrestamo.obtenerPrestamoConDetalleAsync(devolucion.IdPrestamo);
 
             if (prestamo == null)
                 throw new NegocioExeption("El préstamo no fue encontrado.");
@@ -84,9 +80,7 @@ namespace SIGEBI.Application.Services
             if (prestamo.Estado != "Activo")
                 throw new NegocioExeption("Solo se pueden devolver préstamos que estén activos.");
 
-            var devolucionExistente = await _repoDevolucion.ObtenerPorPrestamoAsync(
-                devolucion.IdPrestamo
-            );
+            var devolucionExistente = await _repoDevolucion.ObtenerPorPrestamoAsync(devolucion.IdPrestamo);
 
             if (devolucionExistente != null)
                 throw new NegocioExeption("Este préstamo ya tiene una devolución registrada.");
@@ -102,7 +96,7 @@ namespace SIGEBI.Application.Services
               bibliotecario.IdUsuario,
               devolucion.CondicionLibro,
               devolucion.Observaciones
-             );
+            );
 
             if (diasRetraso > 0)
             {
@@ -111,7 +105,6 @@ namespace SIGEBI.Application.Services
                    prestamo.IdPrestamo,
                    diasRetraso
                 );
-
                 generoPenalizacion = true;
             }
 
@@ -122,7 +115,6 @@ namespace SIGEBI.Application.Services
                       prestamo.IdPrestamo,
                       devolucion.CondicionLibro
                 );
-
                 generoPenalizacion = true;
             }
 
@@ -141,7 +133,6 @@ namespace SIGEBI.Application.Services
             prestamo.RegistrarDevolucion();
 
             await _repoDevolucion.AgregarAsync(nuevaDevolucion);
-
             await _repoPrestamo.ActualizarAsync(prestamo);
 
             await _servicioAuditoria.RegistrarAccionAsync(
@@ -154,6 +145,7 @@ namespace SIGEBI.Application.Services
                     $"Días de retraso: {diasRetraso}. " +
                     $"Observaciones: {devolucion.Observaciones}"
             );
+
             await _servicioNotificacion.EnviarNotificacionAsync(
                 bibliotecario.IdUsuario,
                 $"El bibliotecario {bibliotecario.Nombre} registró la devolución del préstamo #{prestamo.IdPrestamo}. " +
@@ -161,8 +153,7 @@ namespace SIGEBI.Application.Services
                     $"Días de retraso: {diasRetraso}. " +
                     $"Observaciones: {devolucion.Observaciones}",
                 TipoNotificacion.ConfirmacionDevolucion
-
-                );
+            );
 
             return MapearDevolucionesResponse(
                 nuevaDevolucion,
@@ -171,9 +162,8 @@ namespace SIGEBI.Application.Services
                 generoPenalizacion,
                 diasRetraso
             );
-
-            
         }
+
         private DevolucionResponseDTO MapearDevolucionesResponse(Devolucion devolucion)
         {
             if (devolucion.Prestamo == null)
@@ -202,19 +192,11 @@ namespace SIGEBI.Application.Services
                 FechaDevolucion = devolucion.FechaDevolucion,
                 CondicionLibro = devolucion.CondicionLibro.ToString(),
                 Observaciones = devolucion.Observaciones,
-
                 IdUsuario = prestamo.IdUsuario,
-
-                NombreUsuario = prestamo.Usuario != null
-                    ? prestamo.Usuario.Nombre
-                    : string.Empty,
-
+                NombreUsuario = prestamo.Usuario != null ? prestamo.Usuario.Nombre : string.Empty,
                 IdBibliotecario = idBibliotecario,
-
                 GeneroPenalizacion = generoPenalizacion,
-
                 DiasRetraso = diasRetraso,
-
                 TitulosLibros = prestamo.EjemplaresAprestar
                     .Where(e => e.Libro != null)
                     .Select(e => e.Libro!.Titulo)

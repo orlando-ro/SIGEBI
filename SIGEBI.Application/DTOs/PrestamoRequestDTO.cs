@@ -9,8 +9,5 @@ namespace SIGEBI.Application.DTOs
     {
         [Required(ErrorMessage = "Debe especificar qué solicitud se va a aprobar.")]
         public int IdSolicitud { get; set; }
-
-        [Required(ErrorMessage = "El identificador del bibliotecario es obligatorio.")]
-        public string MatriculaOnumeroEmpleado { get; set; } = string.Empty;
     }
 }

@@ -10,7 +10,7 @@ namespace SIGEBI.Application.Interfaces
 {
     public interface IservicioPrestamo
     {
-        Task<PrestamoResponseDTO> AprobarYRegistrarPrestamoAsync(PrestamoRequestDTO peticion);
+        Task<PrestamoResponseDTO> AprobarYRegistrarPrestamoAsync(PrestamoRequestDTO peticion, int idBibliotecarioResponsable);
 
         Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorIdentificadorAsync(string identificador);
 
@@ -19,7 +19,5 @@ namespace SIGEBI.Application.Interfaces
         Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorUsuarioAsync(string identificador);
 
         Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorRecursoAsync(string isbn);
-
-
     }
 }

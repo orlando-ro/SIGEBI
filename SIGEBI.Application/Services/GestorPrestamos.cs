@@ -17,10 +17,9 @@ namespace SIGEBI.Application.Services
         private readonly IRepositorioEjemplar _repositorioEjemplar;
         private readonly IServicioNotificacion _servicioNotificacion;
         private readonly IServicioPoliticaNegocio _servicioPoliticaNegocio;
-        private readonly IServiciosObtenerBibliotecario _serviciosObtenerBibliotecario;
+
 
         public GestorPrestamos(
-           
             IRepositorioPrestamo repoPrestamo,
             IRepoSolicitud repoSolicitud,
             IRepositorioLibro repoLibro,
@@ -28,7 +27,6 @@ namespace SIGEBI.Application.Services
             IServicioAuditoria servicioAuditoria,
             IRepositorioEjemplar repositorioejemplar,
             IServicioNotificacion servicioNotificacion,
-            IServiciosObtenerBibliotecario serviciosObtenerBibliotecario,
             IServicioPoliticaNegocio servicioPoliticaNegocio,
             IUsuarios usuario)
         {
@@ -40,20 +38,18 @@ namespace SIGEBI.Application.Services
             _usuario = usuario;
             _repositorioEjemplar = repositorioejemplar;
             _servicioNotificacion = servicioNotificacion;
-            _serviciosObtenerBibliotecario = serviciosObtenerBibliotecario;
             _servicioPoliticaNegocio = servicioPoliticaNegocio;
-           
         }
 
-        public async Task<PrestamoResponseDTO> AprobarYRegistrarPrestamoAsync(PrestamoRequestDTO peticion)
+        public async Task<PrestamoResponseDTO> AprobarYRegistrarPrestamoAsync(PrestamoRequestDTO peticion, int idBibliotecarioResponsable)
         {
-
             if (peticion == null)
                 throw new NegocioExeption("Los datos de aprobación son obligatorios.");
 
-            var bibliotecario = await _serviciosObtenerBibliotecario.ObtenerBibliotecarioAsync(
-                peticion.MatriculaOnumeroEmpleado
-            );
+            var bibliotecario = await _usuario.ObtenerUsuarioConDetallesAsync(idBibliotecarioResponsable);
+
+            if (bibliotecario == null || bibliotecario is not PersonalBibliotecario)
+                throw new NegocioExeption("Solo el personal bibliotecario puede aprobar préstamos.");
 
             var solicitud = await _repoSolicitud.ObtenerSolicitudConDetallesAsync(peticion.IdSolicitud);
 
@@ -78,12 +74,9 @@ namespace SIGEBI.Application.Services
             if (limitePrestamos <= 0)
                 throw new NegocioExeption("Este tipo de usuario no está autorizado para recibir préstamos.");
 
-            var prestamosActivos = await _repoPrestamo
-     .ObtenerActivoPorUsuarioAsync(usuarioSolicitante.IdUsuario);
+            var prestamosActivos = await _repoPrestamo.ObtenerActivoPorUsuarioAsync(usuarioSolicitante.IdUsuario);
 
-            int recursosActivos = prestamosActivos
-                .SelectMany(p => p.EjemplaresAprestar)
-                .Count();
+            int recursosActivos = prestamosActivos.SelectMany(p => p.EjemplaresAprestar).Count();
 
             if (recursosActivos + solicitud.EjemplaresSolicitados.Count > limitePrestamos)
             {
@@ -96,8 +89,7 @@ namespace SIGEBI.Application.Services
 
             foreach (var ejemplar in solicitud.EjemplaresSolicitados)
             {
-                if (ejemplar.Estado != EstadoEjemplar.Disponible
-                    && ejemplar.Estado != EstadoEjemplar.Reservado)
+                if (ejemplar.Estado != EstadoEjemplar.Disponible && ejemplar.Estado != EstadoEjemplar.Reservado)
                     throw new NegocioExeption($"No se puede aprobar la solicitud porque el Ejemplar '{ejemplar.CodigoFisico}' ya no esta disponible.");
             }
 
@@ -121,7 +113,6 @@ namespace SIGEBI.Application.Services
             solicitud.Aprobar();
 
             await _repoSolicitud.ActualizarAsync(solicitud);
-
             await _repoPrestamo.AgregarAsync(nuevoPrestamo);
 
             var aprobacion = new Aprobacion(
@@ -133,16 +124,13 @@ namespace SIGEBI.Application.Services
             await _repoSolicitud.GuardarResolucionAsync(aprobacion);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                idResponsable: bibliotecario.IdUsuario,
+                idResponsable: idBibliotecarioResponsable,
                 tipoAccion: "Aprobar préstamo",
                 entidadAfectada: "Prestamo",
                 detalles: $"El bibliotecario {bibliotecario.Nombre} aprobó la solicitud #{solicitud.IdSolicitud} y registró el préstamo #{nuevoPrestamo.IdPrestamo}."
             );
 
-            var titulosPrestados = string.Join(", ",
-    nuevoPrestamo.EjemplaresAprestar
-        .Where(e => e.Libro != null)
-        .Select(e => e.Libro!.Titulo));
+            var titulosPrestados = string.Join(", ", nuevoPrestamo.EjemplaresAprestar.Where(e => e.Libro != null).Select(e => e.Libro!.Titulo));
 
             await _servicioNotificacion.EnviarNotificacionAsync(
                 usuarioSolicitante.IdUsuario,
@@ -155,31 +143,25 @@ namespace SIGEBI.Application.Services
             return MapearPrestamoResponse(nuevoPrestamo, usuarioSolicitante);
         }
 
-        
-        
-
-        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorIdentificadorAsync(string identificador) {
-
-
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorIdentificadorAsync(string identificador)
+        {
             var ObtenerUsuario = await _usuario.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
 
             if (ObtenerUsuario == null)
                 throw new NegocioExeption("Este usuario no esta registrado en el sistema ");
 
-            
             var prestamos = await _repoPrestamo.ObtenerActivoPorUsuarioAsync(ObtenerUsuario.IdUsuario);
 
             if (prestamos.Count() == 0)
             {
-                throw new NegocioExeption(
-                    "Este usuario no tiene préstamos activos.");
+                throw new NegocioExeption("Este usuario no tiene préstamos activos.");
             }
 
             return prestamos.Select(p => MapearPrestamoResponse(p, p.Usuario));
         }
 
-        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorRecursoAsync(string isbnLibro) {
-
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorRecursoAsync(string isbnLibro)
+        {
             if (string.IsNullOrWhiteSpace(isbnLibro))
                 throw new NegocioExeption("Debe ingresar el identificador (isbn) de algun libro");
 
@@ -188,12 +170,11 @@ namespace SIGEBI.Application.Services
             if (prestamos.Count() == 0)
                 throw new NegocioExeption("No se encontro el prestamo, revise el isbn ingrado");
 
-
             return prestamos.Select(p => MapearPrestamoResponse(p, p.Usuario));
         }
 
-        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorRecursoAsync(string isbnLibro) {
-
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorRecursoAsync(string isbnLibro)
+        {
             if (string.IsNullOrWhiteSpace(isbnLibro))
                 throw new NegocioExeption("Debe ingresar el identificador (isbn) de algun libro");
 
@@ -205,8 +186,8 @@ namespace SIGEBI.Application.Services
             return prestamos.Select(p => MapearPrestamoResponse(p, p.Usuario));
         }
 
-        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorUsuarioAsync(string identificador) {
-
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorUsuarioAsync(string identificador)
+        {
             var ObtenerUsuario = await _usuario.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
 
             if (ObtenerUsuario == null)
@@ -219,8 +200,6 @@ namespace SIGEBI.Application.Services
 
             return prestamos.Select(p => MapearPrestamoResponse(p, p.Usuario));
         }
-
-        
 
         private PrestamoResponseDTO MapearPrestamoResponse(Prestamo prestamo, Usuario? usuario)
         {
@@ -236,14 +215,12 @@ namespace SIGEBI.Application.Services
                 TitulosLibros = prestamo.EjemplaresAprestar.Where(e => e.Libro != null).Select(e => e.Libro!.Titulo).ToList(),
                 Matricula = usuario is Estudiante estudiante ? estudiante.Matricula : null,
                 NumeroEmpleado = usuario?.NumeroEmpleado,
-                 ISBNs = prestamo.EjemplaresAprestar.Select(l => l.ISBN).ToList()
+                ISBNs = prestamo.EjemplaresAprestar.Select(l => l.ISBN).ToList()
             };
         }
 
-        
-
-        private DateTime calcularFechaVencimiento(Usuario usuario, DateTime fechaInicio) {
-
+        private DateTime calcularFechaVencimiento(Usuario usuario, DateTime fechaInicio)
+        {
             if (usuario is Docente)
                 return fechaInicio.AddDays(14);
 
@@ -251,4 +228,3 @@ namespace SIGEBI.Application.Services
         }
     }
 }
- 
