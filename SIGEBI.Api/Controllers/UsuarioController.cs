@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
@@ -7,9 +8,11 @@ using SIGEBI.Application.DependencyInyeccion;
 
 namespace SIGEBI.Api.Controllers
 {
+    // Heredamos de BaseController para acceder a ObtenerIdResponsable()
     [ApiController]
     [Route("api/[controller]")]
-    public class UsuarioController : ControllerBase
+    [Authorize] // Asegura que todo el controlador requiera estar autenticado por defecto
+    public class UsuarioController : BaseController
     {
         private readonly IServicioUsuarios _GestorUsuarios;
 
@@ -44,45 +47,54 @@ namespace SIGEBI.Api.Controllers
 
         // POST: api/usuarios/registrar
         [HttpPost("registrar")]
+        [Authorize(Roles = "Administrador,PersonalBibliotecario")] // Restringido
         public async Task<IActionResult> RegistrarUsuario([FromBody] UsuarioRequestDTO request)
         {
-            await _GestorUsuarios.RegistrarUsuarioAsync(request);
-            return Ok(new {Mensaje = "Usuario Creado exitosamente"}); // 201 Created
+            int idResponsable = ObtenerIdResponsable();
+            await _GestorUsuarios.RegistrarUsuarioAsync(request, idResponsable);
+            return Ok(new { Mensaje = "Usuario Creado exitosamente" }); // 201 Created
         }
 
         // PUT: api/usuarios/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador,PersonalBibliotecario")]
         public async Task<IActionResult> ActualizarUsuario(int id, [FromBody] UsuarioUpdateRequestDTO request)
         {
-            await _GestorUsuarios.ActualizarUsuarioAsync(id, request);
+            int idResponsable = ObtenerIdResponsable();
+            await _GestorUsuarios.ActualizarUsuarioAsync(id, request, idResponsable);
             return NoContent(); // 204 No Content
         }
 
         // PUT: api/usuarios/identificador/EMP-001
         [HttpPut("identificador/{identificador}")]
+        [Authorize(Roles = "Administrador,PersonalBibliotecario")]
         public async Task<IActionResult> ActualizarPorIdentificador(string identificador, [FromBody] UsuarioUpdateRequestDTO request)
         {
-            await _GestorUsuarios.ActualizarPorIdentificadorAsync(identificador, request);
+            int idResponsable = ObtenerIdResponsable();
+            await _GestorUsuarios.ActualizarPorIdentificadorAsync(identificador, request, idResponsable);
             return NoContent();
         }
 
         // PUT: api/usuarios/5/suspender
         [HttpPut("{id}/suspender")]
+        [Authorize(Roles = "Administrador,PersonalBibliotecario")] 
         public async Task<IActionResult> SuspenderUsuario(int id)
         {
-            await _GestorUsuarios.SuspenderUsuarioAsync(id);
+            int idResponsable = ObtenerIdResponsable();
+            await _GestorUsuarios.SuspenderUsuarioAsync(id, idResponsable);
             return NoContent();
         }
 
         // PUT: api/usuarios/identificador/EMP-001/suspender
         [HttpPut("identificador/{identificador}/suspender")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> SuspenderPorIdentificador(string identificador)
         {
-            await _GestorUsuarios.SuspenderUsuarioPorIdentificadorAsync(identificador);
+            int idResponsable = ObtenerIdResponsable();
+            await _GestorUsuarios.SuspenderUsuarioPorIdentificadorAsync(identificador, idResponsable);
             return NoContent();
         }
+
+            
     }
 }
-
-
-
