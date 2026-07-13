@@ -22,6 +22,34 @@ namespace SIGEBI.Api.Middleware
             try
             {
                 await _next(context);
+
+                // NUEVO: Capturar las respuestas 401 y 403 generadas por el framework (no lanzan excepción)
+                if (context.Response.StatusCode == (int)HttpStatusCode.Forbidden)
+                {
+                    var idUsuario = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                    _logger.LogWarning("Acceso denegado (403). Usuario ID: {IdUsuario}, Ruta: {Path}", idUsuario, context.Request.Path);
+
+                    // Verificamos que la respuesta no haya empezado a enviarse al cliente
+                    if (!context.Response.HasStarted)
+                    {
+                        await ManejarExcepcionAsync(
+                            context,
+                            HttpStatusCode.Forbidden,
+                            "No tienes los permisos necesarios para realizar esta acción.");
+                    }
+                }
+                else if (context.Response.StatusCode == (int)HttpStatusCode.Unauthorized)
+                {
+                    _logger.LogWarning("Acceso no autorizado (401) en la ruta: {Path}", context.Request.Path);
+
+                    if (!context.Response.HasStarted)
+                    {
+                        await ManejarExcepcionAsync(
+                            context,
+                            HttpStatusCode.Unauthorized,
+                            "Debe iniciar sesión o el token ha expirado.");
+                    }
+                }
             }
             catch (NegocioExeption ex)
             {

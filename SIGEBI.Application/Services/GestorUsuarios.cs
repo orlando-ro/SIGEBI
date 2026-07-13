@@ -18,7 +18,7 @@ namespace SIGEBI.Application.Services
             _servicioAuditoria = servicioAuditoria;
         }
 
-        public async Task RegistrarUsuarioAsync(UsuarioRequestDTO dto)
+        public async Task RegistrarUsuarioAsync(UsuarioRequestDTO dto, int idResponsable)
         {
             if (dto == null)
                 throw new NegocioExeption("Los datos del usuario son obligatorios.");
@@ -37,14 +37,14 @@ namespace SIGEBI.Application.Services
             await _repositorioUsuario.AgregarAsync(nuevoUsuario);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                idResponsable: null, // Aquí podrías pasar el ID del usuario que realiza la acción si está disponible
+                idResponsable: idResponsable,
                 tipoAccion: "Registrar usuario",
                 entidadAfectada: "Usuario",
                 detalles: $"Se ha registrado el usuario {nuevoUsuario.Nombre} con ID {nuevoUsuario.IdUsuario}."
             );
         }
 
-        public async Task SuspenderUsuarioAsync(int idUsuario)
+        public async Task SuspenderUsuarioAsync(int idUsuario, int idResponsable)
         {
             if (idUsuario <= 0)
                 throw new NegocioExeption("El identificador del usuario no es válido.");
@@ -53,7 +53,7 @@ namespace SIGEBI.Application.Services
 
             if (usuario == null)
                 throw new NegocioExeption("El usuario no fue encontrado.");
-            if (usuario.Estado == "Inactivo") 
+            if (usuario.Estado == "Inactivo")
                 throw new NegocioExeption("El usuario ya se encuentra suspendido.");
 
             usuario.Estado = "Inactivo";
@@ -61,22 +61,21 @@ namespace SIGEBI.Application.Services
             await _repositorioUsuario.ActualizarAsync(usuario);
 
             await _servicioAuditoria.RegistrarAccionAsync(
-                idResponsable: null, // Aquí podrías pasar el ID del usuario que realiza la acción si está disponible
+                idResponsable: idResponsable,
                 tipoAccion: "Suspender usuario",
                 entidadAfectada: "Usuario",
                 detalles: $"Se ha suspendido el usuario con ID {idUsuario}."
             );
         }
 
-        public async Task SuspenderUsuarioPorIdentificadorAsync(string identificador)
+        public async Task SuspenderUsuarioPorIdentificadorAsync(string identificador, int idResponsable)
         {
             var usuario = await _repositorioUsuario.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
 
             if (usuario == null)
                 throw new NegocioExeption("No se encontró ningún usuario con ese identificador.");
-            
 
-            await SuspenderUsuarioAsync(usuario.IdUsuario);
+            await SuspenderUsuarioAsync(usuario.IdUsuario, idResponsable);
         }
 
         public async Task<UsuarioResponseDTO?> ObtenerUsuarioPorIdAsync(int idUsuario)
@@ -113,7 +112,7 @@ namespace SIGEBI.Application.Services
             return usuarios.Select(MapearUsuarioResponse);
         }
 
-        public async Task ActualizarUsuarioAsync(int idUsuario, UsuarioUpdateRequestDTO dto)
+        public async Task ActualizarUsuarioAsync(int idUsuario, UsuarioUpdateRequestDTO dto, int idResponsable)
         {
             if (idUsuario <= 0)
                 throw new NegocioExeption("El identificador del usuario no es válido.");
@@ -130,6 +129,19 @@ namespace SIGEBI.Application.Services
 
             usuario.Nombre = dto.Nombre.Trim();
             usuario.Email = dto.Email.Trim();
+
+            if (!string.IsNullOrWhiteSpace(dto.Estado))
+            {
+                string estadoNormalizado = dto.Estado.Trim();
+                if (estadoNormalizado == "Activo" || estadoNormalizado == "Inactivo")
+                {
+                    usuario.Estado = estadoNormalizado;
+                }
+                else
+                {
+                    throw new NegocioExeption("El estado debe ser 'Activo' o 'Inactivo'.");
+                }
+            }
 
             if (usuario is Estudiante estudiante)
             {
@@ -149,16 +161,23 @@ namespace SIGEBI.Application.Services
             }
 
             await _repositorioUsuario.ActualizarAsync(usuario);
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+                idResponsable: idResponsable,
+                tipoAccion: "Actualizar usuario",
+                entidadAfectada: "Usuario",
+                detalles: $"Se ha actualizado la información del usuario con ID {idUsuario}."
+            );
         }
 
-        public async Task ActualizarPorIdentificadorAsync(string identificador, UsuarioUpdateRequestDTO dto)
+        public async Task ActualizarPorIdentificadorAsync(string identificador, UsuarioUpdateRequestDTO dto, int idResponsable)
         {
             var usuario = await _repositorioUsuario.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
 
             if (usuario == null)
                 throw new NegocioExeption("No se encontró ningún usuario con ese identificador.");
 
-            await ActualizarUsuarioAsync(usuario.IdUsuario, dto);
+            await ActualizarUsuarioAsync(usuario.IdUsuario, dto, idResponsable);
         }
 
         private async Task ValidarDuplicadosParaRegistroAsync(UsuarioRequestDTO dto)
@@ -227,36 +246,12 @@ namespace SIGEBI.Application.Services
 
             return tipo switch
             {
-                "estudiante" => new Estudiante
-                {
-                    Matricula = dto.Matricula!.Trim()
-                },
-
-                "docente" => new Docente
-                {
-                    NumeroEmpleado = dto.NumeroEmpleado!.Trim()
-                },
-
-                "administrador" => new Administrador
-                {
-                    NumeroEmpleado = dto.NumeroEmpleado!.Trim()
-                },
-
-                "bibliotecario" => new PersonalBibliotecario
-                {
-                    NumeroEmpleado = dto.NumeroEmpleado!.Trim()
-                },
-
-                "personalbibliotecario" => new PersonalBibliotecario
-                {
-                    NumeroEmpleado = dto.NumeroEmpleado!.Trim()
-                },
-
-                "auditor" => new Auditor
-                {
-                    NumeroEmpleado = dto.NumeroEmpleado!.Trim()
-                },
-
+                "estudiante" => new Estudiante { Matricula = dto.Matricula!.Trim() },
+                "docente" => new Docente { NumeroEmpleado = dto.NumeroEmpleado!.Trim() },
+                "administrador" => new Administrador { NumeroEmpleado = dto.NumeroEmpleado!.Trim() },
+                "bibliotecario" => new PersonalBibliotecario { NumeroEmpleado = dto.NumeroEmpleado!.Trim() },
+                "personalbibliotecario" => new PersonalBibliotecario { NumeroEmpleado = dto.NumeroEmpleado!.Trim() },
+                "auditor" => new Auditor { NumeroEmpleado = dto.NumeroEmpleado!.Trim() },
                 _ => throw new NegocioExeption("Tipo de usuario inválido.")
             };
         }
@@ -264,18 +259,12 @@ namespace SIGEBI.Application.Services
         private static string? ObtenerIdentificadorDesdeRequest(UsuarioRequestDTO dto)
         {
             string tipo = NormalizarTipoUsuario(dto.TipoUsuario);
-
-            return tipo == "estudiante"
-                ? dto.Matricula?.Trim()
-                : dto.NumeroEmpleado?.Trim();
+            return tipo == "estudiante" ? dto.Matricula?.Trim() : dto.NumeroEmpleado?.Trim();
         }
 
         private static string NormalizarTipoUsuario(string tipoUsuario)
         {
-            return tipoUsuario
-                .Trim()
-                .ToLowerInvariant()
-                .Replace(" ", "");
+            return tipoUsuario.Trim().ToLowerInvariant().Replace(" ", "");
         }
 
         private static UsuarioResponseDTO MapearUsuarioResponse(Usuario usuario)

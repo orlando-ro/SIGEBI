@@ -6,19 +6,16 @@ namespace SIGEBI.Application.Interfaces
 {
     public interface IServicioUsuarios
     {
-        Task RegistrarUsuarioAsync(UsuarioRequestDTO dto);
-        
-        Task SuspenderUsuarioPorIdentificadorAsync(string identificador);
+        // modifican
+        Task RegistrarUsuarioAsync(UsuarioRequestDTO dto, int idResponsable);
+        Task SuspenderUsuarioPorIdentificadorAsync(string identificador, int idResponsable);
+        Task SuspenderUsuarioAsync(int idUsuario, int idResponsable);
+        Task ActualizarUsuarioAsync(int idUsuario, UsuarioUpdateRequestDTO dto, int idResponsable);
+        Task ActualizarPorIdentificadorAsync(string identificador, UsuarioUpdateRequestDTO dto, int idResponsable);
 
-        Task SuspenderUsuarioAsync(int idUsuario);
+        // solo lectura
         Task<UsuarioResponseDTO?> ObtenerPorMatriculaONumeroEmpleadoAsync(string identificador);
         Task<IEnumerable<UsuarioResponseDTO>> ConsultarTodosAsync();
-
         Task<UsuarioResponseDTO?> ObtenerUsuarioPorIdAsync(int idUsuario);
-
-        Task ActualizarUsuarioAsync(int idUsuario, UsuarioUpdateRequestDTO dto);
-
-        Task ActualizarPorIdentificadorAsync(string identificador, UsuarioUpdateRequestDTO dto);
     }
-
 }

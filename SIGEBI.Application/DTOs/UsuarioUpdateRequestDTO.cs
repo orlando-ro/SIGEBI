@@ -17,10 +17,12 @@ namespace SIGEBI.Application.DTOs
         [EmailAddress(ErrorMessage = "Formato de correo inválido.")]
         public string Email { get; set; } = string.Empty;
 
-
         [StringLength(50, ErrorMessage = "La matricula no puede tener mas de 50 caracteres")]
         public string? Matricula { get; set; }
+
         [StringLength(50, ErrorMessage = "El numero de empleado no puede tener mas de 50 caracteres")]
         public string? NumeroEmpleado { get; set; }
+
+        public string? Estado { get; set; }
     }
 }
