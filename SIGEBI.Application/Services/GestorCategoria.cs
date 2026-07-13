@@ -11,21 +11,69 @@ namespace SIGEBI.Application.Services
     public class GestorCategoria : IServicioCategoria
     {
         private readonly IRepositorioCategoria _repositorio;
+        private readonly IServicioAuditoria _servicioAuditoria;
 
-        public GestorCategoria(IRepositorioCategoria repositorio) => _repositorio = repositorio;
+        public GestorCategoria(IRepositorioCategoria repositorio, IServicioAuditoria servicioAuditoria)
+        {
+            _repositorio = repositorio;
+            _servicioAuditoria = servicioAuditoria;
+        }
 
-        public async Task RegistrarCategoriaAsync(CategoriaRequestDTO dto)
+        public async Task RegistrarCategoriaAsync(CategoriaRequestDTO dto, int idResponsable)
         {
             var existe = await _repositorio.ObtenerPorNombreAsync(dto.Nombre);
             if (existe != null)
                 throw new NegocioExeption("Ya existe esta categoría.");
-            await _repositorio.AgregarAsync(new Categoria { Nombre = dto.Nombre });
+
+            var nuevaCategoria = new Categoria
+            {
+                Nombre = dto.Nombre,
+                Descripcion = dto.Descripcion
+            };
+
+            await _repositorio.AgregarAsync(nuevaCategoria);
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+                idResponsable: idResponsable,
+                tipoAccion: "Registrar categoría",
+                entidadAfectada: "Categoria",
+                detalles: $"Se ha registrado la categoría {nuevaCategoria.Nombre}."
+            );
+        }
+
+        public async Task ActualizarCategoriaAsync(int idCategoria, CategoriaRequestDTO dto, int idResponsable)
+        {
+            var categoria = await _repositorio.ObtenerPorIdAsync(idCategoria);
+            if (categoria == null)
+                throw new NegocioExeption("La categoría no existe.");
+
+            // Validar si el nuevo nombre choca con otra categoría existente
+            var existe = await _repositorio.ObtenerPorNombreAsync(dto.Nombre);
+            if (existe != null && existe.IdCategoria != idCategoria)
+                throw new NegocioExeption("Ya existe otra categoría con ese nombre.");
+
+            categoria.Nombre = dto.Nombre.Trim();
+            categoria.Descripcion = dto.Descripcion?.Trim();
+
+            await _repositorio.ActualizarAsync(categoria);
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+                idResponsable: idResponsable,
+                tipoAccion: "Actualizar categoría",
+                entidadAfectada: "Categoria",
+                detalles: $"Se ha actualizado la categoría con ID {idCategoria}."
+            );
         }
 
         public async Task<IEnumerable<CategoriaResponseDTO>> ConsultarTodasAsync()
         {
             var cats = await _repositorio.ObtenerTodosAsync();
-            return cats.Select(c => new CategoriaResponseDTO { IdCategoria = c.IdCategoria, Nombre = c.Nombre });
+            return cats.Select(c => new CategoriaResponseDTO
+            {
+                IdCategoria = c.IdCategoria,
+                Nombre = c.Nombre,
+                Descripcion = c.Descripcion
+            });
         }
 
         public async Task<CategoriaResponseDTO?> ObtenerPorIdAsync(int idCategoria)
@@ -38,7 +86,8 @@ namespace SIGEBI.Application.Services
             return new CategoriaResponseDTO
             {
                 IdCategoria = categoria.IdCategoria,
-                Nombre = categoria.Nombre
+                Nombre = categoria.Nombre,
+                Descripcion = categoria.Descripcion
             };
         }
     }
