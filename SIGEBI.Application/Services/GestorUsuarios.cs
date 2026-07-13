@@ -113,41 +113,6 @@ namespace SIGEBI.Application.Services
             return usuarios.Select(MapearUsuarioResponse);
         }
 
-        public async Task<LoginResponseDTO> AutenticarUsuarioAsync(LoginRequestDTO dto)
-        {
-            if (dto == null)
-                throw new NegocioExeption("Las credenciales son obligatorias.");
-
-            var usuario = await _repositorioUsuario.ObtenerPorEmailAsync(dto.Email);
-
-            if (usuario == null)
-                throw new NegocioExeption("Credenciales incorrectas.");
-
-            bool passwordValida = BCrypt.Net.BCrypt.Verify(dto.Password, usuario.Password);
-
-            if (!passwordValida)
-                throw new NegocioExeption("Credenciales incorrectas.");
-
-            if (usuario.Estado == "Inactivo")
-                throw new NegocioExeption("El usuario se encuentra suspendido.");
-
-            var usuarioConDetalles = await _repositorioUsuario.ObtenerUsuarioConDetallesAsync(usuario.IdUsuario);
-
-            usuario = usuarioConDetalles ?? usuario;
-
-            return new LoginResponseDTO
-            {
-                IdUsuario = usuario.IdUsuario,
-                Nombre = usuario.Nombre,
-                Email = usuario.Email,
-                Estado = usuario.Estado,
-                TipoUsuario = usuario.GetType().Name,
-                Matricula = usuario is Estudiante estudiante ? estudiante.Matricula : null,
-                NumeroEmpleado = usuario.NumeroEmpleado,
-                HabilitadoParaPrestamos = usuario.Estado == "Activo" && !usuario.VerificarPenalizaciones()
-            };
-        }
-
         public async Task ActualizarUsuarioAsync(int idUsuario, UsuarioUpdateRequestDTO dto)
         {
             if (idUsuario <= 0)

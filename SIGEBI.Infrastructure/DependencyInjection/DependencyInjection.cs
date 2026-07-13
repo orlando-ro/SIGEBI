@@ -40,6 +40,7 @@ namespace SIGEBI.Infrastructure.DependencyInjection
             services.AddScoped<IServicioAuditoria, ServicioAuditoria>();
             services.AddScoped<IStorageService, LocalStorageService>();
             services.AddScoped<IServicioNotificacion, ServicioNotificaciones>();
+            services.AddScoped<IServicioJwt, ServicioJwt>();
 
 
             return services;

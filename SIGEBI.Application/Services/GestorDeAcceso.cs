@@ -1,16 +1,65 @@
-﻿using System.Threading.Tasks;
+﻿using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
+using SIGEBI.Domain.Entities;
 using SIGEBI.Domain.Exceptions;
+using System.Threading.Tasks;
 
 namespace SIGEBI.Application.Services
 {
     public class GestorDeAcceso : IServicioAcceso
     {
         private readonly IUsuarios _repositorioUsuario;
+        private readonly IServicioJwt _servicioJwt;
 
-        public GestorDeAcceso(IUsuarios repositorioUsuario)
+        public GestorDeAcceso(IUsuarios repositorioUsuario, IServicioJwt servicioJwt)
         {
             _repositorioUsuario = repositorioUsuario;
+            _servicioJwt = servicioJwt;
+        }
+
+        public async Task<LoginResponseDTO> LoginAsync(LoginRequestDTO request)
+        {
+            var usuario = await _repositorioUsuario.ObtenerPorEmailAsync(request.Email);
+
+            if (usuario == null)
+                throw new NegocioExeption("Credenciales incorrectas.");
+
+            bool passwordValido = BCrypt.Net.BCrypt.Verify(request.Password, usuario.Password);
+
+            if (!passwordValido)
+                throw new NegocioExeption("Credenciales incorrectas.");
+
+            if (usuario.Estado == "Inactivo")
+                throw new NegocioExeption("El usuario se encuentra suspendido.");
+
+            var usuarioConDetalles = await _repositorioUsuario.ObtenerUsuarioConDetallesAsync(usuario.IdUsuario);
+            usuario = usuarioConDetalles ?? usuario;
+
+            string tipoUsuario = usuario.GetType().Name;
+
+            string? matricula = null;
+            string identificador = usuario.NumeroEmpleado ?? string.Empty;
+
+            if (usuario is Estudiante estudiante)
+            {
+                matricula = estudiante.Matricula;
+                identificador = estudiante.Matricula ?? string.Empty;
+            }
+
+            string tokenString = _servicioJwt.GenerarToken(identificador, usuario.Email, tipoUsuario);
+
+            return new LoginResponseDTO
+            {
+                IdUsuario = usuario.IdUsuario,
+                Matricula = matricula,
+                NumeroEmpleado = usuario.NumeroEmpleado,
+                Nombre = usuario.Nombre,
+                Email = usuario.Email,
+                TipoUsuario = tipoUsuario,
+                Estado = usuario.Estado,
+                Token = tokenString,
+                HabilitadoParaPrestamos = usuario.Estado == "Activo" && !usuario.VerificarPenalizaciones()
+            };
         }
 
         public async Task ValidarElegibilidadPorIdentificadorAsync(string identificador)
@@ -25,7 +74,5 @@ namespace SIGEBI.Application.Services
 
             usuario.ValidarElegibilidadParaPrestamo();
         }
-        
-        
     }
 }
