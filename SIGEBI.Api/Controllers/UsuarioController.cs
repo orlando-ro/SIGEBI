@@ -50,14 +50,6 @@ namespace SIGEBI.Api.Controllers
             return Ok(new {Mensaje = "Usuario Creado exitosamente"}); // 201 Created
         }
 
-        // POST: api/usuarios/login
-        [HttpPost("login")]
-        public async Task<IActionResult> Autenticar([FromBody] LoginRequestDTO request)
-        {
-            var response = await _GestorUsuarios.AutenticarUsuarioAsync(request);
-            return Ok(response);
-        }
-
         // PUT: api/usuarios/5
         [HttpPut("{id}")]
         public async Task<IActionResult> ActualizarUsuario(int id, [FromBody] UsuarioUpdateRequestDTO request)

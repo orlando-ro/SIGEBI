@@ -13,7 +13,6 @@ namespace SIGEBI.Application.Interfaces
         Task SuspenderUsuarioAsync(int idUsuario);
         Task<UsuarioResponseDTO?> ObtenerPorMatriculaONumeroEmpleadoAsync(string identificador);
         Task<IEnumerable<UsuarioResponseDTO>> ConsultarTodosAsync();
-        Task<LoginResponseDTO> AutenticarUsuarioAsync(LoginRequestDTO dto);
 
         Task<UsuarioResponseDTO?> ObtenerUsuarioPorIdAsync(int idUsuario);
 

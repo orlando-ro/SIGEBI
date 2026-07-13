@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using SIGEBI.Application.DTOs;
 
 namespace SIGEBI.Application.Interfaces
 {
@@ -6,5 +7,6 @@ namespace SIGEBI.Application.Interfaces
     {
 
         Task ValidarElegibilidadPorIdentificadorAsync(string identificador);
+        Task <LoginResponseDTO> LoginAsync(LoginRequestDTO request);
     }
 }
