@@ -17,7 +17,7 @@ namespace SIGEBI.Infrastructure.Services
             _config = config;
         }
 
-        public string GenerarToken(string identificador, string email, string rol)
+        public string GenerarToken(int idUsuario, string email, string rol)
         {
             var jwtSettings = _config.GetSection("JwtSettings");
             var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("Falta la SecretKey en appsettings.json");
@@ -27,7 +27,7 @@ namespace SIGEBI.Infrastructure.Services
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, identificador),
+                new Claim(ClaimTypes.NameIdentifier, idUsuario.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, email),
                 new Claim(ClaimTypes.Role, rol),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
