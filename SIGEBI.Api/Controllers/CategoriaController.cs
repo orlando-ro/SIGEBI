@@ -57,7 +57,7 @@ namespace SIGEBI.Api.Controllers
         {
             int idResponsable = ObtenerIdResponsable();
             await _GestorCategoria.ActualizarCategoriaAsync(id, request, idResponsable);
-            return NoContent();
+            return Ok(new { mensaje = "Categoría actualizada exitosamente." });
         }
     }
 }

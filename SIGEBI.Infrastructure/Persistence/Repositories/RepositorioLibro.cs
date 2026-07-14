@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +18,10 @@ namespace SIGEBI.Infrastructure.Repositories
 
         public async Task<Libro?> ObtenerLibroConCategoriaAsync(string isbn)
         {
-            // JOIN con la tabla Categorías y la tabla Ejemplares
             return await _dbSet
                 .AsNoTracking()
                 .Include(l => l.Categoria)
-                .Include(l => l.Ejemplares) // <-- CLAVE
+                .Include(l => l.Ejemplares)
                 .FirstOrDefaultAsync(l => l.ISBN == isbn);
         }
 
@@ -29,7 +29,7 @@ namespace SIGEBI.Infrastructure.Repositories
         {
             return await _dbSet
                 .AsNoTracking()
-                .Include(l => l.Ejemplares) // <-- CLAVE
+                .Include(l => l.Ejemplares)
                 .FirstOrDefaultAsync(l => l.ISBN == isbn);
         }
 
@@ -38,7 +38,7 @@ namespace SIGEBI.Infrastructure.Repositories
             return await _dbSet
                 .AsNoTracking()
                 .Include(l => l.Categoria)
-                .Include(l => l.Ejemplares) // <-- CLAVE
+                .Include(l => l.Ejemplares)
                 .ToListAsync();
         }
 
@@ -49,7 +49,6 @@ namespace SIGEBI.Infrastructure.Repositories
                 .Include(l => l.Ejemplares)
                 .AsQueryable();
 
-            // filtros
             if (!string.IsNullOrWhiteSpace(titulo))
                 query = query.Where(l => l.Titulo.Contains(titulo));
 
@@ -63,6 +62,23 @@ namespace SIGEBI.Infrastructure.Repositories
                 query = query.Where(l => l.Ejemplares.Any(e => e.Estado.ToString() == "Disponible"));
 
             return await query.ToListAsync();
+        }
+
+        public async Task<Libro?> ObtenerLibroIgnorandoFiltrosAsync(string isbn)
+        {
+            return await _dbSet
+                .IgnoreQueryFilters()
+                .Include(l => l.Ejemplares)
+                .FirstOrDefaultAsync(l => l.ISBN == isbn);
+        }
+
+        public async Task<IEnumerable<Libro>> ObtenerCatalogoCompletoAdminAsync()
+        {
+            return await _dbSet
+                .IgnoreQueryFilters()
+                .Include(l => l.Categoria)
+                .Include(l => l.Ejemplares)
+                .ToListAsync();
         }
     }
 }

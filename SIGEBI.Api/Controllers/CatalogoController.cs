@@ -69,7 +69,7 @@ namespace SIGEBI.Api.Controllers
             int idResponsable = ObtenerIdResponsable();
 
             await _gestorCatalogo.ActualizarLibroAsync(isbn, request, idResponsable);
-            return NoContent(); // 204 No Content
+            return Ok(new { mensaje = "Libro acatualizado"}); // 200 Ok
         }
 
         // PUT: api/catalogo/{isbn}/desactivar
@@ -81,7 +81,7 @@ namespace SIGEBI.Api.Controllers
 
             await _gestorCatalogo.EliminarLibroAsync(isbn, idResponsable);
 
-            return NoContent(); // 204 No Content
+            return Ok(new { mensaje = "Libro Desactivado"}); // 200 Ok
         }
     }
 }

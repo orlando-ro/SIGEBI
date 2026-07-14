@@ -85,7 +85,9 @@ namespace SIGEBI.Application.Services
                 ISBN = libro.ISBN,
                 Titulo = libro.Titulo,
                 NombreAutor = libro.NombreAutor,
-                Categoria = libro.Categoria?.Nombre ?? "N/A"
+                Categoria = libro.Categoria?.Nombre ?? "N/A",
+                UrlImagen = libro.UrlImagen,
+                CopiasDisponibles = libro.CopiasDisponibles
             };
         }
 
@@ -99,7 +101,8 @@ namespace SIGEBI.Application.Services
                 Titulo = l.Titulo,
                 NombreAutor = l.NombreAutor,
                 CopiasDisponibles = l.CopiasDisponibles,
-                Categoria = l.Categoria != null ? l.Categoria.Nombre : "N/A"
+                Categoria = l.Categoria != null ? l.Categoria.Nombre : "N/A",
+                UrlImagen = l.UrlImagen
             });
         }
 

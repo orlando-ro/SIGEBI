@@ -5,13 +5,14 @@ using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Infrastructure.DependencyInjection;
 using SIGEBI.Application.DependencyInyeccion;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace SIGEBI.Api.Controllers
 {
     // Heredamos de BaseController para acceder a ObtenerIdResponsable()
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // Asegura que todo el controlador requiera estar autenticado por defecto
+    [Authorize]
     public class UsuarioController : BaseController
     {
         private readonly IServicioUsuarios _GestorUsuarios;
@@ -52,7 +53,7 @@ namespace SIGEBI.Api.Controllers
         {
             int idResponsable = ObtenerIdResponsable();
             await _GestorUsuarios.RegistrarUsuarioAsync(request, idResponsable);
-            return Ok(new { Mensaje = "Usuario Creado exitosamente" }); // 201 Created
+            return Ok(new { Mensaje = "Usuario Creado exitosamente" }); // 200 Ok
         }
 
         // PUT: api/usuarios/5
@@ -62,7 +63,7 @@ namespace SIGEBI.Api.Controllers
         {
             int idResponsable = ObtenerIdResponsable();
             await _GestorUsuarios.ActualizarUsuarioAsync(id, request, idResponsable);
-            return NoContent(); // 204 No Content
+            return Ok( new { mesanje = "Usuario actualizado"}); // 200 Ok
         }
 
         // PUT: api/usuarios/identificador/EMP-001
@@ -72,7 +73,7 @@ namespace SIGEBI.Api.Controllers
         {
             int idResponsable = ObtenerIdResponsable();
             await _GestorUsuarios.ActualizarPorIdentificadorAsync(identificador, request, idResponsable);
-            return NoContent();
+            return Ok( new { mensaje = "Usuairo actualizado"}); 
         }
 
         // PUT: api/usuarios/5/suspender
@@ -82,7 +83,7 @@ namespace SIGEBI.Api.Controllers
         {
             int idResponsable = ObtenerIdResponsable();
             await _GestorUsuarios.SuspenderUsuarioAsync(id, idResponsable);
-            return NoContent();
+            return Ok( new { mensaje = "Usuario suspnedido"});
         }
 
         // PUT: api/usuarios/identificador/EMP-001/suspender
@@ -92,7 +93,7 @@ namespace SIGEBI.Api.Controllers
         {
             int idResponsable = ObtenerIdResponsable();
             await _GestorUsuarios.SuspenderUsuarioPorIdentificadorAsync(identificador, idResponsable);
-            return NoContent();
+            return Ok(new { mensaje = "Usuario suspendido"});
         }
 
             

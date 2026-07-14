@@ -11,5 +11,7 @@ namespace SIGEBI.Application.DTOs
         public string NombreAutor { get; set; } = string.Empty;
         public int CopiasDisponibles { get; set; }
         public string Categoria { get; set; } = string.Empty;
+
+        public string? UrlImagen { get; set; }
     }
 }
