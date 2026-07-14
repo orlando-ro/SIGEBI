@@ -29,7 +29,7 @@ namespace SIGEBI.Api.Controllers
         }
 
         [HttpGet("{idSolicitud:int}")]
-        [Authorize(Roles = "PersonalBibliotecario,Administrador,Estudiante,Docente")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador")]
         public async Task<IActionResult> ObtenerSolicitudPorId(int idSolicitud)
         {
             var resultado = await _iservicioSolicitud.ObtenerPorIdAsync(idSolicitud);
@@ -45,7 +45,7 @@ namespace SIGEBI.Api.Controllers
         }
 
         [HttpGet("usuario/{identificador}")]
-        [Authorize(Roles = "PersonalBibliotecario,Administrador,Estudiante,Docente")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador")]
         public async Task<IActionResult> ConsultarSolicitudesPorUsuario(string identificador)
         {
             var resultado = await _iservicioSolicitud.ConsultarPorUsuarioAsync(identificador);
