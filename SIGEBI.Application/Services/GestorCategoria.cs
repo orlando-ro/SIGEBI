@@ -28,7 +28,7 @@ namespace SIGEBI.Application.Services
             var nuevaCategoria = new Categoria
             {
                 Nombre = dto.Nombre,
-                Descripcion = dto.Descripcion
+                Descripcion = dto.Descripcion?.Trim() ?? string.Empty
             };
 
             await _repositorio.AgregarAsync(nuevaCategoria);
@@ -53,7 +53,7 @@ namespace SIGEBI.Application.Services
                 throw new NegocioExeption("Ya existe otra categoría con ese nombre.");
 
             categoria.Nombre = dto.Nombre.Trim();
-            categoria.Descripcion = dto.Descripcion?.Trim();
+            categoria.Descripcion = dto.Descripcion?.Trim() ?? string.Empty;
 
             await _repositorio.ActualizarAsync(categoria);
 
