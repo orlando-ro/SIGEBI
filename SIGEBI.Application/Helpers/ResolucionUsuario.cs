@@ -6,10 +6,12 @@ namespace SIGEBI.Application.Helpers
 {
     public static class ResolucionUsuario
     {
-        public static async Task<Usuario> ObtenerPorIdentificadorAsync(IUsuarios usuarios, string identificador)
+        public static async Task<Usuario> ObtenerPorIdentificadorAsync(IUsuarios usuarios, string matriculaONumeroEmpleado)
         {
-            if (string.IsNullOrWhiteSpace(identificador))
+            if (string.IsNullOrWhiteSpace(matriculaONumeroEmpleado))
                 throw new NegocioExeption("Debe ingresar el identificador del usuario.");
+
+            var identificador = matriculaONumeroEmpleado.Trim();
 
             var usuario = await usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
 

@@ -1,4 +1,5 @@
 ﻿using SIGEBI.Application.DTOs;
+using SIGEBI.Application.Helpers;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Domain.Entities;
 using SIGEBI.Domain.Enums;
@@ -114,15 +115,7 @@ namespace SIGEBI.Application.Services
 
         public async Task<IEnumerable<PenalizacionResponseDTO>> ObtenerPendientesPorUsuariosAsync(string MatriculaONumeroEmpleado)
         {
-            if (string.IsNullOrWhiteSpace(MatriculaONumeroEmpleado))
-                throw new NegocioExeption("Debe indicar la matrícula o el número de empleado.");
-           
-            var identificador = MatriculaONumeroEmpleado.Trim();
-
-            var usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
-
-            if(usuario == null)
-                throw new NegocioExeption("No existe un usuario con esa matrícula o número de empleado.");
+            var usuario = await ResolucionUsuario.ObtenerPorIdentificadorAsync(_usuarios, MatriculaONumeroEmpleado);
 
             var penalizacionesPendientes = await _repoPenalizacion.ObtenerPendientesPorUsuarioAsync(usuario.IdUsuario);
 
@@ -217,5 +210,6 @@ namespace SIGEBI.Application.Services
             penalizacion.MotivoResolucion
             };
         }
+
     }
 }

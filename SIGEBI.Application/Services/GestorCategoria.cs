@@ -49,7 +49,7 @@ namespace SIGEBI.Application.Services
 
             // Validar si el nuevo nombre choca con otra categoría existente
             var existe = await _repositorio.ObtenerPorNombreAsync(dto.Nombre);
-            if (existe != null && existe.IdCategoria != idCategoria)
+            if (existe != null && existe.IdCategoria != idCategoria) 
                 throw new NegocioExeption("Ya existe otra categoría con ese nombre.");
 
             categoria.Nombre = dto.Nombre.Trim();
