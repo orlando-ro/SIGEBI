@@ -1,11 +1,9 @@
 ﻿using SIGEBI.Application.DTOs;
+using SIGEBI.Application.Helpers;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Domain.Entities;
-using SIGEBI.Domain.Exceptions;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using SIGEBI.Domain.Enums;
+using SIGEBI.Domain.Exceptions;
 
 namespace SIGEBI.Application.Services
 {
@@ -18,6 +16,7 @@ namespace SIGEBI.Application.Services
         private readonly IRepositorioPrestamo _repositorioPrestamo;
         private readonly IRepositorioEjemplar _repositorioEjemplar;
         private readonly IServicioPoliticaNegocio _servicioPoliticaNegocio;
+        private readonly IServiciosObtenerBibliotecario _servicioObtenerBibliotecario;
 
         public GestorSolicitudes(
             IRepoSolicitud repoSolicitud,
@@ -27,7 +26,8 @@ namespace SIGEBI.Application.Services
             IRepositorioPrestamo repositorioPrestamo,
             IServicioNotificacion servicioNotificacion,
             IServicioPoliticaNegocio servicioPoliticaNegocio,
-            IRepositorioEjemplar repositorioEjemplar)
+            IRepositorioEjemplar repositorioEjemplar,
+            IServiciosObtenerBibliotecario servicioObtenerBibliotecario)
         {
             _repoSolicitud = repoSolicitud;
             _usuarios = usuarios;
@@ -36,6 +36,7 @@ namespace SIGEBI.Application.Services
             _repositorioPrestamo = repositorioPrestamo;
             _repositorioEjemplar = repositorioEjemplar;
             _servicioPoliticaNegocio = servicioPoliticaNegocio;
+            _servicioObtenerBibliotecario = servicioObtenerBibliotecario;
         }
 
         public async Task<SolicitudResponseDTO> CrearSolicitudAsync(SolicitudRequestDTO peticion, int idUsuarioSolicitante)
@@ -51,27 +52,14 @@ namespace SIGEBI.Application.Services
             if (usuario == null)
                 throw new NegocioExeption("El usuario no está registrado en el sistema.");
 
-            usuario.ValidarElegibilidadParaPrestamo();
-
-            int limiteDePrestamos = _servicioPoliticaNegocio.ObtenerLimitePrestamosPorTipoUsuario(usuario);
-
-            if (limiteDePrestamos <= 0)
-                throw new NegocioExeption("Este usuario no puede solicitar préstamos.");
-
+            var ejemplaresSolicitados = await ObtenerEjemplaresSolicitadosAsync(peticion.IsbnsLibros);
             var prestamosActivos = await _repositorioPrestamo.ObtenerActivoPorUsuarioAsync(usuario.IdUsuario);
 
-            int recursosActivos = prestamosActivos.SelectMany(p => p.EjemplaresAprestar).Count();
-
-            var ejemplaresSolicitados = await ObtenerEjemplaresSolicitadosAsync(peticion.IsbnsLibros);
-
-            if (recursosActivos + ejemplaresSolicitados.Count > limiteDePrestamos)
-            {
-                throw new NegocioExeption(
-                    $"Excediste el límite de préstamos. " +
-                    $"Límite permitido: {limiteDePrestamos}. " +
-                    $"Recursos activos actuales: {recursosActivos}. " +
-                    $"Libros solicitados: {ejemplaresSolicitados.Count}.");
-            }
+            _servicioPoliticaNegocio.ValidarCapacidadPrestamo(
+                usuario,
+                ejemplaresSolicitados.Count,
+                prestamosActivos,
+                "solicitar");
 
             foreach (var ejemplar in ejemplaresSolicitados)
             {
@@ -101,10 +89,7 @@ namespace SIGEBI.Application.Services
             if (string.IsNullOrWhiteSpace(peticion.MotivoRechazo))
                 throw new NegocioExeption("Debe especificar el motivo del rechazo");
 
-            var bibliotecario = await _usuarios.ObtenerUsuarioConDetallesAsync(idBibliotecarioResponsable);
-
-            if (bibliotecario == null || bibliotecario is not PersonalBibliotecario)
-                throw new NegocioExeption("Solo el personal bibliotecario puede rechazar solicitudes.");
+            var bibliotecario = await _servicioObtenerBibliotecario.ObtenerBibliotecarioPorIdAsync(idBibliotecarioResponsable);
 
             var solicitudARechazar = await _repoSolicitud.ObtenerSolicitudConDetallesAsync(peticion.idSolicitud);
 
@@ -160,17 +145,11 @@ namespace SIGEBI.Application.Services
 
         public async Task<IEnumerable<SolicitudResponseDTO>> ConsultarPorUsuarioAsync(string MatriculaONUmeroEmpleado)
         {
-            if (string.IsNullOrWhiteSpace(MatriculaONUmeroEmpleado))
-                throw new NegocioExeption("Debe ingresar el identificador del usuario.");
+            var usuario = await ResolucionUsuario.ObtenerPorIdentificadorAsync(_usuarios, MatriculaONUmeroEmpleado);
 
-            var Usuarios = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(MatriculaONUmeroEmpleado);
+            var solicitudes = await _repoSolicitud.ObtenerPorUsuarioAsync(usuario.IdUsuario);
 
-            if (Usuarios == null)
-                throw new NegocioExeption("El usuario no se encuentra registrado.");
-
-            var Solicitud = await _repoSolicitud.ObtenerPorUsuarioAsync(Usuarios.IdUsuario);
-
-            return Solicitud.Select(s => MapearSolicitudResponse(s, Usuarios));
+            return solicitudes.Select(s => MapearSolicitudResponse(s, usuario));
         }
 
         private async Task<List<Ejemplar>> ObtenerEjemplaresSolicitadosAsync(List<string> Isbn)
@@ -216,10 +195,10 @@ namespace SIGEBI.Application.Services
                 Estado = solicitud.Estado ?? string.Empty,
                 IdUsuario = solicitud.IdUsuario,
                 NombreUsuarioSolicitante = usuario?.Nombre ?? string.Empty,
-                Matricula = usuario is Estudiante estudiante ? estudiante.Matricula : null,
+                Matricula = MapeoExtensiones.ObtenerMatricula(usuario),
                 NumeroEmpleado = usuario?.NumeroEmpleado,
-                ISBNs = solicitud.EjemplaresSolicitados.Select(e => e.ISBN).ToList(),
-                TitulosLibros = solicitud.EjemplaresSolicitados.Where(e => e.Libro != null).Select(e => e.Libro!.Titulo).ToList()
+                ISBNs = MapeoExtensiones.ObtenerIsbns(solicitud.EjemplaresSolicitados),
+                TitulosLibros = MapeoExtensiones.ObtenerTitulosLibros(solicitud.EjemplaresSolicitados)
             };
         }
     }
