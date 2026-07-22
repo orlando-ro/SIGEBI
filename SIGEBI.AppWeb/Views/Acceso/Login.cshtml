@@ -1,0 +1,47 @@
+﻿@model SIGEBI.AppWeb.Models.Acceso.LoginViewModel
+@{
+    ViewData["Title"] = "Iniciar sesión";
+}
+
+<div class="container mt-5 pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header text-center bg-primary text-white pt-4 pb-3">
+                    <h2 class="fw-bold"><i class="bi bi-shield-lock"></i> Acceso Segurizado</h2>
+                    <p class="mb-0 small opacity-75">Ingrese sus credenciales de SIGEBI</p>
+                </div>
+                <div class="card-body p-5">
+                    <form asp-action="Login" method="post">
+                        @Html.AntiForgeryToken()
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger shadow-sm rounded border-start border-danger border-4">
+                                <i class="bi bi-exclamation-circle-fill me-2"></i>
+                                <span class="fw-semibold">Error al iniciar sesión:</span>
+                                <div asp-validation-summary="All" class="mb-0 mt-1 small"></div>
+                            </div>
+                        }
+
+                        <div class="form-floating mb-4">
+                            <input asp-for="Identificador" class="form-control" placeholder="123456" autocomplete="off" />
+                            <label asp-for="Identificador" class="text-muted"><i class="bi bi-person me-1"></i> Matrícula o Empleado</label>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input asp-for="Password" class="form-control" placeholder="Contraseña" type="password" />
+                            <label asp-for="Password" class="text-muted"><i class="bi bi-key me-1"></i> Contraseña</label>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold shadow-sm">
+                                <i class="bi bi-box-arrow-in-right me-2"></i> Iniciar Sesión
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

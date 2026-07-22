@@ -1,0 +1,124 @@
+﻿@{
+    ViewData["Title"] = "Gestión de Préstamos";
+}
+
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h1 class="fw-bold"><i class="bi bi-journal-bookmark text-primary"></i> Módulo de Préstamos</h1>
+    </div>
+
+    <!-- Alertas de Éxito -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <strong>¡Operación Exitosa!</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Acción Principal: Aprobar Préstamo -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card shadow p-3 border-start border-primary border-5">
+                <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <h4 class="card-title fw-bold">Aprobar Solicitud Pendiente</h4>
+                        <p class="card-text text-muted mb-0">Valida las solicitudes de los usuarios y registra el inicio del préstamo físico en el sistema.</p>
+                    </div>
+                    <a asp-action="Aprobar" class="btn btn-primary btn-lg px-5 rounded-pill shadow">
+                        <i class="bi bi-check-circle me-2"></i> Realizar Aprobación
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de Consultas -->
+    <div class="row g-4">
+
+        <!-- Búsqueda: Activos por Usuario -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm transition-hover">
+                <div class="card-header bg-transparent border-0 pt-4 pb-0">
+                    <h5 class="fw-bold text-success"><i class="bi bi-person-check me-2"></i> Activos por Usuario</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ActivosPorUsuario" method="get">
+                        <div class="input-group mb-3 shadow-sm">
+                            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" name="identificador" required placeholder="Ej: Matrícula o Empleado" />
+                            <button class="btn btn-success px-4" type="submit">Buscar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Búsqueda: Activos por Recurso -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm transition-hover">
+                <div class="card-header bg-transparent border-0 pt-4 pb-0">
+                    <h5 class="fw-bold text-info"><i class="bi bi-book me-2"></i> Activos por Recurso</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ActivosPorRecurso" method="get">
+                        <div class="input-group mb-3 shadow-sm">
+                            <span class="input-group-text bg-white"><i class="bi bi-upc-scan"></i></span>
+                            <input type="text" class="form-control" name="isbnLibro" required placeholder="Ej: Código ISBN del Libro" />
+                            <button class="btn btn-info text-white px-4" type="submit">Buscar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Búsqueda: Historial por Usuario -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm transition-hover">
+                <div class="card-header bg-transparent border-0 pt-4 pb-0">
+                    <h5 class="fw-bold text-secondary"><i class="bi bi-clock-history me-2"></i> Historial de Usuario</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="HistorialPorUsuario" method="get">
+                        <div class="input-group mb-3 shadow-sm">
+                            <span class="input-group-text bg-white"><i class="bi bi-person-lines-fill"></i></span>
+                            <input type="text" class="form-control" name="identificador" required placeholder="Ej: Matrícula o Empleado" />
+                            <button class="btn btn-secondary px-4" type="submit">Revisar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Búsqueda: Historial por Recurso -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm transition-hover">
+                <div class="card-header bg-transparent border-0 pt-4 pb-0">
+                    <h5 class="fw-bold text-dark"><i class="bi bi-archive me-2"></i> Historial de Recurso</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="HistorialPorRecurso" method="get">
+                        <div class="input-group mb-3 shadow-sm">
+                            <span class="input-group-text bg-white"><i class="bi bi-journal-text"></i></span>
+                            <input type="text" class="form-control" name="isbnLibro" required placeholder="Ej: Código ISBN del Libro" />
+                            <button class="btn btn-dark px-4" type="submit">Revisar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .transition-hover {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+        .transition-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+</style>

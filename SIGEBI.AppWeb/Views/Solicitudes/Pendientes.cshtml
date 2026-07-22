@@ -1,0 +1,66 @@
+﻿@model IEnumerable<SIGEBI.AppWeb.Models.Solicitudes.SolicitudItemViewModel>
+@{
+    ViewData["Title"] = "Solicitudes Pendientes";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <div>
+            <h2 class="fw-bold text-warning"><i class="bi bi-hourglass-split"></i> Solicitudes Pendientes</h2>
+            <p class="text-muted mb-0">Listado de solicitudes a la espera de resolución.</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">Volver</a>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-custom table-striped mb-0 text-center align-middle">
+                        <thead class="py-3 bg-warning text-dark">
+                            <tr>
+                                <th class="py-3 rounded-top-start">ID Solicitud</th>
+                                <th class="py-3">Usuario (Identificador)</th>
+                                <th class="py-3">Fecha</th>
+                                <th class="py-3">Libros Solicitados</th>
+                                <th class="py-3 rounded-top-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="fw-bold text-primary">#@item.IdSolicitud</td>
+                                    <td>
+                                        <div class="fw-semibold">@item.NombreUsuarioSolicitante</div>
+                                        <div class="small text-muted">@item.MatriculaONumeroEmpleado</div>
+                                    </td>
+                                    <td>@item.FechaSolicitud.ToString("dd/MMM/yyyy HH:mm")</td>
+                                    <td class="text-start">
+                                        <ul class="mb-0 pl-3">
+                                            @foreach (var titulo in item.TitulosLibros)
+                                            {
+                                                <li class="small">@titulo</li>
+                                            }
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Prestamos" asp-action="Aprobar" class="btn btn-sm btn-success shadow-sm" title="Aprobar"><i class="bi bi-check-circle"></i></a>
+                                        <a asp-action="Rechazar" asp-route-id="@item.IdSolicitud" class="btn btn-sm btn-danger shadow-sm" title="Rechazar"><i class="bi bi-x-circle"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <h4 class="text-muted">No hay solicitudes pendientes en este momento.</h4>
+        </div>
+    }
+</div>

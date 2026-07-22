@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Domain.Exceptions;
+using SIGEBI.AppWeb.Models.Prestamos;
 using System.Security.Claims;
 
 namespace SIGEBI.AppWeb.Controllers
@@ -11,6 +12,7 @@ namespace SIGEBI.AppWeb.Controllers
     {
         private readonly IservicioPrestamo _servicioPrestamo;
         private readonly ILogger<PrestamosController> _logger;
+
         public PrestamosController(IservicioPrestamo servicioPrestamo, ILogger<PrestamosController> logger)
         {
             _servicioPrestamo = servicioPrestamo;
@@ -18,79 +20,80 @@ namespace SIGEBI.AppWeb.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador,Estudiante,Docente")]
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        [HttpGet]
         [Authorize(Roles = "PersonalBibliotecario")]
         public IActionResult Aprobar()
         {
-
-            return View(new PrestamoRequestDTO());
+            return View(new AprobarPrestamoViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "PersonalBibliotecario")]
-        public async Task<IActionResult> Aprobar(PrestamoRequestDTO peticion)
+        public async Task<IActionResult> Aprobar(AprobarPrestamoViewModel peticionWeb)
         {
             try
             {
-
-                var claimId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
-                    User.FindFirst("id")?.Value;
+                var claimId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("id")?.Value;
 
                 if (!int.TryParse(claimId, out int idBibliotecarioResponsable))
                 {
-
-                    ModelState.AddModelError(
-                        string.Empty, "No se pudo obtener el ID del bibliotecario responsable.");
-                    return View(peticion);
+                    ModelState.AddModelError(string.Empty, "No se pudo obtener el ID del bibliotecario responsable.");
+                    return View(peticionWeb);
                 }
 
-                var resultado = await _servicioPrestamo.AprobarYRegistrarPrestamoAsync(peticion, idBibliotecarioResponsable);
+                // Mapeo de ViewModel a DTO
+                var peticionDto = new PrestamoRequestDTO
+                {
+                    IdSolicitud = peticionWeb.IdSolicitud
+                };
 
-                TempData["SuccessMessage"] = $"El préstamo con ID {resultado.IdPrestamo} ha sido aprobado y registrado exitosamente.";
-                return RedirectToAction("Index", "Prestamos");
+                var resultado = await _servicioPrestamo.AprobarYRegistrarPrestamoAsync(peticionDto, idBibliotecarioResponsable);
+
+                TempData["SuccessMessage"] = $"¡Éxito! El préstamo #{resultado.IdPrestamo} para el usuario {resultado.NombreUsuario} ha sido aprobado.";
+                return RedirectToAction("Index");
             }
             catch (NegocioExeption ex)
             {
-                _logger.LogError(ex, "Error al aprobar el préstamo con ID {IdPrestamo}.", peticion);
-                ModelState.AddModelError(string.Empty, $"No se encontró el préstamo con ID {peticion}.");
-                return View(peticion);
+                _logger.LogError(ex, "Error de negocio al aprobar el préstamo con solicitud ID {IdSolicitud}.", peticionWeb.IdSolicitud);
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(peticionWeb);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error inesperado al aprobar el préstamo con ID {IdPrestamo}.", peticion);
-                ModelState.AddModelError(string.Empty, "Ocurrió un error inesperado. Por favor, inténtelo de nuevo más tarde.");
-                return View(peticion);
+                _logger.LogError(ex, "Error inesperado al aprobar el préstamo.");
+                ModelState.AddModelError(string.Empty, "Ocurrió un error inesperado en el servidor.");
+                return View(peticionWeb);
             }
         }
 
         [HttpGet]
         [Authorize(Roles = "PersonalBibliotecario,Administrador,Estudiante,Docente")]
-        public async Task<IActionResult> ConsultarPrestamosActivosPorUsuario(string? identificador)
+        public async Task<IActionResult> ActivosPorUsuario(string? identificador)
         {
             try
             {
-
                 if (string.IsNullOrWhiteSpace(identificador))
-                {
-                    ModelState.AddModelError(string.Empty, "El identificador del usuario no puede estar vacío.");
-                    return View(new List<PrestamoResponseDTO>());
-                }
-                var prestamos = await _servicioPrestamo.ConsultarPrestamosActivosPorIdentificadorAsync(identificador);
+                    return View(new List<PrestamoItemViewModel>());
 
-                ViewBag.IdentificadorUsuario = identificador;
-                return View(prestamos);
-
-
+                var prestamosDto = await _servicioPrestamo.ConsultarPrestamosActivosPorIdentificadorAsync(identificador);
+                ViewBag.Busqueda = identificador;
+                return View(MapearLista(prestamosDto));
             }
             catch (NegocioExeption ex)
             {
-                _logger.LogWarning(ex, "Error al consultar préstamos activos por usuario.");
-
-                TempData["Error"] = ex.Message;
-
-                return View(new List<PrestamoResponseDTO>());
+                TempData["WarningMessage"] = ex.Message;
+                ViewBag.Busqueda = identificador;
+                return View(new List<PrestamoItemViewModel>());
             }
         }
+
         [HttpGet]
         [Authorize(Roles = "PersonalBibliotecario,Administrador,Estudiante,Docente")]
         public async Task<IActionResult> ActivosPorRecurso(string? isbnLibro)
@@ -98,22 +101,17 @@ namespace SIGEBI.AppWeb.Controllers
             try
             {
                 if (string.IsNullOrWhiteSpace(isbnLibro))
-                    return View(new List<PrestamoResponseDTO>());
+                    return View(new List<PrestamoItemViewModel>());
 
-                var resultado = await _servicioPrestamo
-                    .ConsultarPrestamosActivosPorRecursoAsync(isbnLibro);
-
-                ViewBag.ISBN = isbnLibro;
-
-                return View(resultado);
+                var resultadoDto = await _servicioPrestamo.ConsultarPrestamosActivosPorRecursoAsync(isbnLibro);
+                ViewBag.Busqueda = isbnLibro;
+                return View(MapearLista(resultadoDto));
             }
             catch (NegocioExeption ex)
             {
-                _logger.LogWarning(ex, "Error al consultar préstamos activos por recurso.");
-
-                TempData["Error"] = ex.Message;
-
-                return View(new List<PrestamoResponseDTO>());
+                TempData["WarningMessage"] = ex.Message;
+                ViewBag.Busqueda = isbnLibro;
+                return View(new List<PrestamoItemViewModel>());
             }
         }
 
@@ -124,22 +122,17 @@ namespace SIGEBI.AppWeb.Controllers
             try
             {
                 if (string.IsNullOrWhiteSpace(identificador))
-                    return View(new List<PrestamoResponseDTO>());
+                    return View(new List<PrestamoItemViewModel>());
 
-                var resultado = await _servicioPrestamo
-                    .ConsultarHistorialPorUsuarioAsync(identificador);
-
-                ViewBag.Identificador = identificador; 
-
-                return View(resultado);
+                var resultadoDto = await _servicioPrestamo.ConsultarHistorialPorUsuarioAsync(identificador);
+                ViewBag.Busqueda = identificador;
+                return View(MapearLista(resultadoDto));
             }
             catch (NegocioExeption ex)
             {
-                _logger.LogWarning(ex, "Error al consultar historial de préstamos por usuario.");
-
-                TempData["Error"] = ex.Message;
-
-                return View(new List<PrestamoResponseDTO>());
+                TempData["WarningMessage"] = ex.Message;
+                ViewBag.Busqueda = identificador;
+                return View(new List<PrestamoItemViewModel>());
             }
         }
 
@@ -150,24 +143,35 @@ namespace SIGEBI.AppWeb.Controllers
             try
             {
                 if (string.IsNullOrWhiteSpace(isbnLibro))
-                    return View(new List<PrestamoResponseDTO>());
+                    return View(new List<PrestamoItemViewModel>());
 
-                var resultado = await _servicioPrestamo
-                    .ConsultarHistorialPorRecursoAsync(isbnLibro);
-
-                ViewBag.ISBN = isbnLibro;
-
-                return View(resultado);
+                var resultadoDto = await _servicioPrestamo.ConsultarHistorialPorRecursoAsync(isbnLibro);
+                ViewBag.Busqueda = isbnLibro;
+                return View(MapearLista(resultadoDto));
             }
             catch (NegocioExeption ex)
             {
-                _logger.LogWarning(ex, "Error al consultar historial de préstamos por recurso.");
-
-                TempData["Error"] = ex.Message;
-
-                return View(new List<PrestamoResponseDTO>());
+                TempData["WarningMessage"] = ex.Message;
+                ViewBag.Busqueda = isbnLibro;
+                return View(new List<PrestamoItemViewModel>());
             }
+        }
+
+        // Método auxiliar para no repetir código de mapeo
+        private List<PrestamoItemViewModel> MapearLista(IEnumerable<PrestamoResponseDTO> dtos)
+        {
+            return dtos.Select(dto => new PrestamoItemViewModel
+            {
+                IdPrestamo = dto.IdPrestamo,
+                NombreUsuario = dto.NombreUsuario,
+                Matricula = dto.Matricula,
+                NumeroEmpleado = dto.NumeroEmpleado,
+                FechaInicio = dto.FechaInicio,
+                FechaVencimiento = dto.FechaVencimiento,
+                Estado = dto.Estado,
+                DiasRetraso = dto.DiasRetraso,
+                EstaVencido = dto.EstaVencido
+            }).ToList();
         }
     }
 }
-

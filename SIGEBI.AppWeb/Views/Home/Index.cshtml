@@ -1,8 +1,54 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container text-center mt-5 pt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="display-4 fw-bold text-primary mb-4">
+                <i class="bi bi-book-half"></i> Bienvenido a SIGEBI
+            </h1>
+            <p class="lead mb-5">
+                Sistema de Gestión de Bibliotecas del Instituto Tecnológico de Las Américas (ITLA).
+            </p>
+
+            @if (!User.Identity!.IsAuthenticated)
+            {
+                <div class="card shadow-sm border-0 p-4 rounded-4">
+                    <h5 class="fw-semibold mb-3">Acceso Restringido</h5>
+                    <p class="mb-4 opacity-75">Para acceder a los módulos de préstamos, devoluciones y administración de recursos, por favor inicie sesión con sus credenciales institucionales.</p>
+                    <div>
+                        <a asp-controller="Acceso" asp-action="Login" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Ir al Login
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card shadow-sm border-0 border-start border-success border-5 p-4 rounded-4 text-start">
+                    <div class="d-flex align-items-center">
+                        <div class="fs-1 text-success me-4 d-none d-sm-block">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-1">¡Hola, @User.Identity.Name!</h4>
+                            <p class="opacity-75 mb-4">Has iniciado sesión correctamente en el sistema. ¿Qué deseas hacer hoy?</p>
+
+                            <!-- Contenedor con los accesos directos -->
+                            <div class="d-flex flex-wrap gap-3">
+                                <a asp-controller="Prestamos" asp-action="Index" class="btn btn-success rounded-pill px-4 shadow-sm">
+                                    <i class="bi bi-journal-bookmark me-2"></i> Panel de Préstamos
+                                </a>
+                                <a asp-controller="Solicitudes" asp-action="Index" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                                    <i class="bi bi-inbox me-2"></i> Panel de Solicitudes
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>

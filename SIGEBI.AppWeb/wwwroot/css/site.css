@@ -1,31 +1,235 @@
-html {
-  font-size: 14px;
+/* =========================================
+   VARIABLES GLOBALES DE TEMAS
+========================================= */
+:root {
+    /* TEMA CLARO (Por defecto) */
+    --bg-body: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-navbar: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --input-bg: #ffffff;
+    --table-hover: #f1f5f9;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+[data-theme="warm-dark"] {
+    /* TEMA NOCTURNO ELEGANTE */
+    --bg-body: #0f172a;
+    --bg-card: #1e293b;
+    --bg-navbar: #0f172a;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --input-bg: #0f172a;
+    --table-hover: #334155;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+[data-theme="ocean"] {
+    /* TEMA AZUL PROFUNDO */
+    --bg-body: #001e3c;
+    --bg-card: #0a2744;
+    --bg-navbar: #001e3c;
+    --text-main: #f3f6f9;
+    --text-muted: #9ebdce;
+    --border-color: #132f4c;
+    --primary-color: #3399ff;
+    --primary-hover: #007fff;
+    --input-bg: #001e3c;
+    --table-hover: #132f4c;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
-}
-
+/* =========================================
+   APLICACIÓN DE LAS VARIABLES GLOBALES
+========================================= */
 body {
-  margin-bottom: 60px;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* Forzar que TODOS los textos base respeten el color del tema */
+h1, h2, h3, h4, h5, h6, p, span, div, li {
+    color: var(--text-main);
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+/* Textos con estilos específicos */
+.text-muted, .opacity-75 {
+    color: var(--text-muted) !important;
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+/* =========================================
+   COMPONENTES BOOTSTRAP
+========================================= */
+
+/* Tarjetas (Cards) */
+.card {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main) !important; /* <-- Arregla el texto invisible */
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+.card-header, .card-footer {
+    background-color: transparent;
+    border-color: var(--border-color);
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--bg-navbar) !important;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-brand, .nav-link {
+    color: var(--text-main) !important;
+}
+
+    .nav-link:hover {
+        color: var(--primary-color) !important;
+    }
+
+/* Menús Desplegables (Dropdowns de usuario) */
+.dropdown-menu {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.dropdown-item {
+    color: var(--text-main) !important;
+}
+
+    .dropdown-item:hover {
+        background-color: var(--table-hover) !important;
+    }
+
+/* Botones Principales */
+.btn-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #ffffff !important;
+}
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover) !important;
+        border-color: var(--primary-hover) !important;
+    }
+
+/* Formularios (Inputs y Textareas) */
+.form-control, .input-group-text {
+    background-color: var(--input-bg) !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+    .form-control:focus {
+        background-color: var(--input-bg) !important;
+        color: var(--text-main) !important;
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25) !important;
+    }
+
+    .form-control::placeholder {
+        color: var(--text-muted) !important;
+    }
+
+
+/* Arreglo específico para los Floating Labels (evita superposición de texto) */
+.form-floating > .form-control::placeholder {
+    color: transparent !important; /* Oculta el placeholder mientras el label está encima */
+}
+
+.form-floating > .form-control:focus::placeholder {
+    color: var(--text-muted) !important; /* Solo muestra el placeholder al hacer clic */
+}
+
+.form-floating > label {
+    color: var(--text-muted) !important;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--primary-color) !important;
+    background-color: transparent !important;
+}
+
+/* Tablas */
+.table {
+    color: var(--text-main) !important;
+    border-color: var(--border-color) !important;
+}
+
+    .table th, .table td {
+        border-bottom-color: var(--border-color) !important;
+        background-color: transparent !important;
+        color: var(--text-main) !important;
+    }
+
+.table-hover tbody tr:hover td {
+    background-color: var(--table-hover) !important;
+    color: var(--text-main) !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    color: var(--text-main) !important;
+}
+
+/* =========================================
+   CLASES DE UTILIDAD Y DECORACIÓN
+========================================= */
+
+/* Gradiente espectacular para fondos */
+.bg-gradient-custom {
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
+    color: white !important;
+    border: none !important;
+}
+
+    .bg-gradient-custom * {
+        color: #f8fafc !important;
+    }
+
+/* Separadores */
+hr, .border-bottom, .border-top {
+    border-color: var(--border-color) !important;
+}
+
+/* Alertas dinámicas para modo oscuro */
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+    color: #ea868f !important;
+    border-color: rgba(220, 53, 69, 0.3) !important;
+}
+
+.alert-success {
+    background-color: rgba(25, 135, 84, 0.1) !important;
+    color: #75b798 !important;
+    border-color: rgba(25, 135, 84, 0.3) !important;
+}
+
+[data-theme="light"] .alert-danger {
+    background-color: #f8d7da !important;
+    color: #842029 !important;
+}
+
+[data-theme="light"] .alert-success {
+    background-color: #d1e7dd !important;
+    color: #0f5132 !important;
+}
+
+/* Badges redondeados tipo Dashboard */
+.badge {
+    padding: 0.5em 0.8em;
+    font-weight: 500;
 }

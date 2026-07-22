@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using SIGEBI.Application.Interfaces;
+using SIGEBI.AppWeb.Models.Acceso;
 using System.Security.Claims;
 
 namespace SIGEBI.AppWeb.Controllers
@@ -22,26 +23,38 @@ namespace SIGEBI.AppWeb.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            return View();
+            // Si el usuario ya está logueado, lo mandamos al Home para que no vea el login de nuevo
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            return View(new LoginViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(string identificador)
+        public async Task<IActionResult> Login(LoginViewModel modelo)
         {
-            if (string.IsNullOrWhiteSpace(identificador))
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError(string.Empty, "Debe ingresar su matrícula o número de empleado.");
-                return View();
+                return View(modelo);
             }
 
-            var usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
+            var usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(modelo.Identificador);
 
             if (usuario == null)
             {
-                ModelState.AddModelError(string.Empty, "Usuario no encontrado.");
-                return View();
+                ModelState.AddModelError(string.Empty, "Credenciales incorrectas o usuario no encontrado.");
+                return View(modelo);
             }
+
+            /* 
+             * NOTA: Aquí puedes agregar la validación de la contraseña usando BCrypt 
+             * igual que lo tienes en tu GestorDeAcceso de la API si deseas mayor seguridad:
+             * 
+             * bool passwordValido = BCrypt.Net.BCrypt.Verify(modelo.Password, usuario.Password);
+             * if (!passwordValido) { ModelState.AddModelError(string.Empty, "Credenciales incorrectas."); return View(modelo); }
+             */
 
             var rol = usuario.GetType().Name;
 
@@ -53,31 +66,20 @@ namespace SIGEBI.AppWeb.Controllers
                 new Claim(ClaimTypes.Role, rol)
             };
 
-            var identidad = new ClaimsIdentity(
-                claims,
-                CookieAuthenticationDefaults.AuthenticationScheme);
-
+            var identidad = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identidad);
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                principal);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            _logger.LogInformation(
-                "Usuario {Usuario} inició sesión en AppWeb con rol {Rol}.",
-                usuario.Nombre,
-                rol);
+            _logger.LogInformation("Usuario {Usuario} inició sesión en AppWeb con rol {Rol}.", usuario.Nombre, rol);
 
             return RedirectToAction("Index", "Home");
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+        [HttpGet]
+        public async Task<IActionResult> Salir()
         {
-            await HttpContext.SignOutAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme);
-
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Acceso");
         }
 

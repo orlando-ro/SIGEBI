@@ -1,5 +1,76 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IEnumerable<SIGEBI.Application.DTOs.PrestamoResponseDTO>
 @{
+    ViewData["Title"] = "Historial por Recurso";
 }
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <div>
+            <h2 class="fw-bold text-dark"><i class="bi bi-archive"></i> Historial de Préstamos (Recurso)</h2>
+            @if (ViewBag.Busqueda != null)
+            {
+                <p class="text-muted mb-0">Resultados para el ISBN: <strong>@ViewBag.Busqueda</strong></p>
+            }
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">Volver al Panel</a>
+    </div>
+
+    @if (TempData["WarningMessage"] != null)
+    {
+        <div class="alert alert-warning border-start border-warning border-5 shadow-sm">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["WarningMessage"]
+        </div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-custom table-striped mb-0 text-center align-middle">
+                        <thead class="py-3 bg-dark text-white">
+                            <tr>
+                                <th class="py-3 rounded-top-start">ID Préstamo</th>
+                                <th class="py-3">Usuario</th>
+                                <th class="py-3">Fecha Inicio</th>
+                                <th class="py-3">Fecha Vencimiento</th>
+                                <th class="py-3">Retraso</th>
+                                <th class="py-3 rounded-top-end">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="fw-bold text-primary">#@item.IdPrestamo</td>
+                                    <td class="fw-semibold">@item.NombreUsuario</td>
+                                    <td>@item.FechaInicio.ToString("dd/MMM/yyyy")</td>
+                                    <td class="fw-semibold">@item.FechaVencimiento.ToString("dd/MMM/yyyy")</td>
+                                    <td>
+                                        @if (item.DiasRetraso > 0)
+                                        {
+                                            <span class="text-danger fw-bold">@item.DiasRetraso días</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Ninguno</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge rounded-pill @(item.Estado == "Activo" ? "bg-success" : "bg-secondary") px-3 py-2">@item.Estado</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else if (ViewBag.Busqueda != null && TempData["WarningMessage"] == null)
+    {
+        <div class="text-center py-5">
+            <h4 class="text-muted">Este recurso no tiene historial de préstamos registrado.</h4>
+        </div>
+    }
+</div>

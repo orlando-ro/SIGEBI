@@ -1,0 +1,43 @@
+﻿@model SIGEBI.AppWeb.Models.Solicitudes.CrearSolicitudViewModel
+@{
+    ViewData["Title"] = "Crear Solicitud";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white py-4 px-4">
+                    <h3 class="mb-0 fw-bold"><i class="bi bi-journal-plus"></i> Nueva Solicitud</h3>
+                    <small class="opacity-75">Reserve sus libros utilizando los códigos ISBN.</small>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Crear" method="post">
+                        @Html.AntiForgeryToken()
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger shadow-sm border-start border-danger border-4">
+                                <div asp-validation-summary="All" class="mb-0 text-danger fw-semibold small"></div>
+                            </div>
+                        }
+
+                        <div class="mb-4">
+                            <label asp-for="IsbnsIngresados" class="form-label fw-semibold text-muted">ISBNs de los recursos</label>
+                            <textarea asp-for="IsbnsIngresados" class="form-control form-control-lg" rows="3" placeholder="Ej: 978-0132350884, 978-0134685991"></textarea>
+                            <span asp-validation-for="IsbnsIngresados" class="text-danger small mt-1 d-block"></span>
+                            <div class="form-text"><i class="bi bi-info-circle"></i> Puede ingresar múltiples ISBNs separándolos por comas.</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-5">
+                            <a asp-action="Index" class="text-muted text-decoration-none"><i class="bi bi-arrow-left"></i> Volver</a>
+                            <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm fw-bold">
+                                Enviar Solicitud
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
