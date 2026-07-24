@@ -1,66 +1,180 @@
 ﻿@model IEnumerable<SIGEBI.AppWeb.Models.Solicitudes.SolicitudItemViewModel>
 @{
     ViewData["Title"] = "Solicitudes Pendientes";
+    var rolUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+    bool esPersonalBibliotecario = rolUsuario == "PersonalBibliotecario";
+    bool esAdministrador = rolUsuario == "Administrador";
 }
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
         <div>
             <h2 class="fw-bold text-warning"><i class="bi bi-hourglass-split"></i> Solicitudes Pendientes</h2>
             <p class="text-muted mb-0">Listado de solicitudes a la espera de resolución.</p>
         </div>
-        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">Volver</a>
+        @if (esPersonalBibliotecario)
+        {
+            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">Volver al Menú</a>
+        }
+        else
+        {
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">Volver al Inicio</a>
+        }
     </div>
 
-    @if (Model != null && Model.Any())
+    @if (TempData["ErrorMessage"] != null)
     {
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover table-custom table-striped mb-0 text-center align-middle">
-                        <thead class="py-3 bg-warning text-dark">
-                            <tr>
-                                <th class="py-3 rounded-top-start">ID Solicitud</th>
-                                <th class="py-3">Usuario (Identificador)</th>
-                                <th class="py-3">Fecha</th>
-                                <th class="py-3">Libros Solicitados</th>
-                                <th class="py-3 rounded-top-end">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td class="fw-bold text-primary">#@item.IdSolicitud</td>
-                                    <td>
-                                        <div class="fw-semibold">@item.NombreUsuarioSolicitante</div>
-                                        <div class="small text-muted">@item.MatriculaONumeroEmpleado</div>
-                                    </td>
-                                    <td>@item.FechaSolicitud.ToString("dd/MMM/yyyy HH:mm")</td>
-                                    <td class="text-start">
-                                        <ul class="mb-0 pl-3">
-                                            @foreach (var titulo in item.TitulosLibros)
-                                            {
-                                                <li class="small">@titulo</li>
-                                            }
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <a asp-controller="Prestamos" asp-action="Aprobar" class="btn btn-sm btn-success shadow-sm" title="Aprobar"><i class="bi bi-check-circle"></i></a>
-                                        <a asp-action="Rechazar" asp-route-id="@item.IdSolicitud" class="btn btn-sm btn-danger shadow-sm" title="Rechazar"><i class="bi bi-x-circle"></i></a>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+        <div class="alert alert-danger shadow-sm border-start border-danger border-5">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+        </div>
+    }
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success shadow-sm border-start border-success border-5">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <!-- SECCIÓN EXCLUSIVA PARA EL ADMINISTRADOR: Buscadores -->
+    @if (esAdministrador)
+    {
+        <div class="row mb-4 g-3">
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 border-top border-info border-4 h-100">
+                    <div class="card-body p-3">
+                        <label class="fw-bold text-info small mb-2"><i class="bi bi-person me-1"></i> Buscar por Usuario</label>
+                        <form asp-action="ConsultarPorUsuario" method="get">
+                            <div class="input-group input-group-sm shadow-sm rounded-pill overflow-hidden border">
+                                <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted ps-2"></i></span>
+                                <input type="text" class="form-control border-0" name="identificador" required placeholder="Matrícula o Empleado" autocomplete="off" />
+                                <button class="btn btn-info text-white px-4 fw-bold" type="submit">Buscar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 border-top border-secondary border-4 h-100">
+                    <div class="card-body p-3">
+                        <label class="fw-bold text-secondary small mb-2"><i class="bi bi-hash me-1"></i> Buscar por ID Solicitud</label>
+                        <form asp-action="ConsultarPorId" method="get">
+                            <div class="input-group input-group-sm shadow-sm rounded-pill overflow-hidden border">
+                                <span class="input-group-text bg-transparent border-0"><i class="bi bi-tag text-muted ps-2"></i></span>
+                                <input type="number" class="form-control border-0" name="idSolicitud" required placeholder="ID de la solicitud" autocomplete="off" />
+                                <button class="btn btn-secondary px-4 fw-bold" type="submit">Buscar</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     }
-    else
-    {
-        <div class="text-center py-5">
-            <h4 class="text-muted">No hay solicitudes pendientes en este momento.</h4>
+
+    <!-- TABLA CON FILTRO JS EN TIEMPO REAL -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-3 border-bottom-0">
+            <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-list-task me-2"></i> Registro de Solicitudes</h5>
+
+            <div class="input-group w-auto shadow-sm">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-funnel text-muted"></i></span>
+                <input type="text" id="filtroTabla" class="form-control border-start-0 ps-0" placeholder="Filtrar por nombre, ID o libro..." style="min-width: 250px;" />
+            </div>
         </div>
-    }
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table id="tablaSolicitudes" class="table table-hover table-custom table-striped mb-0 align-middle text-center">
+                    <thead class="py-3 bg-warning text-white">
+                        <tr>
+                            <th class="py-3 px-3">ID Solicitud</th>
+                            <th class="py-3">Usuario (Identificador)</th>
+                            <th class="py-3">Fecha</th>
+                            <th class="py-3 text-start">Libros Solicitados</th>
+
+                            @if (esPersonalBibliotecario)
+                            {
+                                <th class="py-3">Acciones</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="fw-bold px-3">#@item.IdSolicitud</td>
+                                    <td>
+                                        <div class="fw-bold">@item.NombreUsuarioSolicitante</div>
+                                        <div class="small text-muted opacity-75">@item.MatriculaONumeroEmpleado</div>
+                                    </td>
+                                    <td>@item.FechaSolicitud.ToString("dd/MMM/yyyy HH:mm")</td>
+                                    <td class="text-start">
+                                        <ul class="mb-0 ps-3 small fw-semibold">
+                                            @foreach (var titulo in item.TitulosLibros)
+                                            {
+                                                <li>@titulo</li>
+                                            }
+                                        </ul>
+                                    </td>
+
+                                    @if (esPersonalBibliotecario)
+                                    {
+                                        <td>
+                                            <div class="d-flex justify-content-center gap-2">
+                                                <!-- Ajustado para apuntar al PrestamosController -->
+                                                <form asp-controller="Prestamos" asp-action="Aprobar" method="get" style="display:inline;">
+                                                    <input type="hidden" name="idSolicitud" value="@item.IdSolicitud" />
+                                                    <button type="submit" class="btn btn-sm btn-success shadow-sm" title="Aprobar Solicitud">
+                                                        <i class="bi bi-check-circle"></i>
+                                                    </button>
+                                                </form>
+
+                                                <!-- El rechazo sí se maneja aquí en SolicitudesController -->
+                                                <form asp-controller="Solicitudes" asp-action="Rechazar" method="get" style="display:inline;">
+                                                    <input type="hidden" name="id" value="@item.IdSolicitud" />
+                                                    <button type="submit" class="btn btn-sm btn-danger shadow-sm" title="Rechazar Solicitud">
+                                                        <i class="bi bi-x-circle"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="@(esPersonalBibliotecario ? 5 : 4)" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2 opacity-50"></i>
+                                    No hay solicitudes para mostrar en este momento.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById('filtroTabla').addEventListener('keyup', function () {
+            let filterValue = this.value.toLowerCase();
+            let rows = document.querySelectorAll('#tablaSolicitudes tbody tr');
+
+            rows.forEach(row => {
+                if (row.cells.length === 1) return; // Ignorar fila de tabla vacía
+
+                let rowText = row.textContent.toLowerCase();
+                if (rowText.includes(filterValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+}

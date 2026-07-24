@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SIGEBI.AppWeb.styles.css" asp-append-version="true" />
 
-    <!-- Script Global para cambiar el tema antes de renderizar la página -->
     <script>
         (function() {
             const savedTheme = localStorage.getItem('sigebi-theme') || 'light';
@@ -18,7 +17,7 @@
         })();
     </script>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <header>
         <nav class="navbar navbar-expand-lg shadow-sm mb-4" style="background-color: var(--theme-primary, #f8f9fa); transition: background-color 0.3s ease;">
             <div class="container">
@@ -40,25 +39,70 @@
 
                         @if (User.Identity!.IsAuthenticated)
                         {
+                            var rol = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+                            bool esPersonalAutorizado = rol == "PersonalBibliotecario" || rol == "Administrador" || rol == "Auditor";
+                            bool esAdminOAuditor = rol == "Administrador" || rol == "Auditor";
+
+                            // Validaciones estrictas por Módulo (Restringiendo al Auditor)
+                            bool puedeVerSolicitudes = rol != "Auditor";
+                            bool puedeVerPenalizaciones = rol != "Auditor";
+
                             <li class="nav-item">
                                 <a class="nav-link fw-semibold" asp-area="" asp-controller="Prestamos" asp-action="Index">
                                     <i class="bi bi-journal-bookmark"></i> Préstamos
                                 </a>
                             </li>
 
-                            <!-- ENLACE DE SOLICITUDES ACTUALIZADO -->
-                            <li class="nav-item">
-                                <a class="nav-link fw-semibold" asp-area="" asp-controller="Solicitudes" asp-action="Index">
-                                    <i class="bi bi-inbox"></i> Solicitudes
-                                </a>
-                            </li>
+                            @if (puedeVerSolicitudes)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link fw-semibold" asp-area="" asp-controller="Solicitudes" asp-action="Index">
+                                        <i class="bi bi-inbox"></i> Solicitudes
+                                    </a>
+                                </li>
+                            }
+
+                            @if (esPersonalAutorizado)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link fw-semibold" asp-area="" asp-controller="Devoluciones" asp-action="Index">
+                                        <i class="bi bi-box-arrow-in-left"></i> Devoluciones
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- NUEVO: Penalizaciones para todos EXCEPTO Auditor -->
+                            @if (puedeVerPenalizaciones)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link fw-semibold text-danger" asp-area="" asp-controller="Penalizaciones" asp-action="Index">
+                                        <i class="bi bi-exclamation-triangle-fill"></i> Penalizaciones
+                                    </a>
+                                </li>
+                            }
+
+                            @if (esPersonalAutorizado)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link fw-semibold" asp-area="" asp-controller="Reportes" asp-action="Index">
+                                        <i class="bi bi-bar-chart-fill"></i> Reportes
+                                    </a>
+                                </li>
+                            }
+
+                            @if (esAdminOAuditor)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link fw-semibold text-dark" asp-area="" asp-controller="Auditoria" asp-action="Index">
+                                        <i class="bi bi-shield-lock-fill"></i> Auditoría
+                                    </a>
+                                </li>
+                            }
                         }
                     </ul>
 
-                    <!-- Controles a la derecha (Temas y Usuario) -->
+                    <!-- Resto del menú (Selector de temas y Perfil) se mantiene igual... -->
                     <ul class="navbar-nav align-items-center">
-
-                        <!-- Selector de Temas Global -->
                         <li class="nav-item me-4">
                             <div class="btn-group shadow-sm" role="group" aria-label="Selector de temas">
                                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setTheme('light')" title="Modo Claro">☀️</button>
@@ -98,13 +142,13 @@
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container flex-grow-1">
+        <main role="main" class="pb-5 mb-5">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted mt-5 py-3">
+    <footer class="border-top text-muted mt-auto py-4" style="background-color: var(--bg-card);">
         <div class="container text-center">
             &copy; 2026 - SIGEBI (Sistema de Gestión de Bibliotecas) - Proyecto ITLA
         </div>
@@ -114,7 +158,6 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <!-- Script Global para cambiar el tema dinámicamente -->
     <script>
         function setTheme(themeName) {
             document.documentElement.setAttribute('data-theme', themeName);

@@ -8,6 +8,7 @@ using System.Security.Claims;
 
 namespace SIGEBI.AppWeb.Controllers
 {
+    [Authorize] // Aseguramos que se requiera login a nivel de clase
     public class SolicitudesController : Controller
     {
         private readonly IServicioSolicitud _servicioSolicitud;
@@ -23,12 +24,17 @@ namespace SIGEBI.AppWeb.Controllers
         [Authorize(Roles = "PersonalBibliotecario,Administrador,Estudiante,Docente")]
         public IActionResult Index()
         {
+            var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            // REDIRECCIÓN INTELIGENTE: El administrador va directo a la lista, no necesita el menú
+            if (rol == "Administrador")
+            {
+                return RedirectToAction("Pendientes");
+            }
+
             return View();
         }
 
-        // ==========================================
-        // CREAR SOLICITUD (Solo Estudiantes y Docentes)
-        // ==========================================
         [HttpGet]
         [Authorize(Roles = "Estudiante,Docente")]
         public IActionResult Crear()
@@ -52,14 +58,12 @@ namespace SIGEBI.AppWeb.Controllers
                     return View(modelo);
                 }
 
-                // Parsear los ISBNs ingresados separados por coma
                 var isbnsList = modelo.IsbnsIngresados
                     .Split(new[] { ',', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(i => i.Trim())
                     .ToList();
 
                 var peticionDto = new SolicitudRequestDTO { IsbnsLibros = isbnsList };
-
                 var resultado = await _servicioSolicitud.CrearSolicitudAsync(peticionDto, idUsuarioSolicitante);
 
                 TempData["SuccessMessage"] = $"La solicitud #{resultado.IdSolicitud} ha sido creada correctamente y se encuentra pendiente de aprobación.";
@@ -79,16 +83,12 @@ namespace SIGEBI.AppWeb.Controllers
             }
         }
 
-        // ==========================================
-        // RECHAZAR SOLICITUD (Solo Bibliotecarios)
-        // ==========================================
         [HttpGet]
         [Authorize(Roles = "PersonalBibliotecario")]
         public IActionResult Rechazar(int? id)
         {
             var modelo = new RechazarSolicitudViewModel();
             if (id.HasValue) modelo.IdSolicitud = id.Value;
-
             return View(modelo);
         }
 
@@ -114,11 +114,10 @@ namespace SIGEBI.AppWeb.Controllers
                     MotivoRechazo = modelo.MotivoRechazo
                 };
 
-                // Llamada respetando el nombre exacto de tu interfaz
                 await _servicioSolicitud.RechasarSolicitudAsync(peticionDto, idBibliotecario);
 
                 TempData["SuccessMessage"] = $"La solicitud #{modelo.IdSolicitud} ha sido rechazada exitosamente.";
-                return RedirectToAction("Index");
+                return RedirectToAction("Pendientes");
             }
             catch (NegocioExeption ex)
             {
@@ -128,9 +127,6 @@ namespace SIGEBI.AppWeb.Controllers
             }
         }
 
-        // ==========================================
-        // CONSULTAS (Bibliotecarios y Administradores)
-        // ==========================================
         [HttpGet]
         [Authorize(Roles = "PersonalBibliotecario,Administrador")]
         public async Task<IActionResult> Pendientes()
@@ -160,7 +156,44 @@ namespace SIGEBI.AppWeb.Controllers
             }
         }
 
-        // Helper de Mapeo
+        // NUEVO: Consulta por ID de Solicitud
+        [HttpGet]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador")]
+        public async Task<IActionResult> ConsultarPorId(int? idSolicitud)
+        {
+            try
+            {
+                if (!idSolicitud.HasValue)
+                    return View(new List<SolicitudItemViewModel>());
+
+                var solicitudDto = await _servicioSolicitud.ObtenerPorIdAsync(idSolicitud.Value);
+                ViewBag.Busqueda = idSolicitud.ToString();
+
+                if (solicitudDto == null)
+                    return View(new List<SolicitudItemViewModel>());
+
+                // Mapeamos el único resultado a una lista para reutilizar las vistas de tablas
+                var modelo = new SolicitudItemViewModel
+                {
+                    IdSolicitud = solicitudDto.IdSolicitud,
+                    FechaSolicitud = solicitudDto.FechaSolicitud,
+                    Estado = solicitudDto.Estado,
+                    NombreUsuarioSolicitante = solicitudDto.NombreUsuarioSolicitante,
+                    MatriculaONumeroEmpleado = solicitudDto.Matricula ?? solicitudDto.NumeroEmpleado ?? "N/A",
+                    ISBNs = solicitudDto.ISBNs,
+                    TitulosLibros = solicitudDto.TitulosLibros
+                };
+
+                return View(new List<SolicitudItemViewModel> { modelo });
+            }
+            catch (NegocioExeption ex)
+            {
+                TempData["WarningMessage"] = ex.Message;
+                ViewBag.Busqueda = idSolicitud.ToString();
+                return View(new List<SolicitudItemViewModel>());
+            }
+        }
+
         private List<SolicitudItemViewModel> MapearLista(IEnumerable<SolicitudResponseDTO> dtos)
         {
             return dtos.Select(dto => new SolicitudItemViewModel

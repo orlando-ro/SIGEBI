@@ -8,6 +8,7 @@ using System.Security.Claims;
 
 namespace SIGEBI.AppWeb.Controllers
 {
+    [Authorize]
     public class PrestamosController : Controller
     {
         private readonly IservicioPrestamo _servicioPrestamo;
@@ -20,7 +21,7 @@ namespace SIGEBI.AppWeb.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "PersonalBibliotecario,Administrador,Estudiante,Docente")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador,Auditor,Estudiante,Docente")]
         public IActionResult Index()
         {
             return View();

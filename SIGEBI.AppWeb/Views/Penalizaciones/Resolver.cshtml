@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "Procesar Resolución";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 border-top border-success border-4 rounded-3">
+                <div class="card-header bg-transparent text-center py-4 border-0">
+                    <h3 class="fw-bold text-success mb-1"><i class="bi bi-shield-check me-2"></i> Procesar Resolución</h3>
+                    @if (ViewBag.IdPenalizacion != null && ViewBag.IdPenalizacion > 0)
+                    {
+                        <p class="text-muted small mb-0">Asignada a la Penalización #@ViewBag.IdPenalizacion</p>
+                    }
+                </div>
+                <div class="card-body p-4 p-md-5">
+
+                    <form asp-action="Resolver" method="post">
+
+                        <!-- Si vinieron desde la tabla, el ID se auto-llena -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small">ID de Penalización</label>
+                            <input type="number" name="idPenalizacion" class="form-control bg-light" required value="@(ViewBag.IdPenalizacion > 0 ? ViewBag.IdPenalizacion : "")" @(ViewBag.IdPenalizacion > 0 ? "readonly" : "") />
+                        </div>
+
+                        <!-- ESTE ERA EL CAMPO QUE DABA ERROR -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small"><i class="bi bi-person-badge me-1"></i> Identificación del Usuario</label>
+                            <input type="text" name="identificador" class="form-control" required placeholder="Ej: 2024-1234 o EMP-001" autocomplete="off" />
+                        </div>
+
+                        <!-- SELECT DE CONCEPTO -->
+                        <div class="mb-5">
+                            <label class="form-label fw-bold text-muted small"><i class="bi bi-card-text me-1"></i> Método de Resolución</label>
+                            <select name="concepto" class="form-select" required>
+                                <option value="">Seleccione método...</option>
+                                <option value="Pago en Efectivo">Pago en Efectivo</option>
+                                <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+                                <option value="Exoneración autorizada">Exoneración autorizada</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a asp-action="Index" class="btn btn-link text-secondary text-decoration-none fw-semibold"><i class="bi bi-arrow-left"></i> Cancelar</a>
+                            <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm">
+                                <i class="bi bi-check-circle me-2"></i> Confirmar Resolución
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

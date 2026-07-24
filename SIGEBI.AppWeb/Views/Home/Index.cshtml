@@ -1,5 +1,13 @@
 ﻿@{
     ViewData["Title"] = "Inicio";
+    var rolUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+    bool esPersonalAutorizado = rolUsuario == "PersonalBibliotecario" || rolUsuario == "Administrador" || rolUsuario == "Auditor";
+    bool esAdminOAuditor = rolUsuario == "Administrador" || rolUsuario == "Auditor";
+    bool esEstudianteODocente = rolUsuario == "Estudiante" || rolUsuario == "Docente";
+
+    // Validaciones
+    bool puedeVerSolicitudes = rolUsuario != "Auditor";
+    bool puedeVerPenalizaciones = rolUsuario != "Auditor";
 }
 
 <div class="container text-center mt-5 pt-5">
@@ -37,12 +45,48 @@
 
                             <!-- Contenedor con los accesos directos -->
                             <div class="d-flex flex-wrap gap-3">
+
                                 <a asp-controller="Prestamos" asp-action="Index" class="btn btn-success rounded-pill px-4 shadow-sm">
-                                    <i class="bi bi-journal-bookmark me-2"></i> Panel de Préstamos
+                                    <i class="bi bi-journal-bookmark me-2"></i>
+                                    @(esEstudianteODocente ? "Consultar Préstamos Activos" : "Panel de Préstamos")
                                 </a>
-                                <a asp-controller="Solicitudes" asp-action="Index" class="btn btn-primary rounded-pill px-4 shadow-sm">
-                                    <i class="bi bi-inbox me-2"></i> Panel de Solicitudes
-                                </a>
+
+                                @if (puedeVerSolicitudes)
+                                {
+                                    <a asp-controller="Solicitudes" asp-action="Index" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                                        <i class="bi bi-inbox me-2"></i> Panel de Solicitudes
+                                    </a>
+                                }
+
+                                @if (esPersonalAutorizado)
+                                {
+                                    <a asp-controller="Devoluciones" asp-action="Index" class="btn btn-info text-white rounded-pill px-4 shadow-sm">
+                                        <i class="bi bi-box-arrow-in-left me-2"></i> Panel de Devoluciones
+                                    </a>
+                                }
+
+                                <!-- NUEVO: Penalizaciones Dinámicas -->
+                                @if (puedeVerPenalizaciones)
+                                {
+                                    <a asp-controller="Penalizaciones" asp-action="Index" class="btn btn-danger text-white rounded-pill px-4 shadow-sm">
+                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                        @(esEstudianteODocente ? "Mis Penalizaciones" : "Panel de Penalizaciones")
+                                    </a>
+                                }
+
+                                @if (esPersonalAutorizado)
+                                {
+                                    <a asp-controller="Reportes" asp-action="Index" class="btn btn-dark text-white rounded-pill px-4 shadow-sm">
+                                        <i class="bi bi-bar-chart-line-fill me-2"></i> Reportes y Estadísticas
+                                    </a>
+                                }
+
+                                @if (esAdminOAuditor)
+                                {
+                                    <a asp-controller="Auditoria" asp-action="Index" class="btn btn-outline-dark rounded-pill px-4 shadow-sm fw-bold bg-white">
+                                        <i class="bi bi-shield-lock-fill me-2"></i> Log de Sistema
+                                    </a>
+                                }
                             </div>
 
                         </div>
