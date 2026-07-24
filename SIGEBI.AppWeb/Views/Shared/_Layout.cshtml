@@ -11,10 +11,10 @@
     <link rel="stylesheet" href="~/SIGEBI.AppWeb.styles.css" asp-append-version="true" />
 
     <script>
-        (function() {
-            const savedTheme = localStorage.getItem('sigebi-theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-        })();
+            (function() {
+                const savedTheme = localStorage.getItem('sigebi-theme') || 'light';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            })();
     </script>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -42,6 +42,9 @@
                             var rol = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
                             bool esPersonalAutorizado = rol == "PersonalBibliotecario" || rol == "Administrador" || rol == "Auditor";
                             bool esAdminOAuditor = rol == "Administrador" || rol == "Auditor";
+
+                            // NUEVA VARIABLE: Validación exclusiva para Administrador
+                            bool esAdmin = rol == "Administrador";
 
                             // Validaciones estrictas por Módulo (Restringiendo al Auditor)
                             bool puedeVerSolicitudes = rol != "Auditor";
@@ -71,7 +74,6 @@
                                 </li>
                             }
 
-                            <!-- NUEVO: Penalizaciones para todos EXCEPTO Auditor -->
                             @if (puedeVerPenalizaciones)
                             {
                                 <li class="nav-item">
@@ -95,6 +97,16 @@
                                 <li class="nav-item">
                                     <a class="nav-link fw-semibold text-dark" asp-area="" asp-controller="Auditoria" asp-action="Index">
                                         <i class="bi bi-shield-lock-fill"></i> Auditoría
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- NUEVO MÓDULO: Gestión de Usuarios -->
+                            @if (esAdmin)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link fw-semibold text-primary" asp-area="" asp-controller="Usuarios" asp-action="Index">
+                                        <i class="bi bi-people-fill"></i> Usuarios
                                     </a>
                                 </li>
                             }
@@ -160,8 +172,8 @@
 
     <script>
         function setTheme(themeName) {
-            document.documentElement.setAttribute('data-theme', themeName);
-            localStorage.setItem('sigebi-theme', themeName);
+        document.documentElement.setAttribute('data-theme', themeName);
+        localStorage.setItem('sigebi-theme', themeName);
         }
     </script>
 

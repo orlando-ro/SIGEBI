@@ -5,6 +5,9 @@
     bool esAdminOAuditor = rolUsuario == "Administrador" || rolUsuario == "Auditor";
     bool esEstudianteODocente = rolUsuario == "Estudiante" || rolUsuario == "Docente";
 
+    // NUEVA VARIABLE: Validación exclusiva para Administrador
+    bool esAdmin = rolUsuario == "Administrador";
+
     // Validaciones
     bool puedeVerSolicitudes = rolUsuario != "Auditor";
     bool puedeVerPenalizaciones = rolUsuario != "Auditor";
@@ -65,7 +68,7 @@
                                     </a>
                                 }
 
-                                <!-- NUEVO: Penalizaciones Dinámicas -->
+                                <!-- Penalizaciones Dinámicas -->
                                 @if (puedeVerPenalizaciones)
                                 {
                                     <a asp-controller="Penalizaciones" asp-action="Index" class="btn btn-danger text-white rounded-pill px-4 shadow-sm">
@@ -78,6 +81,14 @@
                                 {
                                     <a asp-controller="Reportes" asp-action="Index" class="btn btn-dark text-white rounded-pill px-4 shadow-sm">
                                         <i class="bi bi-bar-chart-line-fill me-2"></i> Reportes y Estadísticas
+                                    </a>
+                                }
+
+                                <!-- Gestión de Usuarios -->
+                                @if (esAdmin)
+                                {
+                                    <a asp-controller="Usuarios" asp-action="Index" class="btn btn-secondary text-white rounded-pill px-4 shadow-sm">
+                                        <i class="bi bi-people-fill me-2"></i> Gestión de Usuarios
                                     </a>
                                 }
 
