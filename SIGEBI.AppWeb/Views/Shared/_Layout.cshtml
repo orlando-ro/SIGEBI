@@ -19,21 +19,21 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
     <header>
-        <nav class="navbar navbar-expand-lg shadow-sm mb-4" style="background-color: var(--theme-primary, #f8f9fa); transition: background-color 0.3s ease;">
+        <nav class="navbar navbar-expand-lg shadow-sm mb-4 py-3" style="background-color: var(--theme-primary, #f8f9fa); transition: background-color 0.3s ease;">
             <div class="container">
-                <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-book-half text-primary"></i> SIGEBI
+                <a class="navbar-brand fw-bold fs-4 d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-book-half text-primary"></i> <span>SIGEBI</span>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-grow-1 align-items-lg-center ms-lg-3">
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold" asp-area="" asp-controller="Home" asp-action="Index">
-                                <i class="bi bi-house-door"></i> Inicio
+                            <a class="nav-link fw-semibold px-2" asp-area="" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house-door me-1"></i> Inicio
                             </a>
                         </li>
 
@@ -43,27 +43,30 @@
                             bool esPersonalAutorizado = rol == "PersonalBibliotecario" || rol == "Administrador" || rol == "Auditor";
                             bool esAdminOAuditor = rol == "Administrador" || rol == "Auditor";
 
-                            // Validaciones estrictas por Módulo
+                            // Validación exclusiva para Administrador
+                            bool esAdmin = rol == "Administrador";
+
+                            // Validaciones estrictas por Módulo (Restringiendo al Auditor)
                             bool puedeVerSolicitudes = rol != "Auditor";
                             bool puedeVerPenalizaciones = rol != "Auditor";
 
                             <li class="nav-item">
-                                <a class="nav-link fw-semibold text-primary" asp-area="" asp-controller="Catalogo" asp-action="Index">
-                                    <i class="bi bi-collection-fill"></i> Catálogo
+                                <a class="nav-link fw-semibold text-primary px-2" asp-area="" asp-controller="Catalogo" asp-action="Index">
+                                    <i class="bi bi-collection-fill me-1"></i> Catálogo
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link fw-semibold" asp-area="" asp-controller="Prestamos" asp-action="Index">
-                                    <i class="bi bi-journal-bookmark"></i> Préstamos
+                                <a class="nav-link fw-semibold px-2" asp-area="" asp-controller="Prestamos" asp-action="Index">
+                                    <i class="bi bi-journal-bookmark me-1"></i> Préstamos
                                 </a>
                             </li>
 
                             @if (puedeVerSolicitudes)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link fw-semibold" asp-area="" asp-controller="Solicitudes" asp-action="Index">
-                                        <i class="bi bi-inbox"></i> Solicitudes
+                                    <a class="nav-link fw-semibold px-2" asp-area="" asp-controller="Solicitudes" asp-action="Index">
+                                        <i class="bi bi-inbox me-1"></i> Solicitudes
                                     </a>
                                 </li>
                             }
@@ -71,8 +74,8 @@
                             @if (esPersonalAutorizado)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link fw-semibold" asp-area="" asp-controller="Devoluciones" asp-action="Index">
-                                        <i class="bi bi-box-arrow-in-left"></i> Devoluciones
+                                    <a class="nav-link fw-semibold px-2" asp-area="" asp-controller="Devoluciones" asp-action="Index">
+                                        <i class="bi bi-box-arrow-in-left me-1"></i> Devoluciones
                                     </a>
                                 </li>
                             }
@@ -80,8 +83,8 @@
                             @if (puedeVerPenalizaciones)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link fw-semibold text-danger" asp-area="" asp-controller="Penalizaciones" asp-action="Index">
-                                        <i class="bi bi-exclamation-triangle-fill"></i> Penalizaciones
+                                    <a class="nav-link fw-semibold text-danger px-2" asp-area="" asp-controller="Penalizaciones" asp-action="Index">
+                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Penalizaciones
                                     </a>
                                 </li>
                             }
@@ -89,8 +92,8 @@
                             @if (esPersonalAutorizado)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link fw-semibold" asp-area="" asp-controller="Reportes" asp-action="Index">
-                                        <i class="bi bi-bar-chart-fill"></i> Reportes
+                                    <a class="nav-link fw-semibold px-2" asp-area="" asp-controller="Reportes" asp-action="Index">
+                                        <i class="bi bi-bar-chart-fill me-1"></i> Reportes
                                     </a>
                                 </li>
                             }
@@ -98,52 +101,62 @@
                             @if (esAdminOAuditor)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link fw-semibold text-info" asp-area="" asp-controller="Notificaciones" asp-action="HistorialGlobal">
-                                        <i class="bi bi-envelope-paper-fill"></i> Log Notificaciones
+                                    <a class="nav-link fw-semibold text-info px-2" asp-area="" asp-controller="Notificaciones" asp-action="HistorialGlobal">
+                                        <i class="bi bi-envelope-paper-fill me-1"></i> Log Notificaciones
                                     </a>
                                 </li>
 
                                 <li class="nav-item">
-                                    <a class="nav-link fw-semibold text-secondary" asp-area="" asp-controller="Auditoria" asp-action="Index">
-                                        <i class="bi bi-shield-lock-fill"></i> Auditoría
+                                    <a class="nav-link fw-semibold text-secondary px-2" asp-area="" asp-controller="Auditoria" asp-action="Index">
+                                        <i class="bi bi-shield-lock-fill me-1"></i> Auditoría
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- MÓDULO: Gestión de Usuarios -->
+                            @if (esAdmin)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link fw-semibold text-primary px-2" asp-area="" asp-controller="Usuarios" asp-action="Index">
+                                        <i class="bi bi-people-fill me-1"></i> Usuarios
                                     </a>
                                 </li>
                             }
                         }
                     </ul>
 
-                    <ul class="navbar-nav align-items-center">
+                    <ul class="navbar-nav align-items-center gap-3 mt-3 mt-lg-0">
 
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <!-- CAMPANITA DE NOTIFICACIONES CORREGIDA (Visible y contrastada en cualquier tema) -->
-                            <li class="nav-item me-3">
+                            <!-- CAMPANITA DE NOTIFICACIONES CORREGIDA -->
+                            <li class="nav-item">
                                 <a class="btn btn-outline-warning border-0 rounded-circle shadow-sm position-relative d-flex align-items-center justify-content-center notification-bell" style="width: 40px; height: 40px;" asp-controller="Notificaciones" asp-action="Index" title="Mis Notificaciones">
                                     <i class="bi bi-bell-fill fs-5"></i>
                                 </a>
                             </li>
                         }
 
-                        <li class="nav-item me-4">
+                        <li class="nav-item">
                             <div class="btn-group shadow-sm" role="group" aria-label="Selector de temas">
-                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setTheme('light')" title="Modo Claro">☀️</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setTheme('warm-dark')" title="Nocturno Cálido">🌙</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setTheme('ocean')" title="Azul Institucional">🌊</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary px-2" onclick="setTheme('light')" title="Modo Claro">☀️</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary px-2" onclick="setTheme('warm-dark')" title="Nocturno Cálido">🌙</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary px-2" onclick="setTheme('ocean')" title="Azul Institucional">🌊</button>
                             </div>
                         </li>
 
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle fw-bold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-person-circle"></i> @User.Identity.Name
+                                <a class="nav-link dropdown-toggle fw-bold d-flex align-items-center gap-1" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle fs-5"></i> <span>@User.Identity.Name</span>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="navbarDropdown">
-                                    <li><span class="dropdown-item-text text-muted small">Rol: @User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</span></li>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 mt-2 p-2" aria-labelledby="navbarDropdown">
+                                    <li><span class="dropdown-item-text text-muted small">Rol: <strong>@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</strong></span></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
-                                        <a class="dropdown-item text-danger" asp-controller="Acceso" asp-action="Salir">
-                                            <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                        <a class="dropdown-item text-danger rounded-3 py-2" asp-controller="Acceso" asp-action="Salir">
+                                            <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
                                         </a>
                                     </li>
                                 </ul>
@@ -152,8 +165,8 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="btn btn-primary text-white px-4 rounded-pill shadow-sm" asp-controller="Acceso" asp-action="Login">
-                                    <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                                <a class="btn btn-primary text-white px-4 rounded-pill shadow-sm fw-bold" asp-controller="Acceso" asp-action="Login">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión
                                 </a>
                             </li>
                         }
@@ -170,7 +183,7 @@
     </div>
 
     <footer class="border-top text-muted mt-auto py-4" style="background-color: var(--bg-card);">
-        <div class="container text-center">
+        <div class="container text-center small">
             &copy; 2026 - SIGEBI (Sistema de Gestión de Bibliotecas) - Proyecto ITLA
         </div>
     </footer>
@@ -187,7 +200,7 @@
     </script>
 
     <style>
-        /* Corrección de visibilidad de la campanita en temas oscuros y azul */
+        /* Estilos modernos y visibilidad de la campanita */
         .notification-bell {
             background-color: rgba(255, 193, 7, 0.15);
             color: #ffc107 !important;
