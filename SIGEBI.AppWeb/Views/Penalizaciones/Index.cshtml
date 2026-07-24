@@ -1,7 +1,8 @@
-﻿@{
+﻿@model IEnumerable<SIGEBI.Application.DTOs.PenalizacionResponseDTO>
+@{
     ViewData["Title"] = "Gestión de Penalizaciones";
     var rolUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-    bool esEstudianteODocente = rolUsuario == "Estudiante" || rolUsuario == "Docente";
+    bool esUsuarioRegular = rolUsuario == "Estudiante" || rolUsuario == "Docente";
 }
 
 <div class="container mt-4">
@@ -11,9 +12,8 @@
 
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <div class="alert alert-success shadow-sm border-start border-success border-5">
             <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
     @if (TempData["ErrorMessage"] != null)
@@ -23,33 +23,65 @@
         </div>
     }
 
-    @if (esEstudianteODocente)
+    <!-- VISTA EXCLUSIVA PARA ESTUDIANTES Y DOCENTES -->
+    @if (esUsuarioRegular)
     {
-        <div class="row justify-content-center my-4">
-            <div class="col-md-9">
-                <div class="card shadow-lg border-0 rounded-4 overflow-hidden" style="background-color: var(--bg-card, #1e2532);">
-                    <div class="card-body p-4 p-md-5 text-center">
-                        <div class="display-4 text-danger mb-3">
-                            <i class="bi bi-cash-coin"></i>
-                        </div>
-                        <!-- TEXTO PERSONALIZADO PARA ESTUDIANTES Y DOCENTES -->
-                        <h4 class="fw-bold mb-3 text-white">Mis Penalizaciones</h4>
-                        <p class="text-muted mb-4">Ingrese su matrícula para que pueda ver sus penalizaciones que están pendientes por retrasos o daños.</p>
+        if (Model != null && Model.Any())
+        {
+            <!-- Si tiene penalizaciones, mostramos la tabla directamente -->
+            <div class="card shadow-sm border-0 border-top border-danger border-4 mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold text-danger mb-3"><i class="bi bi-cash-coin me-2"></i> Mis Penalizaciones</h4>
+                    <p class="text-muted mb-4 opacity-75">Estas son las multas activas registradas en tu cuenta por daños o devoluciones tardías.</p>
 
-                        <form asp-action="ConsultarPorUsuario" method="get">
-                            <div class="input-group input-group-lg mb-3 shadow-sm rounded-pill overflow-hidden border border-secondary">
-                                <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted ps-2"></i></span>
-                                <input type="text" class="form-control bg-transparent text-white border-0" name="identificador" required placeholder="Ej: 2024-1234" autocomplete="off" />
-                                <button class="btn btn-danger px-5 fw-bold" type="submit">Consultar Activas</button>
-                            </div>
-                        </form>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-custom table-striped mb-0 align-middle text-center">
+                            <thead class="py-3 bg-danger text-white">
+                                <tr>
+                                    <th class="py-3 px-3">ID Multa</th>
+                                    <th class="py-3">Préstamo</th>
+                                    <th class="py-3">Monto</th>
+                                    <th class="py-3 text-start">Motivo</th>
+                                    <th class="py-3">Fecha Emisión</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="fw-bold px-3">#@item.IdPenalizacion</td>
+                                        <td><span class="badge bg-secondary">Préstamo #@item.IdPrestamo</span></td>
+                                        <td class="fw-bold text-danger">RD$ @item.Monto.ToString("N2")</td>
+                                        <td class="text-start small">@item.Motivo</td>
+                                        <td>@item.FechaEmision.ToString("dd/MMM/yyyy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <!-- Si no tiene penalizaciones, mostramos el mensaje de felicitaciones -->
+            <div class="row justify-content-center mt-5">
+                <div class="col-md-8">
+                    <div class="card shadow-lg border-0 border-top border-success border-5 rounded-4 text-center p-5" style="background-color: var(--bg-card, #ffffff);">
+                        <div class="display-1 text-success mb-4">
+                            <i class="bi bi-award-fill"></i>
+                        </div>
+                        <h2 class="fw-bold mb-3">¡Felicidades! 🎉</h2>
+                        <p class="lead text-muted mb-4">Tienes un récord impecable.</p>
+                        <p class="mb-0 opacity-75">No cuentas con penalizaciones ni multas activas. ¡Sigue así, cuidando los recursos de nuestra biblioteca! 🌟</p>
+                    </div>
+                </div>
+            </div>
+        }
     }
     else
     {
+        <!-- VISTA PARA EL PERSONAL BIBLIOTECARIO Y ADMIN -->
         <div class="row g-4 mb-4">
             <div class="col-md-6">
                 <div class="card h-100 shadow-sm border-0 border-start border-danger border-4 transition-hover">
@@ -60,7 +92,7 @@
                         </div>
                         <form asp-action="ConsultarPorUsuario" method="get">
                             <div class="input-group shadow-sm">
-                                <input type="text" class="form-control" name="identificador" required placeholder="Ej: Matrícula o Empleado" />
+                                <input type="text" class="form-control bg-transparent text-inherit" name="identificador" required placeholder="Ej: Matrícula o Empleado" />
                                 <button class="btn btn-danger px-4 fw-bold" type="submit">Buscar</button>
                             </div>
                         </form>

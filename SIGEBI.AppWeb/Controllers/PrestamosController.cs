@@ -22,9 +22,36 @@ namespace SIGEBI.AppWeb.Controllers
 
         [HttpGet]
         [Authorize(Roles = "PersonalBibliotecario,Administrador,Auditor,Estudiante,Docente")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+            bool esUsuarioRegular = rol == "Estudiante" || rol == "Docente";
+
+            if (esUsuarioRegular)
+            {
+                // Seguridad: Extraemos la matrícula directo del Token
+                var identificador = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity?.Name;
+
+                if (!string.IsNullOrWhiteSpace(identificador))
+                {
+                    try
+                    {
+                        var prestamosDto = await _servicioPrestamo.ConsultarPrestamosActivosPorIdentificadorAsync(identificador);
+                        ViewBag.EsUsuarioRegular = true;
+                        return View(MapearLista(prestamosDto));
+                    }
+                    catch (NegocioExeption)
+                    {
+                        // Si no tiene préstamos, mandamos una lista vacía para mostrar el mensaje bonito
+                        ViewBag.EsUsuarioRegular = true;
+                        return View(new List<PrestamoItemViewModel>());
+                    }
+                }
+            }
+
+            // Si es Administrador, Bibliotecario o Auditor, cargamos la vista normal vacía
+            ViewBag.EsUsuarioRegular = false;
+            return View(new List<PrestamoItemViewModel>());
         }
 
         [HttpGet]
@@ -49,7 +76,6 @@ namespace SIGEBI.AppWeb.Controllers
                     return View(peticionWeb);
                 }
 
-                // Mapeo de ViewModel a DTO
                 var peticionDto = new PrestamoRequestDTO
                 {
                     IdSolicitud = peticionWeb.IdSolicitud
@@ -80,17 +106,32 @@ namespace SIGEBI.AppWeb.Controllers
         {
             try
             {
+                var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+                bool esUsuarioRegular = rol == "Estudiante" || rol == "Docente";
+
+                if (esUsuarioRegular)
+                {
+                    identificador = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity?.Name;
+                }
+
                 if (string.IsNullOrWhiteSpace(identificador))
+                {
+                    if (esUsuarioRegular) throw new NegocioExeption("No se pudo identificar su matrícula en el sistema.");
                     return View(new List<PrestamoItemViewModel>());
+                }
 
                 var prestamosDto = await _servicioPrestamo.ConsultarPrestamosActivosPorIdentificadorAsync(identificador);
+
                 ViewBag.Busqueda = identificador;
+                ViewBag.EsUsuarioRegular = esUsuarioRegular;
+
                 return View(MapearLista(prestamosDto));
             }
             catch (NegocioExeption ex)
             {
                 TempData["WarningMessage"] = ex.Message;
                 ViewBag.Busqueda = identificador;
+                ViewBag.EsUsuarioRegular = User.FindFirst(ClaimTypes.Role)?.Value == "Estudiante" || User.FindFirst(ClaimTypes.Role)?.Value == "Docente";
                 return View(new List<PrestamoItemViewModel>());
             }
         }
@@ -158,7 +199,6 @@ namespace SIGEBI.AppWeb.Controllers
             }
         }
 
-        // Método auxiliar para no repetir código de mapeo
         private List<PrestamoItemViewModel> MapearLista(IEnumerable<PrestamoResponseDTO> dtos)
         {
             return dtos.Select(dto => new PrestamoItemViewModel

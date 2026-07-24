@@ -21,35 +21,80 @@ namespace SIGEBI.AppWeb.Controllers
 
         [HttpGet]
         [Authorize(Roles = "PersonalBibliotecario,Administrador,Estudiante,Docente")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+            bool esUsuarioRegular = rol == "Estudiante" || rol == "Docente";
+
+            if (esUsuarioRegular)
+            {
+                // Seguridad: Extraemos el identificador directamente del Token
+                var identificador = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity?.Name;
+
+                if (!string.IsNullOrWhiteSpace(identificador))
+                {
+                    try
+                    {
+                        var pendientesDto = await _servicioPenalizacion.ObtenerPendientesPorUsuariosAsync(identificador);
+                        ViewBag.EsUsuarioRegular = true;
+                        return View(pendientesDto);
+                    }
+                    catch (NegocioExeption)
+                    {
+                        // Si no hay deudas, mandamos lista vacía para mostrar el mensaje de felicitaciones
+                        ViewBag.EsUsuarioRegular = true;
+                        return View(new List<PenalizacionResponseDTO>());
+                    }
+                }
+            }
+
+            ViewBag.EsUsuarioRegular = false;
+            return View(new List<PenalizacionResponseDTO>());
         }
 
         [HttpGet]
         [Authorize(Roles = "PersonalBibliotecario,Administrador,Estudiante,Docente")]
-        public async Task<IActionResult> ConsultarPorUsuario(string identificador)
+        public async Task<IActionResult> ConsultarPorUsuario(string? identificador)
         {
             try
             {
+                var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+                bool esUsuarioRegular = rol == "Estudiante" || rol == "Docente";
+
+                if (esUsuarioRegular)
+                {
+                    identificador = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity?.Name;
+                }
+
                 if (string.IsNullOrWhiteSpace(identificador))
+                {
+                    if (esUsuarioRegular) throw new NegocioExeption("No se pudo identificar su matrícula.");
                     return RedirectToAction("Index");
+                }
 
                 var pendientesDto = await _servicioPenalizacion.ObtenerPendientesPorUsuariosAsync(identificador);
                 ViewBag.Busqueda = identificador;
+                ViewBag.EsUsuarioRegular = esUsuarioRegular;
 
                 return View(pendientesDto);
             }
             catch (NegocioExeption ex)
             {
-                // Si el gestor lanza la excepción de que no hay penalizaciones, lo capturamos aquí
-                TempData["SuccessMessage"] = "Excelente: " + ex.Message; // Usamos Success porque no deber nada es algo bueno
-                return RedirectToAction("Index");
+                ViewBag.Busqueda = identificador;
+                ViewBag.EsUsuarioRegular = User.FindFirst(ClaimTypes.Role)?.Value == "Estudiante" || User.FindFirst(ClaimTypes.Role)?.Value == "Docente";
+
+                if (!ViewBag.EsUsuarioRegular)
+                {
+                    TempData["SuccessMessage"] = ex.Message;
+                    return RedirectToAction("Index");
+                }
+
+                return View(new List<PenalizacionResponseDTO>());
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error inesperado al consultar penalizaciones para {Identificador}", identificador);
-                TempData["ErrorMessage"] = "Ocurrió un error inesperado al consultar los datos en el servidor.";
+                _logger.LogError(ex, "Error al consultar penalizaciones para {Identificador}", identificador);
+                TempData["ErrorMessage"] = "Error inesperado en el servidor.";
                 return RedirectToAction("Index");
             }
         }
@@ -76,7 +121,6 @@ namespace SIGEBI.AppWeb.Controllers
                     return RedirectToAction("Index");
                 }
 
-                
                 var peticion = new PenalizacionRequestDTO
                 {
                     MatriculaONumeroEmpleado = identificador,

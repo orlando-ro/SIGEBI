@@ -1,16 +1,16 @@
-﻿@{
+﻿@model IEnumerable<SIGEBI.AppWeb.Models.Prestamos.PrestamoItemViewModel>
+@{
     ViewData["Title"] = "Gestión de Préstamos";
     var rolUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
 
-    // Mapeo exacto de la matriz de permisos de los Casos de Uso
     bool esEstudianteODocente = rolUsuario == "Estudiante" || rolUsuario == "Docente";
     bool esPersonalBibliotecario = rolUsuario == "PersonalBibliotecario";
     bool esAdministrador = rolUsuario == "Administrador";
     bool esAuditor = rolUsuario == "Auditor";
 
-    bool puedeAprobar = esPersonalBibliotecario; // CU-PRE-02
-    bool puedeVerActivosGeneral = esPersonalBibliotecario || esAdministrador; // CU-PRE-03 (Vista Admin)
-    bool puedeVerHistorial = esPersonalBibliotecario || esAdministrador || esAuditor; // CU-PRE-04
+    bool puedeAprobar = esPersonalBibliotecario;
+    bool puedeVerActivosGeneral = esPersonalBibliotecario || esAdministrador;
+    bool puedeVerHistorial = esPersonalBibliotecario || esAdministrador || esAuditor;
 }
 
 <div class="container mt-4">
@@ -26,34 +26,68 @@
         </div>
     }
 
-    <!-- VISTA EXCLUSIVA PARA ESTUDIANTES Y DOCENTES (CU-PRE-03) -->
+    <!-- VISTA EXCLUSIVA PARA ESTUDIANTES Y DOCENTES -->
     @if (esEstudianteODocente)
     {
-        <div class="row justify-content-center my-4">
-            <div class="col-md-9">
-                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-                    <div class="card-header bg-success text-white py-4 px-4 text-center">
-                        <h3 class="mb-1 fw-bold"><i class="bi bi-journal-check me-2"></i> Mis Préstamos Activos</h3>
-                        <p class="mb-0 text-white-50 small">Consulta los recursos bibliotecarios que tienes asignados actualmente en posesión.</p>
-                    </div>
-                    <div class="card-body p-4 p-md-5 text-center">
-                        <div class="display-4 text-success mb-3">
-                            <i class="bi bi-person-badge"></i>
-                        </div>
-                        <h5 class="fw-bold mb-3">Verificación de Usuario</h5>
-                        <p class="text-muted mb-4">Ingresa tu matrícula institucional o número de empleado para consultar el listado y las fechas límites de devolución de tus libros activos.</p>
+        if (Model != null && Model.Any())
+        {
+            <!-- Si tiene préstamos, mostramos la tabla directamente -->
+            <div class="card shadow-sm border-0 border-top border-success border-4 mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold text-success mb-3"><i class="bi bi-journal-check me-2"></i> Mis Préstamos Activos</h4>
+                    <p class="text-muted mb-4 opacity-75">Este es el listado de los recursos bibliotecarios que tienes actualmente en posesión.</p>
 
-                        <form asp-action="ActivosPorUsuario" method="get">
-                            <div class="input-group input-group-lg mb-3 shadow-sm rounded-pill overflow-hidden border">
-                                <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted ps-2"></i></span>
-                                <input type="text" class="form-control border-0" name="identificador" required placeholder="Ej: 2024-1234 o EMP-001" autocomplete="off" />
-                                <button class="btn btn-success px-5 fw-bold" type="submit">Consultar Activos</button>
-                            </div>
-                        </form>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-custom table-striped mb-0 align-middle text-center">
+                            <thead class="py-3 bg-success text-white">
+                                <tr>
+                                    <th class="py-3 px-3">ID Préstamo</th>
+                                    <th class="py-3">Fecha Inicio</th>
+                                    <th class="py-3">Fecha Vencimiento</th>
+                                    <th class="py-3">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="fw-bold px-3">#@item.IdPrestamo</td>
+                                        <td>@item.FechaInicio.ToString("dd/MMM/yyyy")</td>
+                                        <td>@item.FechaVencimiento.ToString("dd/MMM/yyyy")</td>
+                                        <td>
+                                            <span class="badge @(item.EstaVencido ? "bg-danger" : "bg-success")">
+                                                @item.Estado
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <!-- Si la lista está vacía, mostramos el mensaje bonito -->
+            <div class="row justify-content-center mt-5">
+                <div class="col-md-8">
+                    <div class="card shadow-lg border-0 border-top border-info border-5 rounded-4 text-center p-5" style="background-color: var(--bg-card, #ffffff);">
+                        <div class="display-1 text-info mb-4">
+                            <i class="bi bi-stars"></i>
+                        </div>
+                        <h2 class="fw-bold mb-3">¡Todo al día! ✨</h2>
+                        <p class="lead text-muted mb-4">No tienes libros pendientes por devolver ni préstamos activos en este momento.</p>
+                        <p class="mb-5 opacity-75">¡Anímate a explorar el catálogo y sumérgete en tu próxima gran lectura! 📚</p>
+                        <div>
+                            <a asp-controller="Solicitudes" asp-action="Crear" class="btn btn-info text-white rounded-pill px-5 py-2 fw-bold shadow">
+                                <i class="bi bi-plus-circle me-2"></i> Solicitar un Libro
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     }
     else
     {
