@@ -8,6 +8,7 @@
     // Validaciones
     bool puedeVerSolicitudes = rolUsuario != "Auditor";
     bool puedeVerPenalizaciones = rolUsuario != "Auditor";
+    bool puedeGestionarCatYCat = rolUsuario == "Administrador" || rolUsuario == "PersonalBibliotecario";
 }
 
 <div class="container text-center mt-5 pt-5">
@@ -22,9 +23,9 @@
 
             @if (!User.Identity!.IsAuthenticated)
             {
-                <div class="card shadow-sm border-0 p-4 rounded-4">
+                <div class="card shadow-sm border-0 p-4 rounded-4" style="background-color: var(--bg-card, #ffffff);">
                     <h5 class="fw-semibold mb-3">Acceso Restringido</h5>
-                    <p class="mb-4 opacity-75">Para acceder a los módulos de préstamos, devoluciones y administración de recursos, por favor inicie sesión con sus credenciales institucionales.</p>
+                    <p class="mb-4 opacity-75">Para explorar el catálogo y acceder a los módulos de préstamos, devoluciones y administración, por favor inicie sesión con sus credenciales institucionales.</p>
                     <div>
                         <a asp-controller="Acceso" asp-action="Login" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
                             <i class="bi bi-box-arrow-in-right me-2"></i> Ir al Login
@@ -34,10 +35,10 @@
             }
             else
             {
-                <div class="card shadow-sm border-0 border-start border-success border-5 p-4 rounded-4 text-start">
+                <div class="card shadow-sm border-0 border-start border-primary border-5 p-4 rounded-4 text-start" style="background-color: var(--bg-card, #ffffff);">
                     <div class="d-flex align-items-center">
-                        <div class="fs-1 text-success me-4 d-none d-sm-block">
-                            <i class="bi bi-check-circle-fill"></i>
+                        <div class="fs-1 text-primary me-4 d-none d-sm-block">
+                            <i class="bi bi-person-bounding-box"></i>
                         </div>
                         <div>
                             <h4 class="fw-bold mb-1">¡Hola, @User.Identity.Name!</h4>
@@ -46,6 +47,32 @@
                             <!-- Contenedor con los accesos directos -->
                             <div class="d-flex flex-wrap gap-3">
 
+                                <!-- Catálogo y Categorías -->
+                                @if (esEstudianteODocente)
+                                {
+                                    <a asp-controller="Catalogo" asp-action="Index" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
+                                        <i class="bi bi-search me-2"></i> Explorar Catálogo
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Catalogo" asp-action="Index" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
+                                        <i class="bi bi-collection me-2"></i> Gestión de Catálogo
+                                    </a>
+
+                                    @if (puedeGestionarCatYCat)
+                                    {
+                                        <a asp-controller="Categorias" asp-action="Index" class="btn btn-outline-secondary border-2 rounded-pill px-4 shadow-sm fw-bold">
+                                            <i class="bi bi-tags me-2"></i> Categorías
+                                        </a>
+                                    }
+                                }
+
+                                <!-- ACCESOS DEL USUARIO: Bandeja de Notificaciones (Todos) -->
+                                <a asp-controller="Notificaciones" asp-action="Index" class="btn btn-warning text-dark fw-bold rounded-pill px-4 shadow-sm">
+                                    <i class="bi bi-bell-fill me-2"></i> Mis Notificaciones
+                                </a>
+
                                 <a asp-controller="Prestamos" asp-action="Index" class="btn btn-success rounded-pill px-4 shadow-sm">
                                     <i class="bi bi-journal-bookmark me-2"></i>
                                     @(esEstudianteODocente ? "Consultar Préstamos Activos" : "Panel de Préstamos")
@@ -53,19 +80,19 @@
 
                                 @if (puedeVerSolicitudes)
                                 {
-                                    <a asp-controller="Solicitudes" asp-action="Index" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                                    <a asp-controller="Solicitudes" asp-action="Index" class="btn btn-info text-white rounded-pill px-4 shadow-sm">
                                         <i class="bi bi-inbox me-2"></i> Panel de Solicitudes
                                     </a>
                                 }
 
                                 @if (esPersonalAutorizado)
                                 {
-                                    <a asp-controller="Devoluciones" asp-action="Index" class="btn btn-info text-white rounded-pill px-4 shadow-sm">
+                                    <a asp-controller="Devoluciones" asp-action="Index" class="btn btn-secondary text-white rounded-pill px-4 shadow-sm">
                                         <i class="bi bi-box-arrow-in-left me-2"></i> Panel de Devoluciones
                                     </a>
                                 }
 
-                                <!-- NUEVO: Penalizaciones Dinámicas -->
+                                <!-- Penalizaciones Dinámicas -->
                                 @if (puedeVerPenalizaciones)
                                 {
                                     <a asp-controller="Penalizaciones" asp-action="Index" class="btn btn-danger text-white rounded-pill px-4 shadow-sm">
@@ -83,7 +110,12 @@
 
                                 @if (esAdminOAuditor)
                                 {
-                                    <a asp-controller="Auditoria" asp-action="Index" class="btn btn-outline-dark rounded-pill px-4 shadow-sm fw-bold bg-white">
+                                    <!-- CU-NOT-05: Botón rápido al historial global de notificaciones -->
+                                    <a asp-controller="Notificaciones" asp-action="HistorialGlobal" class="btn btn-outline-info rounded-pill px-4 shadow-sm fw-bold border-2 bg-white">
+                                        <i class="bi bi-envelope-paper-fill me-2"></i> Log Notificaciones
+                                    </a>
+
+                                    <a asp-controller="Auditoria" asp-action="Index" class="btn btn-outline-dark rounded-pill px-4 shadow-sm fw-bold border-2 bg-white">
                                         <i class="bi bi-shield-lock-fill me-2"></i> Log de Sistema
                                     </a>
                                 }

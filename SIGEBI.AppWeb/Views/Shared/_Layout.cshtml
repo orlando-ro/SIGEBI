@@ -22,7 +22,7 @@
         <nav class="navbar navbar-expand-lg shadow-sm mb-4" style="background-color: var(--theme-primary, #f8f9fa); transition: background-color 0.3s ease;">
             <div class="container">
                 <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-book-half"></i> SIGEBI
+                    <i class="bi bi-book-half text-primary"></i> SIGEBI
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -43,9 +43,15 @@
                             bool esPersonalAutorizado = rol == "PersonalBibliotecario" || rol == "Administrador" || rol == "Auditor";
                             bool esAdminOAuditor = rol == "Administrador" || rol == "Auditor";
 
-                            // Validaciones estrictas por Módulo (Restringiendo al Auditor)
+                            // Validaciones estrictas por Módulo
                             bool puedeVerSolicitudes = rol != "Auditor";
                             bool puedeVerPenalizaciones = rol != "Auditor";
+
+                            <li class="nav-item">
+                                <a class="nav-link fw-semibold text-primary" asp-area="" asp-controller="Catalogo" asp-action="Index">
+                                    <i class="bi bi-collection-fill"></i> Catálogo
+                                </a>
+                            </li>
 
                             <li class="nav-item">
                                 <a class="nav-link fw-semibold" asp-area="" asp-controller="Prestamos" asp-action="Index">
@@ -71,7 +77,6 @@
                                 </li>
                             }
 
-                            <!-- NUEVO: Penalizaciones para todos EXCEPTO Auditor -->
                             @if (puedeVerPenalizaciones)
                             {
                                 <li class="nav-item">
@@ -93,7 +98,13 @@
                             @if (esAdminOAuditor)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link fw-semibold text-dark" asp-area="" asp-controller="Auditoria" asp-action="Index">
+                                    <a class="nav-link fw-semibold text-info" asp-area="" asp-controller="Notificaciones" asp-action="HistorialGlobal">
+                                        <i class="bi bi-envelope-paper-fill"></i> Log Notificaciones
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link fw-semibold text-secondary" asp-area="" asp-controller="Auditoria" asp-action="Index">
                                         <i class="bi bi-shield-lock-fill"></i> Auditoría
                                     </a>
                                 </li>
@@ -101,8 +112,18 @@
                         }
                     </ul>
 
-                    <!-- Resto del menú (Selector de temas y Perfil) se mantiene igual... -->
                     <ul class="navbar-nav align-items-center">
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <!-- CAMPANITA DE NOTIFICACIONES CORREGIDA (Visible y contrastada en cualquier tema) -->
+                            <li class="nav-item me-3">
+                                <a class="btn btn-outline-warning border-0 rounded-circle shadow-sm position-relative d-flex align-items-center justify-content-center notification-bell" style="width: 40px; height: 40px;" asp-controller="Notificaciones" asp-action="Index" title="Mis Notificaciones">
+                                    <i class="bi bi-bell-fill fs-5"></i>
+                                </a>
+                            </li>
+                        }
+
                         <li class="nav-item me-4">
                             <div class="btn-group shadow-sm" role="group" aria-label="Selector de temas">
                                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setTheme('light')" title="Modo Claro">☀️</button>
@@ -164,6 +185,21 @@
             localStorage.setItem('sigebi-theme', themeName);
         }
     </script>
+
+    <style>
+        /* Corrección de visibilidad de la campanita en temas oscuros y azul */
+        .notification-bell {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: #ffc107 !important;
+            transition: all 0.2s ease-in-out;
+        }
+
+            .notification-bell:hover {
+                background-color: #ffc107 !important;
+                color: #212529 !important;
+                transform: scale(1.05);
+            }
+    </style>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -1,0 +1,88 @@
+﻿@model IEnumerable<SIGEBI.AppWeb.Models.Categorias.CategoriaItemViewModel>
+@{
+    ViewData["Title"] = "Gestión de Categorías";
+    var rolUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+    bool puedeGestionar = rolUsuario == "Administrador" || rolUsuario == "PersonalBibliotecario";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h1 class="fw-bold"><i class="bi bi-tags-fill text-secondary"></i> Categorías Bibliográficas</h1>
+
+        @if (puedeGestionar)
+        {
+            <div class="d-flex gap-2">
+                <a asp-controller="Catalogo" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">
+                    Volver al Catálogo
+                </a>
+                <a asp-action="Registrar" class="btn btn-secondary rounded-pill px-4 shadow-sm fw-bold">
+                    <i class="bi bi-plus-lg"></i> Nueva Categoría
+                </a>
+            </div>
+        }
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success shadow-sm border-start border-success border-5">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger shadow-sm border-start border-danger border-5">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="card shadow-sm border-0" style="background-color: var(--bg-card, #ffffff);">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-custom table-striped mb-0 align-middle">
+                    <thead class="py-3 bg-secondary text-white">
+                        <tr>
+                            <th class="py-3 px-4">ID</th>
+                            <th class="py-3">Nombre de Categoría</th>
+                            <th class="py-3 w-50 text-start">Descripción</th>
+                            @if (puedeGestionar)
+                            {
+                                <th class="py-3 text-center">Acciones</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="fw-bold px-4">@item.IdCategoria</td>
+                                    <td class="fw-bold">@item.Nombre</td>
+                                    <td class="text-start small opacity-75">@(string.IsNullOrEmpty(item.Descripcion) ? "Sin descripción" : item.Descripcion)</td>
+
+                                    @if (puedeGestionar)
+                                    {
+                                        <td class="text-center">
+                                            <a asp-action="Actualizar" asp-route-id="@item.IdCategoria" class="btn btn-sm btn-outline-primary shadow-sm px-3 rounded-pill">
+                                                <i class="bi bi-pencil-square"></i> Editar
+                                            </a>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted opacity-50">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                    No hay categorías registradas.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
