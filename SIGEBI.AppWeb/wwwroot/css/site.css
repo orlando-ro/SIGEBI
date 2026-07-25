@@ -67,6 +67,10 @@ h1, h2, h3, h4, h5, h6, p, span, div, li {
     color: var(--primary-color) !important;
 }
 
+.text-inherit {
+    color: inherit !important;
+}
+
 /* =========================================
    COMPONENTES BOOTSTRAP
 ========================================= */
@@ -74,7 +78,7 @@ h1, h2, h3, h4, h5, h6, p, span, div, li {
 /* Tarjetas (Cards) */
 .card {
     background-color: var(--bg-card) !important;
-    color: var(--text-main) !important; /* <-- Arregla el texto invisible */
+    color: var(--text-main) !important;
     border: 1px solid var(--border-color) !important;
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -144,14 +148,13 @@ h1, h2, h3, h4, h5, h6, p, span, div, li {
         color: var(--text-muted) !important;
     }
 
-
-/* Arreglo específico para los Floating Labels (evita superposición de texto) */
+/* Arreglo general para los Floating Labels (evita superposición de texto) */
 .form-floating > .form-control::placeholder {
-    color: transparent !important; /* Oculta el placeholder mientras el label está encima */
+    color: transparent !important;
 }
 
 .form-floating > .form-control:focus::placeholder {
-    color: var(--text-muted) !important; /* Solo muestra el placeholder al hacer clic */
+    color: var(--text-muted) !important;
 }
 
 .form-floating > label {
@@ -189,7 +192,6 @@ h1, h2, h3, h4, h5, h6, p, span, div, li {
    CLASES DE UTILIDAD Y DECORACIÓN
 ========================================= */
 
-/* Gradiente espectacular para fondos */
 .bg-gradient-custom {
     background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
     color: white !important;
@@ -200,12 +202,10 @@ h1, h2, h3, h4, h5, h6, p, span, div, li {
         color: #f8fafc !important;
     }
 
-/* Separadores */
 hr, .border-bottom, .border-top {
     border-color: var(--border-color) !important;
 }
 
-/* Alertas dinámicas para modo oscuro */
 .alert-danger {
     background-color: rgba(220, 53, 69, 0.1) !important;
     color: #ea868f !important;
@@ -228,8 +228,158 @@ hr, .border-bottom, .border-top {
     color: #0f5132 !important;
 }
 
-/* Badges redondeados tipo Dashboard */
 .badge {
     padding: 0.5em 0.8em;
     font-weight: 500;
+}
+
+/* =========================================
+   DISEÑO ESPECIAL DEL LOGIN (LIBRO ABIERTO)
+========================================= */
+
+.book-wrapper {
+    max-width: 950px;
+    width: 100%;
+    min-height: 550px;
+    background-color: transparent;
+    border-radius: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+    animation: openBook 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    transform-style: preserve-3d;
+    perspective: 1200px;
+}
+
+.book-page-left {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, #082d6b 100%);
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    box-shadow: inset -25px 0 30px -20px rgba(0, 0, 0, 0.6);
+    border-right: 1px solid rgba(0,0,0,0.3);
+}
+
+.book-bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(circle at top left, rgba(255,255,255,0.15) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.book-page-right {
+    background-color: var(--bg-card, #ffffff);
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    box-shadow: inset 20px 0 30px -20px rgba(0, 0, 0, 0.15), inset -4px 0 10px rgba(0,0,0,0.02);
+    border-right: 3px solid rgba(0,0,0,0.05);
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.custom-book-input {
+    border: none !important;
+    border-bottom: 2px solid var(--bs-secondary) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding-left: 5px !important;
+    transition: border-color 0.3s ease;
+}
+
+    .custom-book-input:focus {
+        border-bottom-color: var(--bs-primary) !important;
+    }
+
+.form-floating > .custom-book-input:focus ~ label::after,
+.form-floating > .custom-book-input:not(:placeholder-shown) ~ label::after {
+    background-color: var(--bg-card, #ffffff) !important;
+}
+
+.form-floating > .custom-book-input::placeholder {
+    color: transparent !important;
+}
+
+.form-floating > .custom-book-input:focus::placeholder {
+    color: inherit !important;
+    opacity: 0.4 !important;
+}
+
+.drop-shadow {
+    text-shadow: 0 10px 20px rgba(0,0,0,0.4);
+}
+
+.tracking-tight {
+    letter-spacing: -0.05em;
+}
+
+.divider-custom {
+    width: 60px;
+    height: 4px;
+    background-color: rgba(255,255,255,0.5);
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+.book-btn-hover {
+    transition: all 0.3s ease;
+}
+
+    .book-btn-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -5px rgba(var(--bs-primary-rgb), 0.5) !important;
+    }
+
+@media (max-width: 767.98px) {
+    .book-page-right {
+        border-radius: 15px;
+        box-shadow: none;
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .book-wrapper {
+        min-height: auto;
+        animation: none;
+    }
+}
+
+@keyframes openBook {
+    0% {
+        opacity: 0;
+        transform: rotateY(20deg) scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: rotateY(0) scale(1);
+    }
+}
+
+/* =========================================
+   ESTILOS Y ANIMACIONES MÓDULO SOLICITUDES
+========================================= */
+
+.transition-hover {
+    transition: color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+    .transition-hover:hover {
+        color: var(--bs-primary) !important;
+        opacity: 1;
+    }
+
+.pulse-animation {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }

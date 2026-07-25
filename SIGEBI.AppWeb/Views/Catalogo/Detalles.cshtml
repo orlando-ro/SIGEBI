@@ -1,0 +1,136 @@
+﻿@model SIGEBI.AppWeb.Models.Catalogo.CatalogoItemViewModel
+@{
+    ViewData["Title"] = "Detalles del Recurso";
+    var rolUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+    bool esPersonalBibliotecario = rolUsuario == "PersonalBibliotecario";
+    bool esAdministrador = rolUsuario == "Administrador";
+    bool puedeGestionar = esPersonalBibliotecario || esAdministrador;
+    bool esAuditor = rolUsuario == "Auditor";
+}
+
+<div class="container mt-4 pt-2 mb-5">
+    <!-- Navegación superior -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm text-inherit transition-hover">
+            <i class="bi bi-arrow-left me-2"></i> Volver al Catálogo
+        </a>
+    </div>
+
+    <!-- Tarjeta Principal de Detalles -->
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden" style="background-color: var(--bg-card, #ffffff);">
+        <div class="row g-0">
+
+            <!-- Columna Izquierda: Imagen del Libro -->
+            <div class="col-md-5 col-lg-4 d-flex align-items-center justify-content-center bg-light border-end" style="min-height: 400px;">
+                @if (!string.IsNullOrEmpty(Model.UrlImagen))
+                {
+                    <img src="@Model.UrlImagen" alt="@Model.Titulo" class="img-fluid w-100 h-100 object-fit-cover" />
+                }
+                else
+                {
+                    <div class="text-center text-muted opacity-25 p-5">
+                        <i class="bi bi-book" style="font-size: 8rem;"></i>
+                        <p class="mt-3 fw-bold">Sin Imagen</p>
+                    </div>
+                }
+            </div>
+
+            <!-- Columna Derecha: Información y Acciones -->
+            <div class="col-md-7 col-lg-8 p-4 p-md-5 d-flex flex-column text-inherit">
+
+                <div class="mb-2 d-flex flex-wrap gap-2 align-items-center">
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-2 rounded-pill">
+                        <i class="bi bi-bookmark-fill me-1"></i> @Model.NombreCategoria
+                    </span>
+                    <span class="badge @(Model.CopiasDisponibles > 0 ? "bg-success" : "bg-danger") px-3 py-2 rounded-pill shadow-sm">
+                        @(Model.CopiasDisponibles > 0 ? $"{Model.CopiasDisponibles} Ejemplares Disponibles" : "Agotado")
+                    </span>
+                </div>
+
+                <h1 class="fw-bolder display-5 mb-2 mt-2 text-inherit">@Model.Titulo</h1>
+                <h4 class="text-muted fw-normal mb-4"><i class="bi bi-pen me-2"></i> @Model.NombreAutor</h4>
+
+                <hr class="opacity-25" />
+
+                <div class="row mb-4 mt-2">
+                    <div class="col-sm-6 mb-3 mb-sm-0">
+                        <p class="text-muted small mb-1 fw-bold text-uppercase tracking-wide">Año de Publicación</p>
+                        <p class="fs-5 fw-semibold text-inherit">@Model.AnioPublicacion</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="text-muted small mb-1 fw-bold text-uppercase tracking-wide">Código ISBN</p>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fs-5 fw-semibold text-inherit font-monospace">@Model.ISBN</span>
+                            <!-- Botón de Copiado Rápido (Llama a site.js) -->
+                            <button type="button" onclick="copiarIsbn('@Model.ISBN')" class="btn btn-sm btn-outline-secondary rounded-circle" title="Copiar ISBN">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de Acciones según el Rol -->
+                <div class="mt-auto pt-4 d-flex flex-wrap gap-3">
+
+                    <!-- Botón para Usuarios Regulares (Agregar a Carrito, llama a site.js) -->
+                    @if (!puedeGestionar && !esAuditor)
+                    {
+                        <button type="button" onclick="agregarAlCarrito('@Model.ISBN', '@Html.Raw(Model.Titulo.Replace("'", "\\'"))')" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm fw-bold flex-grow-1 flex-md-grow-0 book-btn-hover">
+                            <i class="bi bi-journal-plus me-2"></i> Solicitar Préstamo
+                        </button>
+                    }
+
+                    <!-- Opciones de Gestión para Bibliotecarios y Administradores -->
+                    @if (puedeGestionar || esAuditor)
+                    {
+                        <a asp-controller="Prestamos" asp-action="HistorialPorRecurso" asp-route-isbnLibro="@Model.ISBN" class="btn btn-outline-info rounded-pill px-4 shadow-sm fw-semibold">
+                            <i class="bi bi-clock-history me-1"></i> Historial
+                        </a>
+                    }
+
+                    @if (puedeGestionar)
+                    {
+                        <a asp-action="Actualizar" asp-route-isbn="@Model.ISBN" class="btn btn-outline-primary rounded-pill px-4 shadow-sm fw-semibold">
+                            <i class="bi bi-pencil-square me-1"></i> Editar
+                        </a>
+
+                        @if (esAdministrador)
+                        {
+                            <form asp-action="Eliminar" method="post" class="d-inline" onsubmit="return confirm('¿Está seguro de que desea dar de baja este recurso?');">
+                                <input type="hidden" name="isbn" value="@Model.ISBN" />
+                                <button type="submit" class="btn btn-outline-danger rounded-pill px-4 shadow-sm fw-semibold">
+                                    <i class="bi bi-trash me-1"></i> Dar de Baja
+                                </button>
+                            </form>
+                        }
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .tracking-wide {
+        letter-spacing: 0.05em;
+    }
+
+    .transition-hover {
+        transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+        .transition-hover:hover {
+            color: var(--bs-primary) !important;
+            transform: translateX(-5px);
+        }
+
+    .book-btn-hover {
+        transition: all 0.3s ease;
+    }
+
+        .book-btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(var(--bs-primary-rgb), 0.5) !important;
+        }
+</style>

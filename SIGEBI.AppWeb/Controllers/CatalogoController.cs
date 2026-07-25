@@ -59,6 +59,40 @@ namespace SIGEBI.AppWeb.Controllers
             return View(modelo);
         }
 
+        
+        [HttpGet]
+        [AllowAnonymous] // permite que cualquier usuario, autenticado, pueda ver los detalles del libro
+        public async Task<IActionResult> Detalles(string isbn)
+        {
+            if (string.IsNullOrWhiteSpace(isbn))
+            {
+                TempData["ErrorMessage"] = "Debe proporcionar un ISBN válido.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var libroDto = await _servicioCatalogo.BuscarPorIsbnAsync(isbn);
+
+            if (libroDto == null)
+            {
+                TempData["ErrorMessage"] = "El recurso bibliográfico que intenta ver no existe.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Reutilizamos el ViewModel del catálogo para mostrar los detalles
+            var modelo = new CatalogoItemViewModel
+            {
+                ISBN = libroDto.ISBN,
+                Titulo = libroDto.Titulo,
+                NombreAutor = libroDto.NombreAutor,
+                AnioPublicacion = libroDto.AnioPublicacion,
+                NombreCategoria = libroDto.Categoria,
+                UrlImagen = libroDto.UrlImagen,
+                CopiasDisponibles = libroDto.CopiasDisponibles
+            };
+
+            return View(modelo);
+        }
+
         [HttpGet]
         [Authorize(Roles = "Administrador,PersonalBibliotecario")]
         public async Task<IActionResult> Registrar()
