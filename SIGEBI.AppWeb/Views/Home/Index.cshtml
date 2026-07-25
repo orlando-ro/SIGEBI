@@ -5,7 +5,7 @@
     bool esAdminOAuditor = rolUsuario == "Administrador" || rolUsuario == "Auditor";
     bool esEstudianteODocente = rolUsuario == "Estudiante" || rolUsuario == "Docente";
 
-    // NUEVA VARIABLE: Validación exclusiva para Administrador
+    // Validación exclusiva para Administrador
     bool esAdmin = rolUsuario == "Administrador";
 
     // Validaciones
@@ -14,23 +14,27 @@
     bool puedeGestionarCatYCat = rolUsuario == "Administrador" || rolUsuario == "PersonalBibliotecario";
 }
 
-<div class="container text-center mt-5 pt-5">
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <h1 class="display-4 fw-bold text-primary mb-4">
-                <i class="bi bi-book-half"></i> Bienvenido a SIGEBI
-            </h1>
-            <p class="lead mb-5">
-                Sistema de Gestión de Bibliotecas del Instituto Tecnológico de Las Américas (ITLA).
-            </p>
+        <div class="col-lg-10">
+            <!-- Hero Section -->
+            <div class="text-center mb-5">
+                <div class="display-5 fw-bold text-primary mb-3">
+                    <i class="bi bi-book-half"></i> Bienvenido a SIGEBI
+                </div>
+                <p class="lead text-muted mx-auto" style="max-width: 600px;">
+                    Sistema de Gestión de Bibliotecas del Instituto Tecnológico de Las Américas (ITLA). Administre y consulte recursos de manera ágil y moderna.
+                </p>
+            </div>
 
             @if (!User.Identity!.IsAuthenticated)
             {
-                <div class="card shadow-sm border-0 p-4 rounded-4" style="background-color: var(--bg-card, #ffffff);">
-                    <h5 class="fw-semibold mb-3">Acceso Restringido</h5>
-                    <p class="mb-4 opacity-75">Para explorar el catálogo y acceder a los módulos de préstamos, devoluciones y administración, por favor inicie sesión con sus credenciales institucionales.</p>
+                <div class="card shadow-lg border-0 p-5 rounded-4 text-center" style="background-color: var(--bg-card, #ffffff);">
+                    <div class="mb-3 text-primary display-4"><i class="bi bi-shield-lock"></i></div>
+                    <h3 class="fw-bold mb-3">Acceso Restringido</h3>
+                    <p class="text-muted mb-4 mx-auto" style="max-width: 450px;">Para explorar el catálogo y acceder a los módulos de préstamos, devoluciones y administración, por favor inicie sesión con sus credenciales institucionales.</p>
                     <div>
-                        <a asp-controller="Acceso" asp-action="Login" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+                        <a asp-controller="Acceso" asp-action="Login" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm fw-bold">
                             <i class="bi bi-box-arrow-in-right me-2"></i> Ir al Login
                         </a>
                     </div>
@@ -38,99 +42,203 @@
             }
             else
             {
-                <div class="card shadow-sm border-0 border-start border-primary border-5 p-4 rounded-4 text-start" style="background-color: var(--bg-card, #ffffff);">
-                    <div class="d-flex align-items-center">
-                        <div class="fs-1 text-primary me-4 d-none d-sm-block">
-                            <i class="bi bi-person-bounding-box"></i>
+                <!-- Panel de Usuario Autenticado -->
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden" style="background-color: var(--bg-card, #ffffff);">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                            <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle fs-3 me-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            <div>
+                                <h3 class="fw-bold mb-1 text-inherit">¡Hola, @User.Identity.Name!</h3>
+                                <p class="text-muted mb-0 small"><i class="bi bi-shield-check text-success me-1"></i> Sesión activa con rol de <strong>@rolUsuario</strong></p>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="fw-bold mb-1">¡Hola, @User.Identity.Name!</h4>
-                            <p class="opacity-75 mb-4">Has iniciado sesión correctamente en el sistema. ¿Qué deseas hacer hoy?</p>
 
-                            <!-- Contenedor con los accesos directos -->
-                            <div class="d-flex flex-wrap gap-3">
+                        <h5 class="fw-bold text-muted text-uppercase fs-6 mb-4 tracking-wider">
+                            <i class="bi bi-grid-fill me-2 text-primary"></i> Módulos y Accesos Disponibles
+                        </h5>
 
-                                <!-- Catálogo y Categorías -->
+                        <!-- Grid de Accesos Directos Moderna -->
+                        <div class="row g-3">
+
+                            <!-- Catálogo -->
+                            <div class="col-md-6 col-lg-4">
                                 @if (esEstudianteODocente)
                                 {
-                                    <a asp-controller="Catalogo" asp-action="Index" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
-                                        <i class="bi bi-search me-2"></i> Explorar Catálogo
+                                    <a asp-controller="Catalogo" asp-action="Index" class="card h-100 text-decoration-none shadow-sm border-0 transition-card p-3 rounded-4 custom-dashboard-card">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary text-white p-3 rounded-3 me-3 fs-4"><i class="bi bi-search"></i></div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1 text-inherit">Explorar Catálogo</h6>
+                                                <small class="text-muted">Busca libros y recursos disponibles.</small>
+                                            </div>
+                                        </div>
                                     </a>
                                 }
                                 else
                                 {
-                                    <a asp-controller="Catalogo" asp-action="Index" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
-                                        <i class="bi bi-collection me-2"></i> Gestión de Catálogo
-                                    </a>
-
-                                    @if (puedeGestionarCatYCat)
-                                    {
-                                        <a asp-controller="Categorias" asp-action="Index" class="btn btn-outline-secondary border-2 rounded-pill px-4 shadow-sm fw-bold">
-                                            <i class="bi bi-tags me-2"></i> Categorías
-                                        </a>
-                                    }
-                                }
-
-                                <!-- ACCESOS DEL USUARIO: Bandeja de Notificaciones (Todos) -->
-                                <a asp-controller="Notificaciones" asp-action="Index" class="btn btn-warning text-dark fw-bold rounded-pill px-4 shadow-sm">
-                                    <i class="bi bi-bell-fill me-2"></i> Mis Notificaciones
-                                </a>
-
-                                <a asp-controller="Prestamos" asp-action="Index" class="btn btn-success rounded-pill px-4 shadow-sm">
-                                    <i class="bi bi-journal-bookmark me-2"></i>
-                                    @(esEstudianteODocente ? "Consultar Préstamos Activos" : "Panel de Préstamos")
-                                </a>
-
-                                @if (puedeVerSolicitudes)
-                                {
-                                    <a asp-controller="Solicitudes" asp-action="Index" class="btn btn-info text-white rounded-pill px-4 shadow-sm">
-                                        <i class="bi bi-inbox me-2"></i> Panel de Solicitudes
-                                    </a>
-                                }
-
-                                @if (esPersonalAutorizado)
-                                {
-                                    <a asp-controller="Devoluciones" asp-action="Index" class="btn btn-secondary text-white rounded-pill px-4 shadow-sm">
-                                        <i class="bi bi-box-arrow-in-left me-2"></i> Panel de Devoluciones
-                                    </a>
-                                }
-
-                                <!-- Penalizaciones Dinámicas -->
-                                @if (puedeVerPenalizaciones)
-                                {
-                                    <a asp-controller="Penalizaciones" asp-action="Index" class="btn btn-danger text-white rounded-pill px-4 shadow-sm">
-                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                        @(esEstudianteODocente ? "Mis Penalizaciones" : "Panel de Penalizaciones")
-                                    </a>
-                                }
-
-                                @if (esPersonalAutorizado)
-                                {
-                                    <a asp-controller="Reportes" asp-action="Index" class="btn btn-dark text-white rounded-pill px-4 shadow-sm">
-                                        <i class="bi bi-bar-chart-line-fill me-2"></i> Reportes y Estadísticas
-                                    </a>
-                                }
-
-                                <!-- Gestión de Usuarios -->
-                                @if (esAdmin)
-                                {
-                                    <a asp-controller="Usuarios" asp-action="Index" class="btn btn-secondary text-white rounded-pill px-4 shadow-sm">
-                                        <i class="bi bi-people-fill me-2"></i> Gestión de Usuarios
-                                    </a>
-                                }
-
-                                @if (esAdminOAuditor)
-                                {
-                                    <!-- CU-NOT-05: Botón rápido al historial global de notificaciones -->
-                                    <a asp-controller="Notificaciones" asp-action="HistorialGlobal" class="btn btn-outline-info rounded-pill px-4 shadow-sm fw-bold border-2 bg-white">
-                                        <i class="bi bi-envelope-paper-fill me-2"></i> Log Notificaciones
-                                    </a>
-
-                                    <a asp-controller="Auditoria" asp-action="Index" class="btn btn-outline-dark rounded-pill px-4 shadow-sm fw-bold border-2 bg-white">
-                                        <i class="bi bi-shield-lock-fill me-2"></i> Log de Sistema
+                                    <a asp-controller="Catalogo" asp-action="Index" class="card h-100 text-decoration-none shadow-sm border-0 transition-card p-3 rounded-4 custom-dashboard-card">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary text-white p-3 rounded-3 me-3 fs-4"><i class="bi bi-collection"></i></div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1 text-inherit">Gestión de Catálogo</h6>
+                                                <small class="text-muted">Administra el inventario bibliográfico.</small>
+                                            </div>
+                                        </div>
                                     </a>
                                 }
                             </div>
+
+                            <!-- Categorías (Admin / Biblio) -->
+                            @if (!esEstudianteODocente && puedeGestionarCatYCat)
+                            {
+                                <div class="col-md-6 col-lg-4">
+                                    <a asp-controller="Categorias" asp-action="Index" class="card h-100 text-decoration-none shadow-sm border-0 transition-card p-3 rounded-4 custom-dashboard-card">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-secondary text-white p-3 rounded-3 me-3 fs-4"><i class="bi bi-tags"></i></div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1 text-inherit">Categorías</h6>
+                                                <small class="text-muted">Clasificación de recursos.</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+
+                            <!-- Notificaciones (Todos) -->
+                            <div class="col-md-6 col-lg-4">
+                                <a asp-controller="Notificaciones" asp-action="Index" class="card h-100 text-decoration-none shadow-sm border-0 transition-card p-3 rounded-4 custom-dashboard-card">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-warning text-dark p-3 rounded-3 me-3 fs-4"><i class="bi bi-bell-fill"></i></div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1 text-inherit">Mis Notificaciones</h6>
+                                            <small class="text-muted">Buzón de avisos y alertas.</small>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Préstamos -->
+                            <div class="col-md-6 col-lg-4">
+                                <a asp-controller="Prestamos" asp-action="Index" class="card h-100 text-decoration-none shadow-sm border-0 transition-card p-3 rounded-4 custom-dashboard-card">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-success text-white p-3 rounded-3 me-3 fs-4"><i class="bi bi-journal-bookmark"></i></div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1 text-inherit">@(esEstudianteODocente ? "Mis Préstamos" : "Panel de Préstamos")</h6>
+                                            <small class="text-muted">Control de libros prestados.</small>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Solicitudes -->
+                            @if (puedeVerSolicitudes)
+                            {
+                                <div class="col-md-6 col-lg-4">
+                                    <a asp-controller="Solicitudes" asp-action="Index" class="card h-100 text-decoration-none shadow-sm border-0 transition-card p-3 rounded-4 custom-dashboard-card">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-info text-white p-3 rounded-3 me-3 fs-4"><i class="bi bi-inbox"></i></div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1 text-inherit">Panel de Solicitudes</h6>
+                                                <small class="text-muted">Revisión de peticiones.</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+
+                            <!-- Devoluciones -->
+                            @if (esPersonalAutorizado)
+                            {
+                                <div class="col-md-6 col-lg-4">
+                                    <a asp-controller="Devoluciones" asp-action="Index" class="card h-100 text-decoration-none shadow-sm border-0 transition-card p-3 rounded-4 custom-dashboard-card">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-secondary text-white p-3 rounded-3 me-3 fs-4"><i class="bi bi-box-arrow-in-left"></i></div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1 text-inherit">Panel de Devoluciones</h6>
+                                                <small class="text-muted">Recepción de ejemplares.</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+
+                            <!-- Penalizaciones -->
+                            @if (puedeVerPenalizaciones)
+                            {
+                                <div class="col-md-6 col-lg-4">
+                                    <a asp-controller="Penalizaciones" asp-action="Index" class="card h-100 text-decoration-none shadow-sm border-0 transition-card p-3 rounded-4 custom-dashboard-card">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-danger text-white p-3 rounded-3 me-3 fs-4"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1 text-inherit">@(esEstudianteODocente ? "Mis Penalizaciones" : "Penalizaciones")</h6>
+                                                <small class="text-muted">Estado de multas y suspensiones.</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+
+                            <!-- Reportes -->
+                            @if (esPersonalAutorizado)
+                            {
+                                <div class="col-md-6 col-lg-4">
+                                    <a asp-controller="Reportes" asp-action="Index" class="card h-100 text-decoration-none shadow-sm border-0 transition-card p-3 rounded-4 custom-dashboard-card">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-warning text-dark p-3 rounded-3 me-3 fs-4"><i class="bi bi-bar-chart-line-fill"></i></div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1 text-inherit">Reportes y Estadísticas</h6>
+                                                <small class="text-muted">Métricas del sistema.</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+
+                            <!-- Gestión de Usuarios (Admin) -->
+                            @if (esAdmin)
+                            {
+                                <div class="col-md-6 col-lg-4">
+                                    <a asp-controller="Usuarios" asp-action="Index" class="card h-100 text-decoration-none shadow-sm border-0 transition-card p-3 rounded-4 custom-dashboard-card">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-dark text-white p-3 rounded-3 me-3 fs-4"><i class="bi bi-people-fill"></i></div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1 text-inherit">Gestión de Usuarios</h6>
+                                                <small class="text-muted">Control de accesos y roles.</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+
+                            <!-- Log de Notificaciones y Sistema (Admin / Auditor) -->
+                            @if (esAdminOAuditor)
+                            {
+                                <div class="col-md-6 col-lg-4">
+                                    <a asp-controller="Notificaciones" asp-action="HistorialGlobal" class="card h-100 text-decoration-none shadow-sm border-0 transition-card p-3 rounded-4 custom-dashboard-card">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-info text-white p-3 rounded-3 me-3 fs-4"><i class="bi bi-envelope-paper-fill"></i></div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1 text-inherit">Log Notificaciones</h6>
+                                                <small class="text-muted">Historial global de avisos.</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <a asp-controller="Auditoria" asp-action="Index" class="card h-100 text-decoration-none shadow-sm border-0 transition-card p-3 rounded-4 custom-dashboard-card">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-dark text-white p-3 rounded-3 me-3 fs-4"><i class="bi bi-shield-lock-fill"></i></div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1 text-inherit">Log de Sistema</h6>
+                                                <small class="text-muted">Auditoría de transacciones.</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
 
                         </div>
                     </div>
@@ -139,3 +247,25 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* Estilos adaptativos para que las tarjetas del dashboard se adapten a cualquier tema */
+    .custom-dashboard-card {
+        background-color: rgba(128, 128, 128, 0.08) !important;
+        color: inherit !important;
+    }
+
+    .text-inherit {
+        color: inherit !important;
+    }
+
+    .transition-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    }
+
+        .transition-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.2) !important;
+            background-color: rgba(var(--bs-primary-rgb), 0.15) !important;
+        }
+</style>

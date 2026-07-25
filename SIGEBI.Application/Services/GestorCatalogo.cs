@@ -37,11 +37,11 @@ namespace SIGEBI.Application.Services
             if (categoria == null)
                 throw new NegocioExeption("La categoría no existe.");
 
-            string urlImagen = string.Empty;
-            if (dto.Imagen != null && dto.Imagen.Length > 0)
+            string urlImagen = string.Empty; 
+            if (dto.ContenidoImagen != null && dto.ContenidoImagen.Length > 0)
             {
-                using var stream = dto.Imagen.OpenReadStream();
-                string extension = Path.GetExtension(dto.Imagen.FileName);
+                using var stream = new MemoryStream(dto.ContenidoImagen);
+                string extension = dto.ExtensionImagen ?? ".jpg";
                 urlImagen = await _storageService.GuardarImagenAsync(stream, extension, "images/libros");
             }
 

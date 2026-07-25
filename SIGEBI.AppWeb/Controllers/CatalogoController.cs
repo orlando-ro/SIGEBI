@@ -81,6 +81,21 @@ namespace SIGEBI.AppWeb.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
+                // NUEVO: Transformación del IFormFile a byte[]
+                byte[]? bytesImagen = null;
+                string? extensionArchivo = null;
+
+                if (modelo.Imagen != null && modelo.Imagen.Length > 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await modelo.Imagen.CopyToAsync(memoryStream);
+                        bytesImagen = memoryStream.ToArray();
+                        extensionArchivo = Path.GetExtension(modelo.Imagen.FileName);
+                    }
+                }
+
+                // Mapeo al DTO (Agnóstico a la web)
                 var dto = new LibroRequestDTO
                 {
                     ISBN = modelo.ISBN,
@@ -89,7 +104,8 @@ namespace SIGEBI.AppWeb.Controllers
                     AnioPublicacion = modelo.AnioPublicacion,
                     CopiasTotales = modelo.CopiasTotales,
                     IdCategoria = modelo.IdCategoria,
-                    Imagen = modelo.Imagen
+                    ContenidoImagen = bytesImagen,
+                    ExtensionImagen = extensionArchivo
                 };
 
                 await _servicioCatalogo.RegistrarLibroAsync(dto, idResponsable);

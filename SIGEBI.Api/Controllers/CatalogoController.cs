@@ -1,14 +1,28 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace SIGEBI.Api.Controllers
 {
+    // Clase exclusiva de la API para recibir el multipart/form-data
+    public class RegistrarLibroApiRequest
+    {
+        public string ISBN { get; set; } = string.Empty;
+        public string Titulo { get; set; } = string.Empty;
+        public string NombreAutor { get; set; } = string.Empty;
+        public int AnioPublicacion { get; set; }
+        public int CopiasTotales { get; set; }
+        public int IdCategoria { get; set; }
+        public IFormFile? Imagen { get; set; }
+    }
+
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] // Protegemos el controlador completo por defecto
+    [Authorize]
     public class CatalogoController : BaseController
     {
         private readonly IServicioCatalogo _gestorCatalogo;
@@ -18,16 +32,16 @@ namespace SIGEBI.Api.Controllers
             _gestorCatalogo = gestorCatalogo;
         }
 
-        // GET: api/catalogo
+        
         [HttpGet]
-        [AllowAnonymous] 
+        [AllowAnonymous]
         public async Task<IActionResult> ConsultarTodos()
         {
             var libros = await _gestorCatalogo.ConsultarTodoAsync();
             return Ok(libros);
         }
 
-        // GET: api/catalogo/{isbn}
+       
         [HttpGet("{isbn}")]
         [AllowAnonymous]
         public async Task<IActionResult> BuscarPorIsbn(string isbn)
@@ -40,7 +54,7 @@ namespace SIGEBI.Api.Controllers
             return Ok(libro);
         }
 
-        // GET: api/catalogo/buscar
+        
         [HttpGet("buscar")]
         [AllowAnonymous]
         public async Task<IActionResult> ConsultarCatalogo([FromQuery] FiltroCatalogoDTO filtros)
@@ -49,19 +63,46 @@ namespace SIGEBI.Api.Controllers
             return Ok(resultados);
         }
 
-        // POST: api/catalogo/registrar
+       
         [HttpPost("registrar")]
         [Authorize(Roles = "Administrador,PersonalBibliotecario")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> RegistrarLibro([FromForm] LibroRequestDTO request)
+        public async Task<IActionResult> RegistrarLibro([FromForm] RegistrarLibroApiRequest request)
         {
             int idResponsable = ObtenerIdResponsable();
 
-            await _gestorCatalogo.RegistrarLibroAsync(request, idResponsable);
+            // Transformación del IFormFile a byte[]
+            byte[]? bytesImagen = null;
+            string? extensionArchivo = null;
+
+            if (request.Imagen != null && request.Imagen.Length > 0)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await request.Imagen.CopyToAsync(memoryStream);
+                    bytesImagen = memoryStream.ToArray();
+                    extensionArchivo = Path.GetExtension(request.Imagen.FileName);
+                }
+            }
+
+            // Mapeo al DTO (Agnóstico a la web)
+            var dto = new LibroRequestDTO
+            {
+                ISBN = request.ISBN,
+                Titulo = request.Titulo,
+                NombreAutor = request.NombreAutor,
+                AnioPublicacion = request.AnioPublicacion,
+                CopiasTotales = request.CopiasTotales,
+                IdCategoria = request.IdCategoria,
+                ContenidoImagen = bytesImagen,
+                ExtensionImagen = extensionArchivo
+            };
+
+            await _gestorCatalogo.RegistrarLibroAsync(dto, idResponsable);
             return Ok(new { Mensaje = "Libro y ejemplares registrados exitosamente." });
         }
 
-        // PUT: api/catalogo/{isbn}
+      
         [HttpPut("{isbn}")]
         [Authorize(Roles = "Administrador,PersonalBibliotecario")]
         public async Task<IActionResult> ActualizarLibro(string isbn, [FromBody] LibroUpdateDTO request)
@@ -69,19 +110,18 @@ namespace SIGEBI.Api.Controllers
             int idResponsable = ObtenerIdResponsable();
 
             await _gestorCatalogo.ActualizarLibroAsync(isbn, request, idResponsable);
-            return Ok(new { mensaje = "Libro acatualizado"}); // 200 Ok
+            return Ok(new { mensaje = "Libro actualizado" });
         }
 
-        // PUT: api/catalogo/{isbn}/desactivar
+        
         [HttpPut("{isbn}/desactivar")]
-        [Authorize(Roles = "Administrador")] 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DesactivarLibro(string isbn)
         {
             int idResponsable = ObtenerIdResponsable();
 
             await _gestorCatalogo.EliminarLibroAsync(isbn, idResponsable);
-
-            return Ok(new { mensaje = "Libro Desactivado"}); // 200 Ok
+            return Ok(new { mensaje = "Libro Desactivado" });
         }
     }
 }
