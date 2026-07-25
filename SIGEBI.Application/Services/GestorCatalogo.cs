@@ -37,7 +37,7 @@ namespace SIGEBI.Application.Services
             if (categoria == null)
                 throw new NegocioExeption("La categoría no existe.");
 
-            string urlImagen = string.Empty; 
+            string urlImagen = string.Empty;
             if (dto.ContenidoImagen != null && dto.ContenidoImagen.Length > 0)
             {
                 using var stream = new MemoryStream(dto.ContenidoImagen);
@@ -72,7 +72,7 @@ namespace SIGEBI.Application.Services
                  tipoAccion: "Creacion de libro y ejemplares",
                  entidadAfectada: "Libro/Ejemplar",
                  detalles: $"Se registró el libro: {libro.Titulo} con {dto.CopiasTotales} ejemplares físicos."
-             );
+            );
         }
 
         public async Task<LibroResponseDTO?> BuscarPorIsbnAsync(string isbn)
@@ -85,6 +85,7 @@ namespace SIGEBI.Application.Services
                 ISBN = libro.ISBN,
                 Titulo = libro.Titulo,
                 NombreAutor = libro.NombreAutor,
+                AnioPublicacion = libro.AnioPublicacion,
                 Categoria = libro.Categoria?.Nombre ?? "N/A",
                 UrlImagen = libro.UrlImagen,
                 CopiasDisponibles = libro.CopiasDisponibles
@@ -100,6 +101,7 @@ namespace SIGEBI.Application.Services
                 ISBN = l.ISBN,
                 Titulo = l.Titulo,
                 NombreAutor = l.NombreAutor,
+                AnioPublicacion = l.AnioPublicacion,
                 CopiasDisponibles = l.CopiasDisponibles,
                 Categoria = l.Categoria != null ? l.Categoria.Nombre : "N/A",
                 UrlImagen = l.UrlImagen
@@ -188,7 +190,7 @@ namespace SIGEBI.Application.Services
                 AnioPublicacion = l.AnioPublicacion,
                 NombreCategoria = l.Categoria?.Nombre ?? "Sin categoría",
                 UrlImagen = l.UrlImagen,
-                CopiasDisponibles = l.Ejemplares.Count(e => e.Estado.ToString() == "Disponible")
+                CopiasDisponibles = l.Ejemplares != null ? l.Ejemplares.Count(e => e.Estado.ToString() == "Disponible") : 0
             }).ToList();
 
             return resultado;

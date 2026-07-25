@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SIGEBI.Application.DTOs.PrestamoResponseDTO>
+﻿@model IEnumerable<SIGEBI.AppWeb.Models.Prestamos.PrestamoItemViewModel>
 @{
     ViewData["Title"] = "Historial por Recurso";
 }
@@ -6,7 +6,7 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
         <div>
-            <h2 class="fw-bold text-dark"><i class="bi bi-archive"></i> Historial de Préstamos (Recurso)</h2>
+            <h2 class="fw-bold text-inherit"><i class="bi bi-archive text-primary"></i> Historial de Préstamos (Recurso)</h2>
             @if (ViewBag.Busqueda != null)
             {
                 <p class="text-muted mb-0">Resultados para el ISBN: <strong>@ViewBag.Busqueda</strong></p>
@@ -24,7 +24,7 @@
 
     @if (Model != null && Model.Any())
     {
-        <div class="card shadow-sm border-0">
+        <div class="card shadow-sm border-0" style="background-color: var(--bg-card, #ffffff);">
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover table-custom table-striped mb-0 text-center align-middle">
@@ -74,3 +74,10 @@
         </div>
     }
 </div>
+
+<style>
+    /* Soporte universal de colores para adaptación dinámica de temas */
+    .text-inherit {
+        color: inherit !important;
+    }
+</style>

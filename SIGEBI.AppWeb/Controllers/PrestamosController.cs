@@ -42,14 +42,14 @@ namespace SIGEBI.AppWeb.Controllers
                     }
                     catch (NegocioExeption)
                     {
-                        // Si no tiene préstamos, mandamos una lista vacía para mostrar el mensaje bonito
+                        
                         ViewBag.EsUsuarioRegular = true;
                         return View(new List<PrestamoItemViewModel>());
                     }
                 }
             }
 
-            // Si es Administrador, Bibliotecario o Auditor, cargamos la vista normal vacía
+            
             ViewBag.EsUsuarioRegular = false;
             return View(new List<PrestamoItemViewModel>());
         }

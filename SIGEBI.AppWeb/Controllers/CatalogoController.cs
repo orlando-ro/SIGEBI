@@ -34,7 +34,7 @@ namespace SIGEBI.AppWeb.Controllers
                 Titulo = titulo,
                 NombreAutor = autor,
                 IdCategoria = idCategoria,
-                SoloDisponibles = soloDisponibles
+                SoloDisponibles = false // Manejo seguro en memoria para evitar fallos de SQL
             };
 
             var dtos = await _servicioCatalogo.ConsultarCatalogoAsync(filtros);
@@ -49,6 +49,12 @@ namespace SIGEBI.AppWeb.Controllers
                 UrlImagen = d.UrlImagen,
                 CopiasDisponibles = d.CopiasDisponibles
             }).ToList();
+
+            // Filtro seguro en memoria RAM del servidor web si el usuario marca la casilla
+            if (soloDisponibles)
+            {
+                modelo = modelo.Where(m => m.CopiasDisponibles > 0).ToList();
+            }
 
             return View(modelo);
         }
@@ -81,7 +87,6 @@ namespace SIGEBI.AppWeb.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                // NUEVO: Transformación del IFormFile a byte[]
                 byte[]? bytesImagen = null;
                 string? extensionArchivo = null;
 
@@ -95,7 +100,6 @@ namespace SIGEBI.AppWeb.Controllers
                     }
                 }
 
-                // Mapeo al DTO (Agnóstico a la web)
                 var dto = new LibroRequestDTO
                 {
                     ISBN = modelo.ISBN,
@@ -141,7 +145,7 @@ namespace SIGEBI.AppWeb.Controllers
                 ISBN = libroDto.ISBN,
                 Titulo = libroDto.Titulo,
                 NombreAutor = libroDto.NombreAutor,
-                AnioPublicacion = 0, // Nota: Tu LibroResponseDTO no traía el Anio, asegúrate de añadirlo si lo necesitas pre-cargar
+                AnioPublicacion = libroDto.AnioPublicacion,
                 IdCategoria = categoriaSeleccionada?.IdCategoria ?? 0
             };
 
