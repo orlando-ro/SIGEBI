@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace SIGEBI.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]")] 
     public class PrestamosController : ControllerBase
     {
         private readonly IservicioPrestamo _iservicioPrestamo;

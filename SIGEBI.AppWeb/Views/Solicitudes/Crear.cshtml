@@ -1,0 +1,170 @@
+﻿@model SIGEBI.AppWeb.Models.Solicitudes.CrearSolicitudViewModel
+@{
+    ViewData["Title"] = "Crear Solicitud";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden" style="background-color: var(--bg-card, #ffffff);">
+
+                <div class="card-header bg-primary text-white py-4 px-4 border-0">
+                    <h3 class="mb-0 fw-bold"><i class="bi bi-journal-check me-2"></i> Confirmar Solicitud</h3>
+                    <small class="text-white-50">Verifica los recursos seleccionados antes de enviar.</small>
+                </div>
+
+                <div class="card-body p-4 p-md-5 text-inherit">
+
+                    <!-- PANTALLA DE AGRADECIMIENTO (Oculta por defecto) -->
+                    <div id="seccionAgradecimiento" class="d-none text-center py-5">
+                        <i class="bi bi-check-circle-fill text-success drop-shadow pulse-animation" style="font-size: 5rem;"></i>
+                        <h2 class="fw-bold mt-4 text-inherit">¡Gracias por usar SIGEBI!</h2>
+                        <p class="text-muted fs-5">Agradecemos tu preferencia. Estamos enviando tu solicitud...</p>
+                        <div class="spinner-border text-primary mt-4" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Procesando...</span>
+                        </div>
+                    </div>
+
+                    <!-- PANTALLA DEL FORMULARIO Y CARRITO -->
+                    <div id="seccionFormulario">
+                        <form id="formSolicitud" asp-action="Crear" method="post">
+                            @Html.AntiForgeryToken()
+
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                <div class="alert alert-danger shadow-sm border-start border-danger border-4 mb-4">
+                                    <div asp-validation-summary="All" class="mb-0 text-danger fw-semibold small"></div>
+                                </div>
+                            }
+
+                            <div class="mb-4">
+                                <h5 class="fw-bold text-inherit mb-3">Recursos en tu lista:</h5>
+
+                                <!-- Contenedor donde JavaScript inyectará las tarjetas de los libros -->
+                                <div id="vistaCarrito"></div>
+
+                                <!-- El textarea original se mantiene para el backend, pero oculto al usuario -->
+                                <div class="d-none">
+                                    <textarea asp-for="IsbnsIngresados" id="IsbnsIngresados" class="form-control"></textarea>
+                                </div>
+                                <span asp-validation-for="IsbnsIngresados" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-5">
+                                <a asp-action="Index" class="text-inherit opacity-75 text-decoration-none fw-semibold transition-hover">
+                                    <i class="bi bi-arrow-left me-1"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm fw-bold book-btn-hover">
+                                    <i class="bi bi-send-check me-2"></i> Enviar Solicitud
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            sincronizarTextareaHaciaCarrito();
+            renderizarCarrito();
+        });
+
+        // Caso excepcional: Si falla una validación en el servidor, el backend devuelve los ISBNs en el textarea oculto.
+        function sincronizarTextareaHaciaCarrito() {
+            const textarea = document.getElementById('IsbnsIngresados');
+            let carrito = JSON.parse(localStorage.getItem('sigebi_carrito_solicitudes')) || [];
+
+            if (carrito.length === 0 && textarea.value.trim() !== '') {
+                const isbns = textarea.value.split(',').map(s => s.trim()).filter(s => s);
+                carrito = isbns.map(isbn => ({ isbn: isbn, titulo: 'Recurso guardado (' + isbn + ')' }));
+                localStorage.setItem('sigebi_carrito_solicitudes', JSON.stringify(carrito));
+            }
+        }
+
+        // Dibuja las tarjetas de los libros en la pantalla
+        function renderizarCarrito() {
+            const contenedor = document.getElementById('vistaCarrito');
+            const textarea = document.getElementById('IsbnsIngresados');
+            let carrito = JSON.parse(localStorage.getItem('sigebi_carrito_solicitudes')) || [];
+
+            // Rellenar automáticamente el textarea oculto para que el controlador C# reciba los datos
+            textarea.value = carrito.map(l => l.isbn).join(', ');
+
+            // Estado vacío
+            if (carrito.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="text-center p-5 border rounded-4 border-secondary border-opacity-25 bg-secondary bg-opacity-10">
+                        <i class="bi bi-cart-x display-4 text-muted opacity-50 mb-3"></i>
+                        <h5 class="text-inherit fw-bold">Tu lista está vacía</h5>
+                        <p class="text-muted small">No has seleccionado ningún recurso.</p>
+                        <a href="/Catalogo" class="btn btn-outline-primary rounded-pill px-4 mt-3 fw-semibold shadow-sm">Explorar Catálogo</a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Estado con libros (Tarjetas visuales)
+            let html = '<div class="list-group shadow-sm border-0 rounded-4 overflow-hidden">';
+            carrito.forEach((libro, index) => {
+                html += `
+                    <div class="list-group-item d-flex justify-content-between align-items-center p-3 bg-transparent border-secondary border-opacity-25 text-inherit">
+                        <div>
+                            <h6 class="mb-1 fw-bold"><i class="bi bi-book-half text-primary me-2"></i>${libro.titulo}</h6>
+                            <small class="text-muted font-monospace"><i class="bi bi-upc-scan me-1"></i>${libro.isbn}</small>
+                        </div>
+                        <button type="button" onclick="eliminarDelCarrito(${index})" class="btn btn-sm btn-outline-danger rounded-circle shadow-sm" title="Quitar recurso">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            contenedor.innerHTML = html;
+        }
+
+        // Elimina un libro específico de la lista
+        function eliminarDelCarrito(index) {
+            let carrito = JSON.parse(localStorage.getItem('sigebi_carrito_solicitudes')) || [];
+            carrito.splice(index, 1);
+            localStorage.setItem('sigebi_carrito_solicitudes', JSON.stringify(carrito));
+            renderizarCarrito();
+        }
+
+        // Interceptar el botón de enviar para ejecutar la animación de SIGEBI
+        const form = document.getElementById('formSolicitud');
+        form.addEventListener('submit', function (e) {
+            let carrito = JSON.parse(localStorage.getItem('sigebi_carrito_solicitudes')) || [];
+
+            // Validar que no envíen el formulario vacío
+            if (carrito.length === 0) {
+                e.preventDefault();
+                if (typeof mostrarNotificacion === "function") {
+                    mostrarNotificacion('<i class="bi bi-exclamation-triangle me-2"></i> Tu lista está vacía. Selecciona recursos del catálogo.', 'bg-danger');
+                }
+                return;
+            }
+
+            // Pausar el envío automático
+            e.preventDefault();
+
+            // Ocultar el formulario y mostrar el mensaje de agradecimiento
+            document.getElementById('seccionFormulario').classList.add('d-none');
+            document.getElementById('seccionAgradecimiento').classList.remove('d-none');
+
+            // Limpiar la memoria del navegador para la próxima solicitud
+            localStorage.removeItem('sigebi_carrito_solicitudes');
+
+            // Reanudar y procesar el envío hacia el backend C# después de 2.5 segundos
+            setTimeout(() => {
+                HTMLFormElement.prototype.submit.call(form);
+            }, 2500);
+        });
+    </script>
+}

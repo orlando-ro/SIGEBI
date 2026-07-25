@@ -1,0 +1,93 @@
+﻿@{
+    ViewData["Title"] = "Gestión de Solicitudes";
+    var rolUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+    bool esPersonalBibliotecario = rolUsuario == "PersonalBibliotecario";
+    bool esEstudianteODocente = rolUsuario == "Estudiante" || rolUsuario == "Docente";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h1 class="fw-bold"><i class="bi bi-inbox text-primary"></i> Módulo de Solicitudes</h1>
+    </div>
+
+    <div class="row g-4 mb-4">
+        @if (esEstudianteODocente)
+        {
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm border-0 border-start border-primary border-4 transition-hover">
+                    <div class="card-body p-4 d-flex flex-column justify-content-between">
+                        <div>
+                            <h5 class="fw-bold text-primary"><i class="bi bi-plus-circle me-2"></i> Crear Nueva Solicitud</h5>
+                            <p class="small text-muted mb-4">Solicita préstamos de libros físicos enviando los códigos ISBN al personal de la biblioteca.</p>
+                        </div>
+                        <div class="text-end">
+                            <a asp-action="Crear" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">Iniciar Solicitud</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (esPersonalBibliotecario)
+        {
+            <div class="col-md-12">
+                <div class="card h-100 shadow-sm border-0 border-start border-warning border-4 transition-hover">
+                    <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div>
+                            <h5 class="fw-bold text-warning"><i class="bi bi-hourglass-split me-2"></i> Solicitudes Pendientes</h5>
+                            <p class="small text-muted mb-0">Revisa todas las solicitudes que están a la espera de aprobación o rechazo.</p>
+                        </div>
+                        <a asp-action="Pendientes" class="btn btn-warning text-dark rounded-pill px-5 fw-bold shadow-sm">Ver Lista Pendiente</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buscador de Historial por Usuario -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 transition-hover h-100">
+                    <div class="card-header bg-transparent border-0 pt-4 pb-0">
+                        <h5 class="fw-bold text-info"><i class="bi bi-person-lines-fill me-2"></i> Buscar por Usuario</h5>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="ConsultarPorUsuario" method="get">
+                            <div class="input-group mb-3 shadow-sm">
+                                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" name="identificador" required placeholder="Ej: Matrícula o Empleado" />
+                                <button class="btn btn-info text-white px-4 fw-bold" type="submit">Buscar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NUEVO: Buscador por ID de Solicitud -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 transition-hover h-100">
+                    <div class="card-header bg-transparent border-0 pt-4 pb-0">
+                        <h5 class="fw-bold text-secondary"><i class="bi bi-hash me-2"></i> Buscar por ID Solicitud</h5>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="ConsultarPorId" method="get">
+                            <div class="input-group mb-3 shadow-sm">
+                                <span class="input-group-text bg-white"><i class="bi bi-tag"></i></span>
+                                <input type="number" class="form-control" name="idSolicitud" required placeholder="Ej: 15" />
+                                <button class="btn btn-secondary px-4 fw-bold" type="submit">Buscar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .transition-hover {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+        .transition-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+</style>

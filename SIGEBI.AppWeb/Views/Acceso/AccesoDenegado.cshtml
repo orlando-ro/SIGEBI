@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Acceso denegado";
+}
+
+<div class="container mt-5 pt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 text-center">
+
+            <h1 class="display-1 text-danger fw-bold"><i class="bi bi-x-octagon-fill"></i></h1>
+            <h2 class="text-uppercase fw-bold mt-3">Acceso Restringido</h2>
+
+            <div class="alert alert-danger mt-4 shadow-sm text-start border-start border-danger border-5 p-4">
+                <h5 class="fw-bold"><i class="bi bi-exclamation-triangle me-2"></i> Permisos Insuficientes</h5>
+                <p class="mb-0 mt-2">Tu rol actual dentro del sistema no tiene autorización para visualizar o interactuar con esta sección. Si crees que esto es un error, por favor contacta al administrador de la biblioteca.</p>
+            </div>
+
+            <div class="mt-5">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-5 shadow-sm">
+                    <i class="bi bi-arrow-left me-2"></i> Volver al Inicio
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

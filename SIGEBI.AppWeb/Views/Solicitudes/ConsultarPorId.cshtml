@@ -1,0 +1,79 @@
+﻿@model IEnumerable<SIGEBI.AppWeb.Models.Solicitudes.SolicitudItemViewModel>
+@{
+    ViewData["Title"] = "Resultados de Búsqueda";
+    var rolUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+    bool esPersonalBibliotecario = rolUsuario == "PersonalBibliotecario";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="fw-bold text-info"><i class="bi bi-search"></i> Resultados de Búsqueda</h2>
+            <p class="text-muted mb-0">Filtro aplicado: <span class="fw-bold">@ViewBag.Busqueda</span></p>
+        </div>
+        <button onclick="history.back()" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">Volver Atrás</button>
+    </div>
+
+    @if (TempData["WarningMessage"] != null)
+    {
+        <div class="alert alert-warning shadow-sm border-start border-warning border-5">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["WarningMessage"]
+        </div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-custom table-striped mb-0 align-middle text-center">
+                    <thead class="py-3 bg-dark text-white">
+                        <tr>
+                            <th class="py-3 px-3">ID Solicitud</th>
+                            <th class="py-3">Usuario (Identificador)</th>
+                            <th class="py-3">Fecha</th>
+                            <th class="py-3">Estado</th>
+                            <th class="py-3 text-start">Libros Solicitados</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="fw-bold px-3">#@item.IdSolicitud</td>
+                                    <td>
+                                        <div class="fw-bold">@item.NombreUsuarioSolicitante</div>
+                                        <div class="small text-muted opacity-75">@item.MatriculaONumeroEmpleado</div>
+                                    </td>
+                                    <td>@item.FechaSolicitud.ToString("dd/MMM/yyyy HH:mm")</td>
+                                    <td>
+                                        <span class="badge @(item.Estado == "Pendiente" ? "bg-warning text-dark" : (item.Estado == "Aprobada" ? "bg-success" : "bg-danger"))">
+                                            @item.Estado
+                                        </span>
+                                    </td>
+                                    <td class="text-start">
+                                        <ul class="mb-0 ps-3 small fw-semibold">
+                                            @foreach (var titulo in item.TitulosLibros)
+                                            {
+                                                <li>@titulo</li>
+                                            }
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi bi-search fs-2 d-block mb-2 opacity-50"></i>
+                                    No se encontraron resultados para la búsqueda actual.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

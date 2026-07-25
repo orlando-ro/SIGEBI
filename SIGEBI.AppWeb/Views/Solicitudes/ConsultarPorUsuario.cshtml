@@ -1,0 +1,74 @@
+﻿@model IEnumerable<SIGEBI.AppWeb.Models.Solicitudes.SolicitudItemViewModel>
+@{
+    ViewData["Title"] = "Solicitudes por Usuario";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <div>
+            <h2 class="fw-bold text-info"><i class="bi bi-person-lines-fill"></i> Solicitudes del Usuario</h2>
+            @if (ViewBag.Busqueda != null)
+            {
+                <p class="text-muted mb-0">Resultados para: <strong>@ViewBag.Busqueda</strong></p>
+            }
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">Volver</a>
+    </div>
+
+    @if (TempData["WarningMessage"] != null)
+    {
+        <div class="alert alert-warning border-start border-warning border-5 shadow-sm">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["WarningMessage"]
+        </div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-custom table-striped mb-0 text-center align-middle">
+                        <thead class="py-3 bg-info text-white">
+                            <tr>
+                                <th class="py-3 rounded-top-start">ID</th>
+                                <th class="py-3">Fecha</th>
+                                <th class="py-3">Libros</th>
+                                <th class="py-3 rounded-top-end">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="fw-bold text-primary">#@item.IdSolicitud</td>
+                                    <td>@item.FechaSolicitud.ToString("dd/MMM/yyyy HH:mm")</td>
+                                    <td class="text-start">
+                                        <ul class="mb-0 pl-3">
+                                            @foreach (var titulo in item.TitulosLibros)
+                                            {
+                                                <li class="small">@titulo</li>
+                                            }
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        @{
+                                            string badgeClass = item.Estado == "Pendiente" ? "bg-warning text-dark" :
+                                            (item.Estado == "Aprobada" ? "bg-success" : "bg-danger");
+                                        }
+                                        <span class="badge rounded-pill @badgeClass px-3 py-2">@item.Estado</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else if (ViewBag.Busqueda != null && TempData["WarningMessage"] == null)
+    {
+        <div class="text-center py-5">
+            <h4 class="text-muted">No se encontraron solicitudes registradas para este usuario.</h4>
+        </div>
+    }
+</div>

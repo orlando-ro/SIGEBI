@@ -1,0 +1,69 @@
+﻿@model SIGEBI.AppWeb.Models.Acceso.LoginViewModel
+@{
+    ViewData["Title"] = "Iniciar sesión";
+}
+
+<div class="container mt-5 pt-2 d-flex justify-content-center align-items-center" style="min-height: 75vh;">
+    <!-- Contenedor del Libro -->
+    <div class="book-wrapper">
+        <div class="row g-0 h-100">
+
+            <!-- PÁGINA IZQUIERDA (Portada interna / Bienvenida) -->
+            <div class="col-md-5 d-none d-md-flex flex-column justify-content-center align-items-center book-page-left position-relative overflow-hidden p-4">
+                <!-- Textura/Decoración de la página izquierda -->
+                <div class="book-bg-overlay"></div>
+
+                <div class="z-1 text-center mt-auto">
+                    <i class="bi bi-book-half display-1 text-white mb-3 drop-shadow"></i>
+                    <h1 class="fw-bolder text-white display-4 drop-shadow tracking-tight">SIGEBI</h1>
+                    <div class="divider-custom my-4"></div>
+                    <p class="text-white-50 fs-6 px-3">Sistema de Gestión de Bibliotecas</p>
+                </div>
+
+                <div class="z-1 mt-auto pb-3 text-center w-100">
+                    <small class="text-white opacity-25" style="font-size: 0.7rem;">&copy; 2026 ITLA</small>
+                </div>
+            </div>
+
+            <!-- PÁGINA DERECHA (Hoja del Formulario) -->
+            <div class="col-md-7 book-page-right position-relative d-flex flex-column justify-content-center p-4 p-lg-5 text-inherit">
+
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold mb-1"><i class="bi bi-shield-lock text-primary me-2"></i> Acceso Segurizado</h2>
+                    <p class="text-inherit opacity-50 small">Abra las puertas al conocimiento</p>
+                </div>
+
+                <form asp-action="Login" method="post" class="px-md-3">
+                    @Html.AntiForgeryToken()
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger shadow-sm rounded border-start border-danger border-4 mb-4">
+                            <i class="bi bi-exclamation-circle-fill me-2"></i>
+                            <span class="fw-semibold">Error al iniciar sesión:</span>
+                            <div asp-validation-summary="All" class="mb-0 mt-1 small"></div>
+                        </div>
+                    }
+
+                    <!-- Estilo de input minimalista como si escribiera sobre líneas de una hoja -->
+                    <div class="form-floating mb-4 position-relative">
+                        <input asp-for="Identificador" class="form-control bg-transparent text-inherit custom-book-input" placeholder="123456" autocomplete="off" />
+                        <label asp-for="Identificador" class="text-inherit opacity-75 custom-floating-label"><i class="bi bi-person me-1"></i> Matrícula o Empleado</label>
+                    </div>
+
+                    <div class="form-floating mb-4 position-relative">
+                        <input asp-for="Password" class="form-control bg-transparent text-inherit custom-book-input" placeholder="Contraseña" type="password" />
+                        <label asp-for="Password" class="text-inherit opacity-75 custom-floating-label"><i class="bi bi-key me-1"></i> Contraseña</label>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg fw-bold shadow-sm rounded-pill book-btn-hover">
+                            <i class="bi bi-journal-arrow-up me-2"></i> Entrar al Sistema
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

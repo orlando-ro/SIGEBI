@@ -1,4 +1,5 @@
 ﻿using SIGEBI.Application.DTOs;
+using SIGEBI.Application.Helpers;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Domain.Entities;
 using SIGEBI.Domain.Enums;
@@ -46,10 +47,7 @@ namespace SIGEBI.Application.Services
 
         public async Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorUsuario(string matriculaONumeroEmpleado)
         {
-            var Usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(matriculaONumeroEmpleado);
-
-            if (Usuario == null)
-                throw new NegocioExeption("El usuario no fue encontrado.");
+            var Usuario = await ResolucionUsuario.ObtenerPorIdentificadorAsync(_usuarios, matriculaONumeroEmpleado);
 
             var devoluciones = await _repoDevolucion.ConsultarHistorialPorUsuario(Usuario.IdUsuario);
 

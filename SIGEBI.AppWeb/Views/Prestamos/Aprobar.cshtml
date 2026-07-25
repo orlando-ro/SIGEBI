@@ -1,0 +1,42 @@
+﻿@model SIGEBI.AppWeb.Models.Prestamos.AprobarPrestamoViewModel
+@{
+    ViewData["Title"] = "Aprobar Préstamo";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header text-center bg-primary text-white py-4">
+                    <h3 class="mb-0 fw-bold"><i class="bi bi-check-circle"></i> Gestión de Aprobación</h3>
+                    <small>Ingrese el ID de la solicitud validada</small>
+                </div>
+                <div class="card-body p-5">
+                    <form asp-action="Aprobar" method="post">
+                        @Html.AntiForgeryToken()
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger shadow-sm rounded">
+                                <div asp-validation-summary="All" class="mb-0 text-danger fw-semibold"></div>
+                            </div>
+                        }
+
+                        <div class="form-floating mb-4">
+                            <input asp-for="IdSolicitud" class="form-control form-control-lg" placeholder="12345" autocomplete="off" />
+                            <label asp-for="IdSolicitud" class="text-muted">Número de Solicitud (ID)</label>
+                            <span asp-validation-for="IdSolicitud" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold shadow-sm">
+                                Confirmar Aprobación
+                            </button>
+                            <a asp-action="Index" class="btn btn-light mt-2 text-muted">Cancelar y volver al panel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
