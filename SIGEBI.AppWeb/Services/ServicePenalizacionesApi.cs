@@ -1,0 +1,7 @@
+﻿namespace SIGEBI.AppWeb.Services
+{
+    public class ServicePenalizacionesApi
+    {
+
+    }
+}
