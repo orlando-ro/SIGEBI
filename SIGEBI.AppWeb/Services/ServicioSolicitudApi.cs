@@ -7,15 +7,15 @@ namespace SIGEBI.AppWeb.Services
     {
         private readonly HttpClient _httpClient;
 
-        public ServicioSolicitudApi(HttpClient httpClient, IConfiguration configuration)
+        public ServicioSolicitudApi(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri(configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001/");
+          
         }
 
         public async Task<SolicitudResponseDTO> CrearSolicitudAsync(SolicitudRequestDTO peticion)
         {
-            var respuesta = await _httpClient.PostAsJsonAsync("api/Solicitudes/crear", peticion);
+            var respuesta = await _httpClient.PostAsJsonAsync("Solicitudes/crear", peticion);
 
             if (respuesta.IsSuccessStatusCode)
             {

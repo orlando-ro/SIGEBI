@@ -10,7 +10,7 @@ namespace SIGEBI.AppWeb.Extencions
     {
         public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
         {
-            var apiBaseUrl = configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7291/api";
+            var apiBaseUrl = configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7291/api/"; 
 
             // 1. Registramos el handler del token jwt como transitorio
             services.AddTransient<JwtTokenHandler>();
@@ -26,6 +26,12 @@ namespace SIGEBI.AppWeb.Extencions
             services.AddHttpClient<ServicioPrestamoApi>(Client =>
             {
                 Client.BaseAddress = new Uri(apiBaseUrl);
+            }).AddHttpMessageHandler<JwtTokenHandler>();
+
+            services.AddHttpClient<ServicePenalizacionesApi>(Client =>
+            {
+                Client.BaseAddress = new Uri(apiBaseUrl);
+
             }).AddHttpMessageHandler<JwtTokenHandler>();
 
 

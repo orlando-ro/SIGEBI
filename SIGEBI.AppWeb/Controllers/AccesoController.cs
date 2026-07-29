@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using SIGEBI.AppWeb.Models.Acceso;
-using System.Security.Claims;
+using System.Security.Claims; 
 
-namespace SIGEBI.AppWeb.Controllers
+ namespace SIGEBI.AppWeb.Controllers
 {
     public class AccesoController : Controller
     {
@@ -47,13 +47,7 @@ namespace SIGEBI.AppWeb.Controllers
                 return View(modelo);
             }
 
-            /* 
-             * NOTA: Aquí puedes agregar la validación de la contraseña usando BCrypt 
-             * igual que lo tienes en tu GestorDeAcceso de la API si deseas mayor seguridad:
-             * 
-             * bool passwordValido = BCrypt.Net.BCrypt.Verify(modelo.Password, usuario.Password);
-             * if (!passwordValido) { ModelState.AddModelError(string.Empty, "Credenciales incorrectas."); return View(modelo); }
-             */
+           
 
             var rol = usuario.GetType().Name;
 
@@ -88,4 +82,4 @@ namespace SIGEBI.AppWeb.Controllers
             return View();
         }
     }
-}
+} 

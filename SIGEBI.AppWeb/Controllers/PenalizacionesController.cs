@@ -3,18 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 using SIGEBI.AppWeb.Models.Penalizaciones;
 using System.Security.Claims;
 using System.Linq;
+using SIGEBI.AppWeb.Services;
 
 namespace SIGEBI.AppWeb.Controllers
 {
     [Authorize]
     public class PenalizacionesController : Controller
     {
-        private readonly IServicioPenalizacion _servicioPenalizacion;
+        private readonly ServicePenalizacionesApi _servicePenalizacionesApi;
         private readonly ILogger<PenalizacionesController> _logger;
 
-        public PenalizacionesController(IServicioPenalizacion servicioPenalizacion, ILogger<PenalizacionesController> logger)
+        public PenalizacionesController(ServicePenalizacionesApi servicioPenalizacion, ILogger<PenalizacionesController> logger)
         {
-            _servicioPenalizacion = servicioPenalizacion;
+            _servicePenalizacionesApi  = servicioPenalizacion;
             _logger = logger;
         }
 
@@ -31,7 +32,7 @@ namespace SIGEBI.AppWeb.Controllers
 
             try
             {
-                var pendientesDto = await _servicioPenalizacion.ObtenerPendientesPorUsuariosAsync(identificador);
+                var pendientesDto = await _servicePenalizacionesApi.ObtenerPenalizacionesPendientesPorUsuario(identificador);
 
                
                 var modelo = pendientesDto.Select(p => new PenalizacionItemViewModel
@@ -48,10 +49,7 @@ namespace SIGEBI.AppWeb.Controllers
 
                 return View(modelo);
             }
-            catch (NegocioExeption)
-            {
-                return View(new List<PenalizacionItemViewModel>());
-            }
+           
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al consultar penalizaciones para {Identificador}", identificador);
