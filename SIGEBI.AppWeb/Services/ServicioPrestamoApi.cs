@@ -12,7 +12,7 @@ namespace SIGEBI.AppWeb.Services
         }
         public async Task<List<PrestamoResponseDTO>> ObtenerPrestamosPorUsuarioAsync(string identificador)
         {
-            var response = await _httpClient.GetAsync($"api/prestamos/usuario/{identificador}");
+            var response = await _httpClient.GetAsync($"prestamos/usuario/{identificador}");
 
             if(response.IsSuccessStatusCode) // si la respuesta es exitosa (código 200)
             {
@@ -21,7 +21,7 @@ namespace SIGEBI.AppWeb.Services
             }
             
              
-            return new List<PrestamoResponseDTO>();
+            return new List<PrestamoResponseDTO>(); 
         }
     }
 }
