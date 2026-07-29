@@ -1,5 +1,7 @@
-using SIGEBI.AppWeb.Extencions;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using SIGEBI.AppWeb.Extencions;
+using SIGEBI.AppWeb.Handlers;
+using SIGEBI.AppWeb.Services;
 
 namespace SIGEBI.AppWeb
 {
@@ -50,6 +52,8 @@ namespace SIGEBI.AppWeb
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+
+           
 
             app.UseHttpsRedirection(); 
             app.UseStaticFiles();
