@@ -1,11 +1,6 @@
 ﻿@model SIGEBI.AppWeb.Models.Catalogo.CatalogoItemViewModel
 @{
     ViewData["Title"] = "Detalles del Recurso";
-    var rolUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-    bool esPersonalBibliotecario = rolUsuario == "PersonalBibliotecario";
-    bool esAdministrador = rolUsuario == "Administrador";
-    bool puedeGestionar = esPersonalBibliotecario || esAdministrador;
-    bool esAuditor = rolUsuario == "Auditor";
 }
 
 <div class="container mt-4 pt-2 mb-5">
@@ -69,41 +64,12 @@
                     </div>
                 </div>
 
-                <!-- Panel de Acciones según el Rol -->
+                <!-- Panel de Acciones -->
                 <div class="mt-auto pt-4 d-flex flex-wrap gap-3">
-
                     <!-- Botón para Usuarios Regulares (Agregar a Carrito, llama a site.js) -->
-                    @if (!puedeGestionar && !esAuditor)
-                    {
-                        <button type="button" onclick="agregarAlCarrito('@Model.ISBN', '@Html.Raw(Model.Titulo.Replace("'", "\\'"))')" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm fw-bold flex-grow-1 flex-md-grow-0 book-btn-hover">
-                            <i class="bi bi-journal-plus me-2"></i> Solicitar Préstamo
-                        </button>
-                    }
-
-                    <!-- Opciones de Gestión para Bibliotecarios y Administradores -->
-                    @if (puedeGestionar || esAuditor)
-                    {
-                        <a asp-controller="Prestamos" asp-action="HistorialPorRecurso" asp-route-isbnLibro="@Model.ISBN" class="btn btn-outline-info rounded-pill px-4 shadow-sm fw-semibold">
-                            <i class="bi bi-clock-history me-1"></i> Historial
-                        </a>
-                    }
-
-                    @if (puedeGestionar)
-                    {
-                        <a asp-action="Actualizar" asp-route-isbn="@Model.ISBN" class="btn btn-outline-primary rounded-pill px-4 shadow-sm fw-semibold">
-                            <i class="bi bi-pencil-square me-1"></i> Editar
-                        </a>
-
-                        @if (esAdministrador)
-                        {
-                            <form asp-action="Eliminar" method="post" class="d-inline" onsubmit="return confirm('¿Está seguro de que desea dar de baja este recurso?');">
-                                <input type="hidden" name="isbn" value="@Model.ISBN" />
-                                <button type="submit" class="btn btn-outline-danger rounded-pill px-4 shadow-sm fw-semibold">
-                                    <i class="bi bi-trash me-1"></i> Dar de Baja
-                                </button>
-                            </form>
-                        }
-                    }
+                    <button type="button" onclick="agregarAlCarrito('@Model.ISBN', '@Html.Raw(Model.Titulo.Replace("'", "\\'"))')" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm fw-bold flex-grow-1 flex-md-grow-0 book-btn-hover">
+                        <i class="bi bi-journal-plus me-2"></i> Solicitar Préstamo
+                    </button>
                 </div>
 
             </div>

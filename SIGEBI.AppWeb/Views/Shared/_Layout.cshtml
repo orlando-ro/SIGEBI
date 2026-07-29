@@ -39,97 +39,33 @@
 
                         @if (User.Identity!.IsAuthenticated)
                         {
-                            var rol = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-                            bool esPersonalAutorizado = rol == "PersonalBibliotecario" || rol == "Administrador" || rol == "Auditor";
-                            bool esAdminOAuditor = rol == "Administrador" || rol == "Auditor";
-
-                            // Validación exclusiva para Administrador
-                            bool esAdmin = rol == "Administrador";
-
-                            // Validaciones estrictas por Módulo (Restringiendo al Auditor)
-                            bool puedeVerSolicitudes = rol != "Auditor";
-                            bool puedeVerPenalizaciones = rol != "Auditor";
-
                             <li class="nav-item">
                                 <a class="nav-link fw-semibold text-primary px-2" asp-area="" asp-controller="Catalogo" asp-action="Index">
                                     <i class="bi bi-collection-fill me-1"></i> Catálogo
                                 </a>
                             </li>
-
                             <li class="nav-item">
                                 <a class="nav-link fw-semibold px-2" asp-area="" asp-controller="Prestamos" asp-action="Index">
                                     <i class="bi bi-journal-bookmark me-1"></i> Préstamos
                                 </a>
                             </li>
-
-                            @if (puedeVerSolicitudes)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link fw-semibold px-2" asp-area="" asp-controller="Solicitudes" asp-action="Index">
-                                        <i class="bi bi-inbox me-1"></i> Solicitudes
-                                    </a>
-                                </li>
-                            }
-
-                            @if (esPersonalAutorizado)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link fw-semibold px-2" asp-area="" asp-controller="Devoluciones" asp-action="Index">
-                                        <i class="bi bi-box-arrow-in-left me-1"></i> Devoluciones
-                                    </a>
-                                </li>
-                            }
-
-                            @if (puedeVerPenalizaciones)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link fw-semibold text-danger px-2" asp-area="" asp-controller="Penalizaciones" asp-action="Index">
-                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Penalizaciones
-                                    </a>
-                                </li>
-                            }
-
-                            @if (esPersonalAutorizado)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link fw-semibold px-2" asp-area="" asp-controller="Reportes" asp-action="Index">
-                                        <i class="bi bi-bar-chart-fill me-1"></i> Reportes
-                                    </a>
-                                </li>
-                            }
-
-                            @if (esAdminOAuditor)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link fw-semibold text-info px-2" asp-area="" asp-controller="Notificaciones" asp-action="HistorialGlobal">
-                                        <i class="bi bi-envelope-paper-fill me-1"></i> Log Notificaciones
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link fw-semibold text-secondary px-2" asp-area="" asp-controller="Auditoria" asp-action="Index">
-                                        <i class="bi bi-shield-lock-fill me-1"></i> Auditoría
-                                    </a>
-                                </li>
-                            }
-
-                            <!-- MÓDULO: Gestión de Usuarios -->
-                            @if (esAdmin)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link fw-semibold text-primary px-2" asp-area="" asp-controller="Usuarios" asp-action="Index">
-                                        <i class="bi bi-people-fill me-1"></i> Usuarios
-                                    </a>
-                                </li>
-                            }
+                            <li class="nav-item">
+                                <a class="nav-link fw-semibold px-2" asp-area="" asp-controller="Solicitudes" asp-action="Index">
+                                    <i class="bi bi-inbox me-1"></i> Solicitudes
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link fw-semibold text-danger px-2" asp-area="" asp-controller="Penalizaciones" asp-action="Index">
+                                    <i class="bi bi-exclamation-triangle-fill me-1"></i> Penalizaciones
+                                </a>
+                            </li>
                         }
                     </ul>
 
                     <ul class="navbar-nav align-items-center gap-3 mt-3 mt-lg-0">
-
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <!-- CAMPANITA DE NOTIFICACIONES CORREGIDA -->
+                            <!-- Campanita de Notificaciones -->
                             <li class="nav-item">
                                 <a class="btn btn-outline-warning border-0 rounded-circle shadow-sm position-relative d-flex align-items-center justify-content-center notification-bell" style="width: 40px; height: 40px;" asp-controller="Notificaciones" asp-action="Index" title="Mis Notificaciones">
                                     <i class="bi bi-bell-fill fs-5"></i>
@@ -137,6 +73,7 @@
                             </li>
                         }
 
+                        <!-- Selector de Temas -->
                         <li class="nav-item">
                             <div class="btn-group shadow-sm" role="group" aria-label="Selector de temas">
                                 <button type="button" class="btn btn-sm btn-outline-secondary px-2" onclick="setTheme('light')" title="Modo Claro">☀️</button>
@@ -200,7 +137,6 @@
     </script>
 
     <style>
-        /* Estilos modernos y visibilidad de la campanita */
         .notification-bell {
             background-color: rgba(255, 193, 7, 0.15);
             color: #ffc107 !important;

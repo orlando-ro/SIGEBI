@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using SIGEBI.Application.Interfaces;
 using SIGEBI.AppWeb.Models.Acceso;
 using System.Security.Claims;
 

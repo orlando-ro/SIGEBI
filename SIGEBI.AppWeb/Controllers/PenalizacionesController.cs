@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SIGEBI.Application.DTOs;
-using SIGEBI.Application.Interfaces;
-using SIGEBI.Domain.Exceptions;
+using SIGEBI.AppWeb.Models.Penalizaciones;
 using System.Security.Claims;
+using System.Linq;
 
 namespace SIGEBI.AppWeb.Controllers
 {
@@ -20,122 +19,44 @@ namespace SIGEBI.AppWeb.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "PersonalBibliotecario,Administrador,Estudiante,Docente")]
         public async Task<IActionResult> Index()
         {
-            var rol = User.FindFirst(ClaimTypes.Role)?.Value;
-            bool esUsuarioRegular = rol == "Estudiante" || rol == "Docente";
+            var identificador = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity?.Name;
 
-            if (esUsuarioRegular)
+            if (string.IsNullOrWhiteSpace(identificador))
             {
-                // Seguridad: Extraemos el identificador directamente del Token
-                var identificador = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity?.Name;
-
-                if (!string.IsNullOrWhiteSpace(identificador))
-                {
-                    try
-                    {
-                        var pendientesDto = await _servicioPenalizacion.ObtenerPendientesPorUsuariosAsync(identificador);
-                        ViewBag.EsUsuarioRegular = true;
-                        return View(pendientesDto);
-                    }
-                    catch (NegocioExeption)
-                    {
-                        // Si no hay deudas, mandamos lista vacía para mostrar el mensaje de felicitaciones
-                        ViewBag.EsUsuarioRegular = true;
-                        return View(new List<PenalizacionResponseDTO>());
-                    }
-                }
+                TempData["ErrorMessage"] = "No se pudo identificar su sesión de usuario.";
+                return View(new List<PenalizacionItemViewModel>());
             }
 
-            ViewBag.EsUsuarioRegular = false;
-            return View(new List<PenalizacionResponseDTO>());
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "PersonalBibliotecario,Administrador,Estudiante,Docente")]
-        public async Task<IActionResult> ConsultarPorUsuario(string? identificador)
-        {
             try
             {
-                var rol = User.FindFirst(ClaimTypes.Role)?.Value;
-                bool esUsuarioRegular = rol == "Estudiante" || rol == "Docente";
-
-                if (esUsuarioRegular)
-                {
-                    identificador = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity?.Name;
-                }
-
-                if (string.IsNullOrWhiteSpace(identificador))
-                {
-                    if (esUsuarioRegular) throw new NegocioExeption("No se pudo identificar su matrícula.");
-                    return RedirectToAction("Index");
-                }
-
                 var pendientesDto = await _servicioPenalizacion.ObtenerPendientesPorUsuariosAsync(identificador);
-                ViewBag.Busqueda = identificador;
-                ViewBag.EsUsuarioRegular = esUsuarioRegular;
 
-                return View(pendientesDto);
-            }
-            catch (NegocioExeption ex)
-            {
-                ViewBag.Busqueda = identificador;
-                ViewBag.EsUsuarioRegular = User.FindFirst(ClaimTypes.Role)?.Value == "Estudiante" || User.FindFirst(ClaimTypes.Role)?.Value == "Docente";
-
-                if (!ViewBag.EsUsuarioRegular)
+               
+                var modelo = pendientesDto.Select(p => new PenalizacionItemViewModel
                 {
-                    TempData["SuccessMessage"] = ex.Message;
-                    return RedirectToAction("Index");
-                }
+                    IdPenalizacion = p.IdPenalizacion,
+                    IdPrestamo = p.IdPrestamo,
+                    Monto = (double)p.Monto, 
+                    Motivo = p.Motivo,
+                    FechaEmision = p.FechaEmision,
+                    Pagada = false, 
+                    Identificador = identificador,
+                    NombreUsuario = string.Empty  
+                }).ToList();
 
-                return View(new List<PenalizacionResponseDTO>());
+                return View(modelo);
+            }
+            catch (NegocioExeption)
+            {
+                return View(new List<PenalizacionItemViewModel>());
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al consultar penalizaciones para {Identificador}", identificador);
-                TempData["ErrorMessage"] = "Error inesperado en el servidor.";
-                return RedirectToAction("Index");
-            }
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "PersonalBibliotecario,Administrador")]
-        public IActionResult Resolver(int? id)
-        {
-            ViewBag.IdPenalizacion = id ?? 0;
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "PersonalBibliotecario,Administrador")]
-        public async Task<IActionResult> Resolver(int idPenalizacion, string identificador, string concepto)
-        {
-            try
-            {
-                var claimId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("id")?.Value;
-                if (!int.TryParse(claimId, out int idUsuarioResolutor))
-                {
-                    TempData["ErrorMessage"] = "Error de autenticación.";
-                    return RedirectToAction("Index");
-                }
-
-                var peticion = new PenalizacionRequestDTO
-                {
-                    MatriculaONumeroEmpleado = identificador,
-                    MotivoResolucion = concepto
-                };
-
-                await _servicioPenalizacion.ProcesarPagoMultaAsync(idPenalizacion, peticion, idUsuarioResolutor);
-
-                TempData["SuccessMessage"] = $"El pago de la penalización #{idPenalizacion} se registró exitosamente.";
-                return RedirectToAction("Index");
-            }
-            catch (NegocioExeption ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-                return RedirectToAction("Index");
+                TempData["ErrorMessage"] = "Ocurrió un error al cargar sus datos.";
+                return View(new List<PenalizacionItemViewModel>());
             }
         }
     }

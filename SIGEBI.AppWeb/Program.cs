@@ -1,7 +1,4 @@
-using QuestPDF.Infrastructure;
-using SIGEBI.Application.DependencyInyeccion;
-using SIGEBI.Infrastructure.DependencyInjection;
-using SIGEBI.Infrastructure.Persistence;
+using SIGEBI.AppWeb.Extencions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace SIGEBI.AppWeb
@@ -12,7 +9,6 @@ namespace SIGEBI.AppWeb
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            QuestPDF.Settings.License = LicenseType.Community;
 
             builder.Services.AddControllersWithViews();
 
@@ -25,9 +21,7 @@ namespace SIGEBI.AppWeb
                 options.Cookie.IsEssential = true;
             });
 
-            
-            builder.Services.AddApplication();
-            builder.Services.AddInfrastructure(builder.Configuration);
+            builder.Services.AddApiServices(builder.Configuration); 
 
            
             builder.Services
@@ -45,16 +39,11 @@ namespace SIGEBI.AppWeb
                     options.SlidingExpiration = true;
                 });
 
-            builder.Services.AddAuthorization();
+            builder.Services.AddAuthorization(); 
 
             var app = builder.Build();
 
-            using (var scope = app.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                var context = services.GetRequiredService<SIGEBIDbContext>();
-                context.Database.EnsureCreated();
-            }
+           
 
             if (!app.Environment.IsDevelopment())
             {
@@ -62,17 +51,11 @@ namespace SIGEBI.AppWeb
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-
+            app.UseHttpsRedirection(); 
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseSession();
-
-            
             app.UseAuthentication();
-
             app.UseAuthorization();
 
             app.MapControllerRoute(

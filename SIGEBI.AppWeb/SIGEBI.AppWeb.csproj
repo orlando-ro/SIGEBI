@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <ProjectReference Include="..\SIGEBI.Application\SIGEBI.Application.csproj" />
-    <ProjectReference Include="..\SIGEBI.Infrastructure\SIGEBI.Infrastructure.csproj" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
   <PropertyGroup>
