@@ -5,9 +5,6 @@ namespace SIGEBI.AppWeb.Models.Prestamos
     public class PrestamoItemViewModel
     {
         public int IdPrestamo { get; set; }
-
-        
-
         public DateTime FechaInicio { get; set; }
         public DateTime FechaVencimiento { get; set; }
         public string Estado { get; set; } = string.Empty;

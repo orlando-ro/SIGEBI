@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIGEBI.AppWeb.Models.Prestamos;
+using SIGEBI.AppWeb.Services;
 using System.Security.Claims;
 
 namespace SIGEBI.AppWeb.Controllers
@@ -8,12 +9,12 @@ namespace SIGEBI.AppWeb.Controllers
     [Authorize] // Solo requiere estar logueado
     public class PrestamosController : Controller
     {
-        private readonly IservicioPrestamo _servicioPrestamo;
+        private readonly ServicioPrestamoApi _servicioPrestamoApi;
         private readonly ILogger<PrestamosController> _logger;
 
-        public PrestamosController(IservicioPrestamo servicioPrestamo, ILogger<PrestamosController> logger)
+        public PrestamosController(ServicioPrestamoApi servicioPrestamoApi, ILogger<PrestamosController> logger)
         {
-            _servicioPrestamo = servicioPrestamo;
+            _servicioPrestamoApi = servicioPrestamoApi;
             _logger = logger;
         }
 
@@ -32,14 +33,20 @@ namespace SIGEBI.AppWeb.Controllers
             try
             {
                 // Solo consultamos los préstamos de ESTE usuario
-                var prestamosDto = await _servicioPrestamo.ConsultarPrestamosActivosPorIdentificadorAsync(identificador);
-                return View(MapearLista(prestamosDto));
+                var prestamosDto = await _servicioPrestamoApi.ObtenerPrestamosPorUsuarioAsync(identificador);
+                
+                var modelo = prestamosDto.Select(p => new PrestamoItemViewModel
+                {
+                    IdPrestamo = p.IdPrestamo,
+                    FechaInicio = p.FechaInicio,
+                    FechaVencimiento = p.FechaVencimiento,
+                    Estado = p.Estado,
+                    DiasRetraso = p.DiasRetraso,
+                    EstaVencido = p.EstaVencido
+                }).ToList();
+                return View(modelo);
             }
-            catch (NegocioExeption)
-            {
-                // Si no tiene préstamos activos, la capa de negocio suele lanzar excepción. Devolvemos lista vacía.
-                return View(new List<PrestamoItemViewModel>());
-            }
+           
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al consultar préstamos para {Identificador}", identificador);
@@ -48,20 +55,7 @@ namespace SIGEBI.AppWeb.Controllers
             }
         }
 
-        #region Helpers
-        // Este mapeo está perfecto, lo conservamos tal cual lo tenías
-        private List<PrestamoItemViewModel> MapearLista(IEnumerable<SIGEBI.Application.DTOs.PrestamoResponseDTO> dtos)
-        {
-            return dtos.Select(dto => new PrestamoItemViewModel
-            {
-                IdPrestamo = dto.IdPrestamo,
-                FechaInicio = dto.FechaInicio,
-                FechaVencimiento = dto.FechaVencimiento,
-                Estado = dto.Estado,
-                DiasRetraso = dto.DiasRetraso,
-                EstaVencido = dto.EstaVencido
-            }).ToList();
-        }
-        #endregion
+       
+       
     }
 }

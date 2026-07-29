@@ -1,30 +1,31 @@
 ﻿using System.Net.Http.Json;
-using SIGEBI.AppWeb.Models.Solicitudes;
-
-
+using SIGEBI.AppWeb.Models.DTOs.Solicitudes; 
 
 namespace SIGEBI.AppWeb.Services
 {
     public class ServicioSolicitudApi
     {
-        private readonly HttpClient _httpclient; // se usa para realizar solicitudes HTTP a la API
-        
+        private readonly HttpClient _httpClient;
 
-        public ServicioSolicitudApi(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        public ServicioSolicitudApi(HttpClient httpClient, IConfiguration configuration)
         {
-            _httpclient = httpClient;
-            
-            var baseUrl = configuration["ApiSettings:BaseUrl"] ?? "http://localhost:7291/api";
-            _httpclient.BaseAddress = new Uri(baseUrl);
+            _httpClient = httpClient;
+            _httpClient.BaseAddress = new Uri(configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001/");
         }
 
+        public async Task<SolicitudResponseDTO> CrearSolicitudAsync(SolicitudRequestDTO peticion)
+        {
+            var respuesta = await _httpClient.PostAsJsonAsync("api/Solicitudes/crear", peticion);
 
-        public async Task<SolicitudItemViewModel> CrearSolicitudAsync(List<string> isbnLibros) { 
-        
-            var playload = new { ISBNs = isbnLibros }; 
+            if (respuesta.IsSuccessStatusCode)
+            {
+                return await respuesta.Content.ReadFromJsonAsync<SolicitudResponseDTO>() ?? new(); 
+            }
 
-
-
+            var error = await respuesta.Content.ReadAsStringAsync();
+            throw new Exception(string.IsNullOrEmpty(error) ? "Error al procesar en la API." : error);
         }
+
+       
     }
 }
