@@ -4,16 +4,18 @@ using SIGEBI.AppWeb.Models.DTOs.Solicitudes;
 using SIGEBI.AppWeb.Models.Solicitudes; 
 using SIGEBI.AppWeb.Services;
 using System.Security.Claims;
+using SIGEBI.AppWeb.Services.Interfaces;
+
 
 namespace SIGEBI.AppWeb.Controllers
 {
-    [Authorize(Roles = "Estudiante,Docente")] // restringido a usuarios con rol "Estudiante" o "Docente" 
+    [Authorize(Roles = "Estudiante,Docente")]  
     public class SolicitudesController : Controller
     {
-        private readonly ServicioSolicitudApi _servicioSolicitud;
+        private readonly IServicioSolicitudApi _servicioSolicitud;
         private readonly ILogger<SolicitudesController> _logger;
 
-        public SolicitudesController(ServicioSolicitudApi servicioSolicitud, ILogger<SolicitudesController> logger)
+        public SolicitudesController(IServicioSolicitudApi servicioSolicitud, ILogger<SolicitudesController> logger)
         {
             _servicioSolicitud = servicioSolicitud;
             _logger = logger;

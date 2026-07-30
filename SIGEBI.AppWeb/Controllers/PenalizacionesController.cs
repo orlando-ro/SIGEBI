@@ -4,6 +4,7 @@ using SIGEBI.AppWeb.Models.Penalizaciones;
 using System.Security.Claims;
 using System.Linq;
 using SIGEBI.AppWeb.Services;
+using SIGEBI.AppWeb.Services.Interfaces;
 
 namespace SIGEBI.AppWeb.Controllers
 {

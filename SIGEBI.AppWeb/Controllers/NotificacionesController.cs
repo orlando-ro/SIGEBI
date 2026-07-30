@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SIGEBI.AppWeb.Services;
+using SIGEBI.AppWeb.Services.Interfaces;
 
 namespace SIGEBI.AppWeb.Controllers
 {

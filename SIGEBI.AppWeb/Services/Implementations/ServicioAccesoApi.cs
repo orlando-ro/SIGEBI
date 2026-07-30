@@ -1,12 +1,10 @@
 ﻿using SIGEBI.AppWeb.Models.DTOs.Acceso;
 using System.Text.Json;
+using SIGEBI.AppWeb.Services.Interfaces;
 
 namespace SIGEBI.AppWeb.Services
 {
-    public interface IServicioAccesoApi
-    {
-        Task<string> IniciarSesionAsync(LoginRequestDTO credenciales);
-    }
+   
 
     public class ServicioAccesoApi : IServicioAccesoApi
     {

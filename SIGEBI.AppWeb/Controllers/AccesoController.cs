@@ -6,6 +6,7 @@ using SIGEBI.AppWeb.Models.DTOs.Acceso;
 using SIGEBI.AppWeb.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using SIGEBI.AppWeb.Services.Interfaces;
 
 namespace SIGEBI.AppWeb.Controllers
 {

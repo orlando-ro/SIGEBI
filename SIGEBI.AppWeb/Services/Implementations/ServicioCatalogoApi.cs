@@ -1,15 +1,9 @@
 ﻿using SIGEBI.AppWeb.Models.DTOs.Catalogo;
+using SIGEBI.AppWeb.Services.Interfaces;
 
 namespace SIGEBI.AppWeb.Services
 {
-    public interface IServicioCatalogoApi
-    {
-        Task<IEnumerable<LibroResponseDTO>> ConsultarTodosAsync();
-        Task<LibroResponseDTO?> BuscarPorIsbnAsync(string isbn);
-        Task<IEnumerable<LibroResponseDTO>> ConsultarCatalogoAsync(FiltroCatalogoDTO filtros);
-
-        Task<IEnumerable<CategoriaResponseDTO>> ObtenerCategoriasAsync();
-    }
+    
 
     public class ServicioCatalogoApi : IServicioCatalogoApi
     {

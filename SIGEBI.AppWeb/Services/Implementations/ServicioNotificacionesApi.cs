@@ -1,12 +1,9 @@
 ﻿using SIGEBI.AppWeb.Models.DTOs.Notificaciones;
+using SIGEBI.AppWeb.Services.Interfaces;
 
 namespace SIGEBI.AppWeb.Services
 {
-    public interface IServicioNotificacionesApi
-    {
-        Task<IEnumerable<NotificacionResponseDTO>> ObtenerPendientesAsync();
-        Task<bool> MarcarComoLeidaAsync(int id);
-    }
+   
 
     public class ServicioNotificacionesApi : IServicioNotificacionesApi
     {

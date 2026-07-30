@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using SIGEBI.AppWeb.Models.Catalogo;
 using SIGEBI.AppWeb.Models.DTOs.Catalogo;
 using SIGEBI.AppWeb.Services;
+using SIGEBI.AppWeb.Services.Interfaces;
 
 namespace SIGEBI.AppWeb.Controllers
 {

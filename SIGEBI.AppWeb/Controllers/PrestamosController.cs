@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SIGEBI.AppWeb.Models.Prestamos;
 using SIGEBI.AppWeb.Services;
 using System.Security.Claims;
+using SIGEBI.AppWeb.Services.Interfaces;
 
 namespace SIGEBI.AppWeb.Controllers
 {

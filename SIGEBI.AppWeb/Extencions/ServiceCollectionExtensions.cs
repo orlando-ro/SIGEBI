@@ -3,6 +3,9 @@ using Microsoft.Extensions.Configuration;
 using System;
 using SIGEBI.AppWeb.Handlers;
 using SIGEBI.AppWeb.Services;
+using SIGEBI.AppWeb.Services.Interfaces;
+
+
 
 namespace SIGEBI.AppWeb.Extencions
 {
@@ -16,7 +19,7 @@ namespace SIGEBI.AppWeb.Extencions
             services.AddTransient<JwtTokenHandler>();
             services.AddHttpContextAccessor();
 
-            // 2. Registramos el servicio HttpClient conectandolo con el handler y la URL base de la API
+            // 2. Registro de Servicios con sus Interfaces y el Handler de Token
 
             services.AddHttpClient<IServicioAccesoApi, ServicioAccesoApi>(client =>
             {
@@ -26,23 +29,26 @@ namespace SIGEBI.AppWeb.Extencions
             services.AddHttpClient<IServicioCatalogoApi, ServicioCatalogoApi>(client =>
             {
                 client.BaseAddress = new Uri(apiBaseUrl);
-            });
+            })
+            .AddHttpMessageHandler<JwtTokenHandler>();
 
-            services.AddHttpClient<ServicioSolicitudApi>(client =>
+            services.AddHttpClient<IServicioSolicitudApi, ServicioSolicitudApi>(client =>
             {
                 client.BaseAddress = new Uri(apiBaseUrl);
             })
-            .AddHttpMessageHandler<JwtTokenHandler>(); // sirve para inyectar el token automáticamente en cada petición
+            .AddHttpMessageHandler<JwtTokenHandler>();
 
-            services.AddHttpClient<ServicioPrestamoApi>(Client =>
+            services.AddHttpClient<IServicioPrestamoApi, ServicioPrestamoApi>(client =>
             {
-                Client.BaseAddress = new Uri(apiBaseUrl);
-            }).AddHttpMessageHandler<JwtTokenHandler>();
+                client.BaseAddress = new Uri(apiBaseUrl);
+            })
+            .AddHttpMessageHandler<JwtTokenHandler>();
 
-            services.AddHttpClient<ServicePenalizacionesApi>(Client =>
+            services.AddHttpClient<IServicioPenalizacionesApi, ServicePenalizacionesApi>(client =>
             {
-                Client.BaseAddress = new Uri(apiBaseUrl);
-            }).AddHttpMessageHandler<JwtTokenHandler>();
+                client.BaseAddress = new Uri(apiBaseUrl);
+            })
+            .AddHttpMessageHandler<JwtTokenHandler>();
 
             services.AddHttpClient<IServicioNotificacionesApi, ServicioNotificacionesApi>(client =>
             {
