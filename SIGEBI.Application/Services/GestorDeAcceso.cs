@@ -44,7 +44,7 @@ namespace SIGEBI.Application.Services
                 matricula = estudiante.Matricula;
             }
 
-            string tokenString = _servicioJwt.GenerarToken(usuario.IdUsuario, usuario.Email, tipoUsuario);
+            string tokenString = _servicioJwt.GenerarToken(usuario.IdUsuario, usuario.Email, tipoUsuario, usuario.Nombre);
 
             return new LoginResponseDTO
             {
