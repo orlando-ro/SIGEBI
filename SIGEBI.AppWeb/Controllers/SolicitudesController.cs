@@ -57,7 +57,7 @@ namespace SIGEBI.AppWeb.Controllers
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Error al crear la solicitud vía API.");
-                ModelState.AddModelError(string.Empty, ex.Message);
+                TempData["ErrorMessage"] = ex.Message;
                 return View(modelo);
             }
         }
