@@ -1,28 +1,28 @@
-﻿ using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using SIGEBI.AppWeb.Models.Acceso;
-using System.Security.Claims; 
+using SIGEBI.AppWeb.Models.DTOs.Acceso;
+using SIGEBI.AppWeb.Services;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
- namespace SIGEBI.AppWeb.Controllers
+namespace SIGEBI.AppWeb.Controllers
 {
     public class AccesoController : Controller
     {
-        private readonly IUsuarios _usuarios;
+        private readonly IServicioAccesoApi _servicioAccesoApi;
         private readonly ILogger<AccesoController> _logger;
 
-        public AccesoController(
-            IUsuarios usuarios,
-            ILogger<AccesoController> logger)
+        public AccesoController(IServicioAccesoApi servicioAccesoApi, ILogger<AccesoController> logger)
         {
-            _usuarios = usuarios;
+            _servicioAccesoApi = servicioAccesoApi;
             _logger = logger;
         }
 
         [HttpGet]
         public IActionResult Login()
         {
-            // Si el usuario ya está logueado, lo mandamos al Home para que no vea el login de nuevo
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
@@ -39,40 +39,44 @@ using System.Security.Claims;
                 return View(modelo);
             }
 
-            var usuario = await _usuarios.ObtenerPorMatriculaONumeroEmpleadoAsync(modelo.Identificador);
-
-            if (usuario == null)
+            try
             {
-                ModelState.AddModelError(string.Empty, "Credenciales incorrectas o usuario no encontrado.");
+                var requestDto = new LoginRequestDTO
+                {
+                    Identificador = modelo.Identificador,
+                    Password = modelo.Password
+                };
+
+                // Hacemos la petición a la API
+                string token = await _servicioAccesoApi.IniciarSesionAsync(requestDto);
+
+                // Guardamos el token en la sesión para el JwtTokenHandler
+                HttpContext.Session.SetString("TokenJwt", token);
+
+                // Decodificamos el JWT para crear la Cookie de sesión
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+
+                var identidad = new ClaimsIdentity(jwtToken.Claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identidad);
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Intento de login fallido.");
+                ModelState.AddModelError(string.Empty, "Credenciales incorrectas o servidor no disponible.");
                 return View(modelo);
             }
-
-           
-
-            var rol = usuario.GetType().Name;
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, usuario.IdUsuario.ToString()),
-                new Claim("id", usuario.IdUsuario.ToString()),
-                new Claim(ClaimTypes.Name, usuario.Nombre ?? string.Empty),
-                new Claim(ClaimTypes.Role, rol)
-            };
-
-            var identidad = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identidad);
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-            _logger.LogInformation("Usuario {Usuario} inició sesión en AppWeb con rol {Rol}.", usuario.Nombre, rol);
-
-            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
         public async Task<IActionResult> Salir()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Remove("TokenJwt");
             return RedirectToAction("Login", "Acceso");
         }
 
@@ -82,4 +86,4 @@ using System.Security.Claims;
             return View();
         }
     }
-} 
+}
