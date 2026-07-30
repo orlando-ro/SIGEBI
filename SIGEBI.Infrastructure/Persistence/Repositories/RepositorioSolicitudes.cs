@@ -14,6 +14,16 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
             _contextLocal = context;
         }
 
+        public async Task<bool> ExisteSolicitudPendienteAsync(int IdUsuario, string isbn)
+        {
+            return await _dbSet.AnyAsync(s =>
+                  s.IdUsuario == IdUsuario &&
+                  s.EjemplaresSolicitados.Any(e => e.ISBN == isbn) &&
+                  s.Estado == "Pendiente"
+
+            );
+        }
+
         public async Task GuardarResolucionAsync(Resolucion resolucion)
         {
             await _contextLocal.Set<Resolucion>().AddAsync(resolucion);
@@ -52,5 +62,7 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
                     .ThenInclude(e => e.Libro)
                 .FirstOrDefaultAsync(s => s.IdSolicitud == id);
         }
+
+
     }
 }
