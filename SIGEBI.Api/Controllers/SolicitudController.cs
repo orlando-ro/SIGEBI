@@ -18,6 +18,7 @@ namespace SIGEBI.Api.Controllers
         }
 
         [HttpPost("crear")]
+        [AllowAnonymous]
         [Authorize(Roles = "Estudiante,Docente")]
         public async Task<IActionResult> CrearSolicitud([FromBody] SolicitudRequestDTO peticion)
         {
