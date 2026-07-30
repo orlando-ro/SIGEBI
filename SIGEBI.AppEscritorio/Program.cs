@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SIGEBI.AppEscritorio.Extencions;
+using SIGEBI.AppEscritorio.Extensions;
 using SIGEBI.AppEscritorio.Forms.Auth;
 using SIGEBI.AppEscritorio.Forms.Main;
 using System;
