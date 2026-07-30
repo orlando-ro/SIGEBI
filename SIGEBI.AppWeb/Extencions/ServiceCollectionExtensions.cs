@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection; 
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using System;
 using SIGEBI.AppWeb.Handlers;
@@ -10,13 +10,19 @@ namespace SIGEBI.AppWeb.Extencions
     {
         public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
         {
-            var apiBaseUrl = configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7291/api/"; 
+            var apiBaseUrl = configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7291/api/";
 
             // 1. Registramos el handler del token jwt como transitorio
             services.AddTransient<JwtTokenHandler>();
             services.AddHttpContextAccessor();
 
             // 2. Registramos el servicio HttpClient conectandolo con el handler y la URL base de la API
+
+            services.AddHttpClient<IServicioAccesoApi, ServicioAccesoApi>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            });
+
             services.AddHttpClient<ServicioSolicitudApi>(client =>
             {
                 client.BaseAddress = new Uri(apiBaseUrl);
@@ -31,10 +37,7 @@ namespace SIGEBI.AppWeb.Extencions
             services.AddHttpClient<ServicePenalizacionesApi>(Client =>
             {
                 Client.BaseAddress = new Uri(apiBaseUrl);
-
             }).AddHttpMessageHandler<JwtTokenHandler>();
-
-
 
             return services;
         }
