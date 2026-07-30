@@ -44,6 +44,12 @@ namespace SIGEBI.AppWeb.Extencions
                 Client.BaseAddress = new Uri(apiBaseUrl);
             }).AddHttpMessageHandler<JwtTokenHandler>();
 
+            services.AddHttpClient<IServicioNotificacionesApi, ServicioNotificacionesApi>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            })
+            .AddHttpMessageHandler<JwtTokenHandler>();
+
             return services;
         }
     }
