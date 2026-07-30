@@ -23,6 +23,11 @@ namespace SIGEBI.AppWeb.Extencions
                 client.BaseAddress = new Uri(apiBaseUrl);
             });
 
+            services.AddHttpClient<IServicioCatalogoApi, ServicioCatalogoApi>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            });
+
             services.AddHttpClient<ServicioSolicitudApi>(client =>
             {
                 client.BaseAddress = new Uri(apiBaseUrl);
