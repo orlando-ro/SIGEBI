@@ -34,7 +34,7 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
                 {
                     SessionManager.IniciarSesion(
                         resultado.IdUsuario,
-                        resultado.NumeroEmpleado,
+                        resultado.NumeroEmpleado ?? string.Empty,
                         resultado.Nombre,
                         resultado.Email,
                         resultado.TipoUsuario,
