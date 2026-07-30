@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
-using SIGEBI.AppWeb.Models.DTOs.Solicitudes; 
+using System.Text.Json; // Agregamos esta librería para leer el JSON
+using SIGEBI.AppWeb.Models.DTOs.Solicitudes;
 
 namespace SIGEBI.AppWeb.Services
 {
@@ -10,7 +11,6 @@ namespace SIGEBI.AppWeb.Services
         public ServicioSolicitudApi(HttpClient httpClient)
         {
             _httpClient = httpClient;
-          
         }
 
         public async Task<SolicitudResponseDTO> CrearSolicitudAsync(SolicitudRequestDTO peticion)
@@ -19,13 +19,32 @@ namespace SIGEBI.AppWeb.Services
 
             if (respuesta.IsSuccessStatusCode)
             {
-                return await respuesta.Content.ReadFromJsonAsync<SolicitudResponseDTO>() ?? new(); 
+                return await respuesta.Content.ReadFromJsonAsync<SolicitudResponseDTO>() ?? new();
             }
 
             var error = await respuesta.Content.ReadAsStringAsync();
-            throw new Exception(string.IsNullOrEmpty(error) ? "Error al procesar en la API." : error);
-        }
 
-       
+            try
+            {
+                
+                var json = JsonDocument.Parse(error);
+
+                
+                if (json.RootElement.TryGetProperty("mensaje", out var mensajeProp))
+                {
+                    
+                    throw new Exception(mensajeProp.GetString());
+                }
+
+               
+                throw new Exception("Error al procesar la solicitud.");
+            }
+            catch (JsonException)
+            {
+                
+                throw new Exception(string.IsNullOrEmpty(error) ? "Error al procesar en la API." : error);
+            }
+            
+        }
     }
 }

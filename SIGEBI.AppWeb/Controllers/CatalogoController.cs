@@ -1,100 +1,77 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SIGEBI.AppWeb.Models.Catalogo;
-using System.Security.Claims;
+using SIGEBI.AppWeb.Models.DTOs.Catalogo;
+using SIGEBI.AppWeb.Services;
 
 namespace SIGEBI.AppWeb.Controllers
 {
-    [Authorize]
     public class CatalogoController : Controller
     {
-        private readonly IServicioCatalogo _servicioCatalogo;
-        private readonly IServicioCategoria _servicioCategoria;
-        private readonly ILogger<CatalogoController> _logger;
+        private readonly IServicioCatalogoApi _servicioCatalogo;
 
-        public CatalogoController(IServicioCatalogo servicioCatalogo, IServicioCategoria servicioCategoria, ILogger<CatalogoController> logger)
+        public CatalogoController(IServicioCatalogoApi servicioCatalogo)
         {
             _servicioCatalogo = servicioCatalogo;
-            _servicioCategoria = servicioCategoria;
-            _logger = logger;
         }
 
         [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Index(string? titulo, string? autor, int? idCategoria, bool soloDisponibles = false)
+        public async Task<IActionResult> Index(FiltroCatalogoDTO filtros)
         {
-            await CargarCategoriasViewBag(idCategoria);
+            IEnumerable<LibroResponseDTO> libros;
 
-            var filtros = new FiltroCatalogoDTO
+            bool hayFiltros = !string.IsNullOrEmpty(filtros.Titulo) ||
+                              !string.IsNullOrEmpty(filtros.NombreAutor) ||
+                              filtros.IdCategoria.HasValue ||
+                              filtros.SoloDisponibles;
+
+            if (hayFiltros)
             {
-                Titulo = titulo,
-                NombreAutor = autor,
-                IdCategoria = idCategoria,
-                SoloDisponibles = false // Manejo seguro en memoria para evitar fallos de SQL
-            };
-
-            var dtos = await _servicioCatalogo.ConsultarCatalogoAsync(filtros);
-
-            var modelo = dtos.Select(d => new CatalogoItemViewModel
+                libros = await _servicioCatalogo.ConsultarCatalogoAsync(filtros);
+            }
+            else 
             {
-                ISBN = d.ISBN,
-                Titulo = d.Titulo,
-                NombreAutor = d.NombreAutor,
-                AnioPublicacion = d.AnioPublicacion,
-                NombreCategoria = d.NombreCategoria,
-                UrlImagen = d.UrlImagen,
-                CopiasDisponibles = d.CopiasDisponibles
-            }).ToList();
-
-            // Filtro seguro en memoria RAM del servidor web si el usuario marca la casilla
-            if (soloDisponibles)
-            {
-                modelo = modelo.Where(m => m.CopiasDisponibles > 0).ToList();
+                libros = await _servicioCatalogo.ConsultarTodosAsync();
             }
 
-            return View(modelo);
+            var categorias = await _servicioCatalogo.ObtenerCategoriasAsync();
+
+            ViewBag.Categorias = new SelectList(categorias, "IdCategoria", "Nombre", filtros.IdCategoria);
+
+            ViewBag.FiltroTitulo = filtros.Titulo;
+            ViewBag.FiltroAutor = filtros.NombreAutor;
+            ViewBag.FiltroDisponibles = filtros.SoloDisponibles;
+
+            return View(libros);
         }
 
         [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Detalles(string isbn)
+        public async Task<IActionResult> Detalles(string id) // id corresponde al ISBN
         {
-            if (string.IsNullOrWhiteSpace(isbn))
+            if (string.IsNullOrEmpty(id))
             {
-                TempData["ErrorMessage"] = "Debe proporcionar un ISBN válido.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index");
             }
 
-            var libroDto = await _servicioCatalogo.BuscarPorIsbnAsync(isbn);
+            var libroDto = await _servicioCatalogo.BuscarPorIsbnAsync(id);
 
             if (libroDto == null)
             {
-                TempData["ErrorMessage"] = "El recurso bibliográfico que intenta ver no existe.";
-                return RedirectToAction(nameof(Index));
+                return NotFound("El libro solicitado no existe en el catálogo.");
             }
 
-            // Reutilizamos el ViewModel del catálogo para mostrar los detalles
             var modelo = new CatalogoItemViewModel
             {
-                ISBN = libroDto.ISBN,
+                ISBN = libroDto.ISBN, 
                 Titulo = libroDto.Titulo,
                 NombreAutor = libroDto.NombreAutor,
-                AnioPublicacion = libroDto.AnioPublicacion,
                 NombreCategoria = libroDto.Categoria,
-                UrlImagen = libroDto.UrlImagen,
-                CopiasDisponibles = libroDto.CopiasDisponibles
+                AnioPublicacion = libroDto.AnioPublicacion,
+                CopiasDisponibles = libroDto.CopiasDisponibles,
+                UrlImagen = libroDto.UrlImagen
             };
 
             return View(modelo);
         }
-
-        #region Helpers
-        private async Task CargarCategoriasViewBag(int? idSeleccionado = null)
-        {
-            var categorias = await _servicioCategoria.ConsultarTodasAsync();
-            ViewBag.Categorias = new SelectList(categorias, "IdCategoria", "Nombre", idSeleccionado);
-        }
-        #endregion
     }
-} 
+}

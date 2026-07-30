@@ -41,6 +41,17 @@ namespace SIGEBI.Application.Services
 
         public async Task<SolicitudResponseDTO> CrearSolicitudAsync(SolicitudRequestDTO peticion, int idUsuarioSolicitante)
         {
+
+            foreach (var isbn in peticion.IsbnsLibros) {
+
+                bool TienesSolicitud = await _repoSolicitud.ExisteSolicitudPendienteAsync(idUsuarioSolicitante, isbn);
+
+                if (TienesSolicitud) {
+
+                    throw new NegocioExeption($"No puedes procesar esta solicitud porque ya tiene una peticion en proceso del ejemplar {isbn}");
+                }
+            }
+            
             if (peticion == null)
                 throw new NegocioExeption("Los datos de la solicitud son obligatorios.");
 

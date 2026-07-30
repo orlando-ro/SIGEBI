@@ -16,14 +16,13 @@
 
                 <div class="card-body p-4 p-md-5 text-inherit">
 
-                    <!-- PANTALLA DE AGRADECIMIENTO (Oculta por defecto) -->
+                    <!-- PANTALLA DE PROCESAMIENTO (Oculta por defecto) -->
                     <div id="seccionAgradecimiento" class="d-none text-center py-5">
-                        <i class="bi bi-check-circle-fill text-success drop-shadow pulse-animation" style="font-size: 5rem;"></i>
-                        <h2 class="fw-bold mt-4 text-inherit">¡Gracias por usar SIGEBI!</h2>
-                        <p class="text-muted fs-5">Agradecemos tu preferencia. Estamos enviando tu solicitud...</p>
-                        <div class="spinner-border text-primary mt-4" role="status" style="width: 3rem; height: 3rem;">
+                        <div class="spinner-border text-primary pulse-animation mb-4" role="status" style="width: 4rem; height: 4rem; border-width: 0.3em;">
                             <span class="visually-hidden">Procesando...</span>
                         </div>
+                        <h2 class="fw-bold text-inherit">Procesando tu petición...</h2>
+                        <p class="text-muted fs-5">Por favor, espera un momento mientras validamos la disponibilidad en el sistema.</p>
                     </div>
 
                     <!-- PANTALLA DEL FORMULARIO Y CARRITO -->
@@ -31,6 +30,7 @@
                         <form id="formSolicitud" asp-action="Crear" method="post">
                             @Html.AntiForgeryToken()
 
+                            <!-- Esto atrapará errores de validación del modelo (Ej. si envían la lista vacía) -->
                             @if (!ViewData.ModelState.IsValid)
                             {
                                 <div class="alert alert-danger shadow-sm border-start border-danger border-4 mb-4">
@@ -76,13 +76,15 @@
             renderizarCarrito();
         });
 
-        // Caso excepcional: Si falla una validación en el servidor, el backend devuelve los ISBNs en el textarea oculto.
+        // Caso excepcional: Si falla una validación en el servidor (ej. Libro ya solicitado),
+        // el backend devuelve los ISBNs en el textarea oculto y esta función restaura la vista.
         function sincronizarTextareaHaciaCarrito() {
             const textarea = document.getElementById('IsbnsIngresados');
             let carrito = JSON.parse(localStorage.getItem('sigebi_carrito_solicitudes')) || [];
 
             if (carrito.length === 0 && textarea.value.trim() !== '') {
                 const isbns = textarea.value.split(',').map(s => s.trim()).filter(s => s);
+                // Reconstruimos el carrito visualmente para el usuario
                 carrito = isbns.map(isbn => ({ isbn: isbn, titulo: 'Recurso guardado (' + isbn + ')' }));
                 localStorage.setItem('sigebi_carrito_solicitudes', JSON.stringify(carrito));
             }
@@ -137,7 +139,7 @@
             renderizarCarrito();
         }
 
-        // Interceptar el botón de enviar para ejecutar la animación de SIGEBI
+        // Interceptar el botón de enviar para ejecutar la animación de carga
         const form = document.getElementById('formSolicitud');
         form.addEventListener('submit', function (e) {
             let carrito = JSON.parse(localStorage.getItem('sigebi_carrito_solicitudes')) || [];
@@ -154,17 +156,18 @@
             // Pausar el envío automático
             e.preventDefault();
 
-            // Ocultar el formulario y mostrar el mensaje de agradecimiento
+            // Ocultar el formulario y mostrar la pantalla de carga (Spinner)
             document.getElementById('seccionFormulario').classList.add('d-none');
             document.getElementById('seccionAgradecimiento').classList.remove('d-none');
 
             // Limpiar la memoria del navegador para la próxima solicitud
+            // (Si falla en el backend, la función sincronizarTextareaHaciaCarrito la restaurará al recargar)
             localStorage.removeItem('sigebi_carrito_solicitudes');
 
-            // Reanudar y procesar el envío hacia el backend C# después de 2.5 segundos
+            // Reanudar y procesar el envío hacia el backend C# después de 1.5 segundos
             setTimeout(() => {
                 HTMLFormElement.prototype.submit.call(form);
-            }, 2500);
+            }, 1500); // Reduje un poco el tiempo a 1.5s para que se sienta más responsivo
         });
     </script>
 }
