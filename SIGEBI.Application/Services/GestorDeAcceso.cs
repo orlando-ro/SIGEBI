@@ -19,7 +19,7 @@ namespace SIGEBI.Application.Services
 
         public async Task<LoginResponseDTO> LoginAsync(LoginRequestDTO request)
         {
-            var usuario = await _repositorioUsuario.ObtenerPorEmailAsync(request.Email);
+            var usuario = await _repositorioUsuario.ObtenerPorEmailAsync(request.Identificador);
 
             if (usuario == null)
                 throw new NegocioExeption("Credenciales incorrectas.");

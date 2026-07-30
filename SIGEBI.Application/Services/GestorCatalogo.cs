@@ -173,7 +173,7 @@ namespace SIGEBI.Application.Services
             );
         }
 
-        public async Task<IEnumerable<LibroCatalogoResponseDTO>> ConsultarCatalogoAsync(FiltroCatalogoDTO filtros)
+        public async Task<IEnumerable<LibroResponseDTO>> ConsultarCatalogoAsync(FiltroCatalogoDTO filtros)
         {
             var libros = await _repositorioLibro.ObtenerCatalogoFiltradoAsync(
                 filtros.Titulo,
@@ -182,14 +182,19 @@ namespace SIGEBI.Application.Services
                 filtros.SoloDisponibles
             );
 
-            var resultado = libros.Select(l => new LibroCatalogoResponseDTO
+            var resultado = libros.Select(l => new LibroResponseDTO 
             {
                 ISBN = l.ISBN,
                 Titulo = l.Titulo,
                 NombreAutor = l.NombreAutor,
                 AnioPublicacion = l.AnioPublicacion,
-                NombreCategoria = l.Categoria?.Nombre ?? "Sin categoría",
+
+              
+                Categoria = l.Categoria?.Nombre ?? "Sin categoría",
+
                 UrlImagen = l.UrlImagen,
+
+                
                 CopiasDisponibles = l.Ejemplares != null ? l.Ejemplares.Count(e => e.Estado.ToString() == "Disponible") : 0
             }).ToList();
 

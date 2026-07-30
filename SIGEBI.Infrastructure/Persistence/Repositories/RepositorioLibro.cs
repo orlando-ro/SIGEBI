@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Domain.Entities;
+using SIGEBI.Domain.Enums;
 using SIGEBI.Infrastructure.Persistence;
 
 namespace SIGEBI.Infrastructure.Repositories
@@ -59,7 +60,7 @@ namespace SIGEBI.Infrastructure.Repositories
                 query = query.Where(l => l.IdCategoria == idCategoria.Value);
 
             if (soloDisponibles)
-                query = query.Where(l => l.Ejemplares.Any(e => e.Estado.ToString() == "Disponible"));
+                query = query.Where(l => l.Ejemplares.Any(e => e.Estado == EstadoEjemplar.Disponible));
 
             return await query.ToListAsync();
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using SIGEBI.AppWeb.Models.Catalogo;
 using SIGEBI.AppWeb.Models.DTOs.Catalogo;
 using SIGEBI.AppWeb.Services;
 
@@ -52,14 +53,25 @@ namespace SIGEBI.AppWeb.Controllers
                 return RedirectToAction("Index");
             }
 
-            var libro = await _servicioCatalogo.BuscarPorIsbnAsync(id);
+            var libroDto = await _servicioCatalogo.BuscarPorIsbnAsync(id);
 
-            if (libro == null)
+            if (libroDto == null)
             {
                 return NotFound("El libro solicitado no existe en el catálogo.");
             }
 
-            return View(libro);
+            var modelo = new CatalogoItemViewModel
+            {
+                ISBN = libroDto.ISBN, 
+                Titulo = libroDto.Titulo,
+                NombreAutor = libroDto.NombreAutor,
+                NombreCategoria = libroDto.Categoria,
+                AnioPublicacion = libroDto.AnioPublicacion,
+                CopiasDisponibles = libroDto.CopiasDisponibles,
+                UrlImagen = libroDto.UrlImagen
+            };
+
+            return View(modelo);
         }
     }
 }
