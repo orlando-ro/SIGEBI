@@ -19,7 +19,6 @@ namespace SIGEBI.AppEscritorio.Utils
 
         public static void IniciarSesion(
             int idUsuario,
-            string matricula,
             string numeroEmpleado,
             string nombre,
             string email,
@@ -29,7 +28,6 @@ namespace SIGEBI.AppEscritorio.Utils
             string token)
         {
             IdUsuario = idUsuario;
-            Matricula = matricula ?? string.Empty;
             NumeroEmpleado = numeroEmpleado ?? string.Empty;
             Nombre = nombre ?? string.Empty;
             Email = email ?? string.Empty;
