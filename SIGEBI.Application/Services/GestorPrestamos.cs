@@ -196,5 +196,13 @@ namespace SIGEBI.Application.Services
                 ISBNs = MapeoExtensiones.ObtenerIsbns(prestamo.EjemplaresAprestar)
             };
         }
+
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarTodosAsync()
+        {
+            return await ConsultarYMapearAsync(
+                 () => _repoPrestamo.ConsultarTodosAsync(),
+                 "No hay préstamos activos registrados en el sistema actualmente."
+             );
+        }
     }
 }

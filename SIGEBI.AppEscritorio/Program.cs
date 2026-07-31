@@ -34,6 +34,7 @@ namespace SIGEBI.AppEscritorio
 
             // llamamos a la extensión para registrar los servicios de la API
             services.AddApiServices(Configuration);
+            services.AddFormServices();
 
             // 3. Registrar los Formularios (Obligatorio para inyectarles cosas)
             services.AddTransient<FormLogin>();

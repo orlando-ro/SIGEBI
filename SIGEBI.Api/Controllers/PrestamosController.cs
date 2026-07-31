@@ -60,5 +60,16 @@ namespace SIGEBI.Api.Controllers
             var resultado = await _iservicioPrestamo.ConsultarHistorialPorRecursoAsync(IsbnLibro);
             return Ok(resultado);
         }
+
+        [HttpGet("activos")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador")]
+
+        public async Task<IActionResult> ConsultarPrestamosActivos()
+        {
+
+            var resultado = await _iservicioPrestamo.ConsultarTodosAsync();
+            return Ok(resultado);
+
+        }
     }
 }

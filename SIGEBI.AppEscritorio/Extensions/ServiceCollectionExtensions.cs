@@ -1,7 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SIGEBI.AppEscritorio.Services.Interfaces;
+using SIGEBI.AppEscritorio.Forms.Auth;
+using SIGEBI.AppEscritorio.Forms.Main;
+using SIGEBI.AppEscritorio.Forms.Prestamos;
+using SIGEBI.AppEscritorio.Handlers;
 using SIGEBI.AppEscritorio.Services.Implementations;
+using SIGEBI.AppEscritorio.Services.Interfaces;
+using SIGEBI.AppEscritorio.Forms.Solicitudes;
 using System;
 
 namespace SIGEBI.AppEscritorio.Extensions
@@ -13,14 +18,41 @@ namespace SIGEBI.AppEscritorio.Extensions
             // Obtenemos la URL base desde el appsettings.json
             var apiBaseUrl = configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7291/api/";
 
+            services.AddTransient<AuthHandler>();
+
             // 1. Registramos el servicio de Acceso conectado con la URL de la API
             services.AddHttpClient<IServicioAccesoApi, ServicioAccesoApi>(client => 
             {
                 client.BaseAddress = new Uri(apiBaseUrl);
             });
 
+            services.AddHttpClient<IServicioPrestamoApi, ServicioPrestamoApi>(client =>
+            {
+
+                client.BaseAddress = new Uri(apiBaseUrl);
+            }
+            ).AddHttpMessageHandler<AuthHandler>();
+
+            services.AddHttpClient<IServicioSolicitudApi, ServicioSolicitudApi>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            })
+            .AddHttpMessageHandler<AuthHandler>();
+
             // Nota: Aquí abajo iremos agregando los demás servicios (Catálogo, Préstamos, etc.)
             // cuando toque inyectarles el token desde el SessionManager.
+
+            return services;
+        }
+
+        public static IServiceCollection AddFormServices(this IServiceCollection services)
+        {
+            services.AddTransient<FormLogin>();
+            services.AddTransient<FormPrincipal>();
+            services.AddTransient<FormAprobarSolicitudes>();
+            services.AddTransient<FormConsultarActivos>();
+            services.AddTransient<FormHistorialPrestamos>();
+            services.AddTransient<FormGestionSolicitudes>();
 
             return services;
         }
