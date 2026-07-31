@@ -36,6 +36,7 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             btnAprobarPrestamos.Visible = false;
             btnConsultarActivos.Visible = false;
             btnHistorial.Visible = false;
+            btnGestionUsuarios.Visible = false; 
 
             if (rol == "PersonalBibliotecario" || rol == "Administrador")
             {
@@ -46,6 +47,11 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             else if (rol == "Auditor")
             {
                 btnHistorial.Visible = true;
+            }
+
+            if (rol == "Administrador")
+            {
+                btnGestionUsuarios.Visible = true; 
             }
         }
 
@@ -91,6 +97,15 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             lblTituloSeccion.Text = "Préstamos y Devoluciones / Historial General";
             var formHistorial = Program.ServiceProvider.GetRequiredService<FormHistorialPrestamos>();
             AbrirFormularioEnPanel(formHistorial);
+        }
+
+        private void btnGestionUsuarios_Click(object? sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Administración / Gestión de Usuarios";
+
+            var formUsuarios = Program.ServiceProvider.GetRequiredService<SIGEBI.AppEscritorio.Forms.Usuarios.formGestionUsuarios>();
+
+            AbrirFormularioEnPanel(formUsuarios);
         }
 
         // 👇 Botón Cerrar Sesión

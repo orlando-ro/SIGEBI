@@ -7,6 +7,7 @@ using SIGEBI.AppEscritorio.Handlers;
 using SIGEBI.AppEscritorio.Services.Implementations;
 using SIGEBI.AppEscritorio.Services.Interfaces;
 using SIGEBI.AppEscritorio.Forms.Solicitudes;
+using SIGEBI.AppEscritorio.Forms.Usuarios;
 using System;
 
 namespace SIGEBI.AppEscritorio.Extensions
@@ -39,6 +40,11 @@ namespace SIGEBI.AppEscritorio.Extensions
             })
             .AddHttpMessageHandler<AuthHandler>();
 
+            services.AddHttpClient<IServicioUsuarioApi, ServicioUsuarioApi>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            })
+            .AddHttpMessageHandler<AuthHandler>();
             // Nota: Aquí abajo iremos agregando los demás servicios (Catálogo, Préstamos, etc.)
             // cuando toque inyectarles el token desde el SessionManager.
 
@@ -53,7 +59,8 @@ namespace SIGEBI.AppEscritorio.Extensions
             services.AddTransient<FormConsultarActivos>();
             services.AddTransient<FormHistorialPrestamos>();
             services.AddTransient<FormGestionSolicitudes>();
-
+            services.AddTransient<formGestionUsuarios>();
+            services.AddTransient<FormUsuarioMantenimiento>();
             return services;
         }
     }

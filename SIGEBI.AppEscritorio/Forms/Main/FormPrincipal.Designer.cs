@@ -15,6 +15,7 @@
         private void InitializeComponent()
         {
             panelMenu = new Panel();
+            btnGestionUsuarios = new Button();
             btnHistorial = new Button();
             btnConsultarActivos = new Button();
             btnAprobarPrestamos = new Button();
@@ -34,6 +35,7 @@
             // panelMenu
             // 
             panelMenu.BackColor = Color.FromArgb(20, 24, 38);
+            panelMenu.Controls.Add(btnGestionUsuarios);
             panelMenu.Controls.Add(btnHistorial);
             panelMenu.Controls.Add(btnConsultarActivos);
             panelMenu.Controls.Add(btnAprobarPrestamos);
@@ -45,6 +47,23 @@
             panelMenu.Name = "panelMenu";
             panelMenu.Size = new Size(250, 650);
             panelMenu.TabIndex = 0;
+            // 
+            // btnGestionUsuarios
+            // 
+            btnGestionUsuarios.Dock = DockStyle.Top;
+            btnGestionUsuarios.FlatAppearance.BorderSize = 0;
+            btnGestionUsuarios.FlatStyle = FlatStyle.Flat;
+            btnGestionUsuarios.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnGestionUsuarios.ForeColor = Color.Gainsboro;
+            btnGestionUsuarios.Location = new Point(0, 340);
+            btnGestionUsuarios.Name = "btnGestionUsuarios";
+            btnGestionUsuarios.Padding = new Padding(20, 0, 0, 0);
+            btnGestionUsuarios.Size = new Size(250, 60);
+            btnGestionUsuarios.TabIndex = 5;
+            btnGestionUsuarios.Text = "👥 Gestión de Usuarios";
+            btnGestionUsuarios.TextAlign = ContentAlignment.MiddleLeft;
+            btnGestionUsuarios.UseVisualStyleBackColor = true;
+            btnGestionUsuarios.Click += btnGestionUsuarios_Click;
             // 
             // btnHistorial
             // 
@@ -125,7 +144,7 @@
             btnCerrarSesion.Name = "btnCerrarSesion";
             btnCerrarSesion.Padding = new Padding(20, 0, 0, 0);
             btnCerrarSesion.Size = new Size(250, 60);
-            btnCerrarSesion.TabIndex = 5;
+            btnCerrarSesion.TabIndex = 6;
             btnCerrarSesion.Text = "🚪 Cerrar Sesión";
             btnCerrarSesion.TextAlign = ContentAlignment.MiddleLeft;
             btnCerrarSesion.UseVisualStyleBackColor = true;
@@ -225,6 +244,7 @@
         private System.Windows.Forms.Button btnAprobarPrestamos;
         private System.Windows.Forms.Button btnConsultarActivos;
         private System.Windows.Forms.Button btnHistorial;
+        private System.Windows.Forms.Button btnGestionUsuarios;
         private System.Windows.Forms.Button btnInicio;
         private System.Windows.Forms.Button btnCerrarSesion;
         private System.Windows.Forms.Panel panelHeader;
