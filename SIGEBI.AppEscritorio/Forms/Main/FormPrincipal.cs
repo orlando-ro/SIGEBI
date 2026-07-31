@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SIGEBI.AppEscritorio.Forms.Prestamos;
+using SIGEBI.AppEscritorio.Forms.Solicitudes;
+using SIGEBI.AppEscritorio.Utils;
+using System;
 using System.Windows.Forms;
 
 namespace SIGEBI.AppEscritorio.Forms.Main
@@ -15,6 +12,97 @@ namespace SIGEBI.AppEscritorio.Forms.Main
         public FormPrincipal()
         {
             InitializeComponent();
+        }
+
+        private void FormPrincipal_Load(object? sender, EventArgs e)
+        {
+            this.Text = $"SIGEBI - Panel Principal [{SessionManager.Nombre} ({SessionManager.TipoUsuario})]";
+
+            if (lblUserInfo != null)
+            {
+                lblUserInfo.Text = $"Usuario: {SessionManager.Nombre} | Rol: {SessionManager.TipoUsuario}";
+            }
+
+            ConfigurarAccesosPorRol();
+
+            // 👇 Abrir el Home automáticamente al iniciar sesión
+            AbrirFormularioEnPanel(new FormDashboard());
+        }
+
+        private void ConfigurarAccesosPorRol()
+        {
+            string rol = SessionManager.TipoUsuario;
+
+            btnAprobarPrestamos.Visible = false;
+            btnConsultarActivos.Visible = false;
+            btnHistorial.Visible = false;
+
+            if (rol == "PersonalBibliotecario" || rol == "Administrador")
+            {
+                btnAprobarPrestamos.Visible = true;
+                btnConsultarActivos.Visible = true;
+                btnHistorial.Visible = true;
+            }
+            else if (rol == "Auditor")
+            {
+                btnHistorial.Visible = true;
+            }
+        }
+
+        private void AbrirFormularioEnPanel(Form formularioHijo)
+        {
+            if (this.panelContenedor.Controls.Count > 0)
+            {
+                this.panelContenedor.Controls.RemoveAt(0);
+            }
+
+            formularioHijo.TopLevel = false;
+            formularioHijo.Dock = DockStyle.Fill;
+            formularioHijo.FormBorderStyle = FormBorderStyle.None;
+
+            this.panelContenedor.Controls.Add(formularioHijo);
+            this.panelContenedor.Tag = formularioHijo;
+            formularioHijo.Show();
+        }
+
+        // Botón Inicio
+        private void btnInicio_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Inicio / Dashboard";
+            AbrirFormularioEnPanel(new FormDashboard());
+        }
+
+        private void btnAprobarPrestamos_Click(object? sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Préstamos y Devoluciones / Gestión de Solicitudes";
+            var formSolicitudes = Program.ServiceProvider.GetRequiredService<FormGestionSolicitudes>();
+            AbrirFormularioEnPanel(formSolicitudes);
+        }
+
+        private void btnConsultarActivos_Click(object? sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Préstamos y Devoluciones / Préstamos Activos";
+            var formActivos = Program.ServiceProvider.GetRequiredService<FormConsultarActivos>();
+            AbrirFormularioEnPanel(formActivos);
+        }
+
+        private void btnHistorial_Click(object? sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Préstamos y Devoluciones / Historial General";
+            var formHistorial = Program.ServiceProvider.GetRequiredService<FormHistorialPrestamos>();
+            AbrirFormularioEnPanel(formHistorial);
+        }
+
+        // 👇 Botón Cerrar Sesión
+        private void btnCerrarSesion_Click(object sender, EventArgs e)
+        {
+            var confirmacion = MessageBox.Show("¿Está seguro que desea cerrar la sesión actual?", "Cerrar Sesión", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (confirmacion == DialogResult.Yes)
+            {
+                // Reiniciar la aplicación vuelve a levantar la pantalla de Login del Program.cs
+                Application.Restart();
+            }
         }
     }
 }

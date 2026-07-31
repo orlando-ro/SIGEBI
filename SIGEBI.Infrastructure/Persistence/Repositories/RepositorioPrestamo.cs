@@ -84,5 +84,16 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
                 .Where(p => p.Estado != "Devuelto" && p.FechaVencimiento.Date == fechaObjetivo.Date)
                 .ToListAsync();
         }
+
+       
+
+        public async Task<IEnumerable<Prestamo>> ConsultarTodosAsync()
+        {
+            return await _context.Prestamos
+                .Include(p => p.Usuario)
+                .Include(p => p.EjemplaresAprestar)
+                .Where(p => p.Estado == "Activo" || p.Estado == "Prestado")
+                .ToListAsync();
+        }
     }
 }

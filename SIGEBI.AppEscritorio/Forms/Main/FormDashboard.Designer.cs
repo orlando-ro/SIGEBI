@@ -2,44 +2,58 @@
 {
     partial class FormDashboard
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
+            if (disposing && (components != null)) { components.Dispose(); }
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
+            lblBienvenida = new Label();
+            lblSubtitulo = new Label();
             SuspendLayout();
+            // 
+            // lblBienvenida
+            // 
+            lblBienvenida.AutoSize = true;
+            lblBienvenida.Font = new Font("Segoe UI", 24F, FontStyle.Bold);
+            lblBienvenida.ForeColor = Color.White;
+            lblBienvenida.Location = new Point(50, 50);
+            lblBienvenida.Name = "lblBienvenida";
+            lblBienvenida.Size = new Size(544, 54);
+            lblBienvenida.TabIndex = 0;
+            lblBienvenida.Text = "¡Bienvenido al Sistema SIGEBI!";
+            // 
+            // lblSubtitulo
+            // 
+            lblSubtitulo.AutoSize = true;
+            lblSubtitulo.Font = new Font("Segoe UI", 12F);
+            lblSubtitulo.ForeColor = Color.Gainsboro;
+            lblSubtitulo.Location = new Point(55, 120);
+            lblSubtitulo.Name = "lblSubtitulo";
+            lblSubtitulo.Size = new Size(491, 28);
+            lblSubtitulo.TabIndex = 1;
+            lblSubtitulo.Text = "Seleccione una opción del menú lateral para comenzar.";
             // 
             // FormDashboard
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(816, 450);
+            BackColor = Color.FromArgb(30, 30, 45);
+            ClientSize = new Size(850, 590);
+            Controls.Add(lblSubtitulo);
+            Controls.Add(lblBienvenida);
+            FormBorderStyle = FormBorderStyle.None;
             Name = "FormDashboard";
             Text = "FormDashboard";
             ResumeLayout(false);
+            PerformLayout();
         }
 
-        #endregion
+        private System.Windows.Forms.Label lblBienvenida;
+        private System.Windows.Forms.Label lblSubtitulo;
     }
 }
