@@ -11,10 +11,10 @@ namespace SIGEBI.AppWeb.Controllers
     [Authorize]
     public class PenalizacionesController : Controller
     {
-        private readonly ServicePenalizacionesApi _servicePenalizacionesApi;
+        private readonly IServicioPenalizacionesApi  _servicePenalizacionesApi;
         private readonly ILogger<PenalizacionesController> _logger;
 
-        public PenalizacionesController(ServicePenalizacionesApi servicioPenalizacion, ILogger<PenalizacionesController> logger)
+        public PenalizacionesController(IServicioPenalizacionesApi servicioPenalizacion, ILogger<PenalizacionesController> logger)
         {
             _servicePenalizacionesApi  = servicioPenalizacion;
             _logger = logger;
@@ -23,7 +23,8 @@ namespace SIGEBI.AppWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var identificador = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity?.Name;
+            var identificador = User.FindFirst(ClaimTypes.Email)?.Value
+                     ?? User.FindFirst("email")?.Value;
 
             if (string.IsNullOrWhiteSpace(identificador))
             {

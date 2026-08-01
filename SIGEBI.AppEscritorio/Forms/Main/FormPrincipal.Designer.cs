@@ -16,6 +16,9 @@
         {
             panelMenu = new Panel();
             btnHistorial = new Button();
+            btnHistorialDevoluciones = new Button();
+            btnPenalizaciones = new Button();
+            btnProcesarDevolucion = new Button();
             btnConsultarActivos = new Button();
             btnAprobarPrestamos = new Button();
             btnInicio = new Button();
@@ -35,6 +38,9 @@
             // 
             panelMenu.BackColor = Color.FromArgb(20, 24, 38);
             panelMenu.Controls.Add(btnHistorial);
+            panelMenu.Controls.Add(btnHistorialDevoluciones);
+            panelMenu.Controls.Add(btnPenalizaciones);
+            panelMenu.Controls.Add(btnProcesarDevolucion);
             panelMenu.Controls.Add(btnConsultarActivos);
             panelMenu.Controls.Add(btnAprobarPrestamos);
             panelMenu.Controls.Add(btnInicio);
@@ -53,15 +59,66 @@
             btnHistorial.FlatStyle = FlatStyle.Flat;
             btnHistorial.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnHistorial.ForeColor = Color.Gainsboro;
-            btnHistorial.Location = new Point(0, 280);
+            btnHistorial.Location = new Point(0, 460);
             btnHistorial.Name = "btnHistorial";
             btnHistorial.Padding = new Padding(20, 0, 0, 0);
             btnHistorial.Size = new Size(250, 60);
-            btnHistorial.TabIndex = 4;
-            btnHistorial.Text = "📁 Historial General";
+            btnHistorial.TabIndex = 6;
+            btnHistorial.Text = "📁 Historial Préstamos";
             btnHistorial.TextAlign = ContentAlignment.MiddleLeft;
             btnHistorial.UseVisualStyleBackColor = true;
             btnHistorial.Click += btnHistorial_Click;
+            // 
+            // btnHistorialDevoluciones
+            // 
+            btnHistorialDevoluciones.Dock = DockStyle.Top;
+            btnHistorialDevoluciones.FlatAppearance.BorderSize = 0;
+            btnHistorialDevoluciones.FlatStyle = FlatStyle.Flat;
+            btnHistorialDevoluciones.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnHistorialDevoluciones.ForeColor = Color.Gainsboro;
+            btnHistorialDevoluciones.Location = new Point(0, 400);
+            btnHistorialDevoluciones.Name = "btnHistorialDevoluciones";
+            btnHistorialDevoluciones.Padding = new Padding(20, 0, 0, 0);
+            btnHistorialDevoluciones.Size = new Size(250, 60);
+            btnHistorialDevoluciones.TabIndex = 5;
+            btnHistorialDevoluciones.Text = "📁 Historial Devoluciones";
+            btnHistorialDevoluciones.TextAlign = ContentAlignment.MiddleLeft;
+            btnHistorialDevoluciones.UseVisualStyleBackColor = true;
+            btnHistorialDevoluciones.Click += btnHistorialDevoluciones_Click;
+            // 
+            // btnPenalizaciones
+            // 
+            btnPenalizaciones.Dock = DockStyle.Top;
+            btnPenalizaciones.FlatAppearance.BorderSize = 0;
+            btnPenalizaciones.FlatStyle = FlatStyle.Flat;
+            btnPenalizaciones.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnPenalizaciones.ForeColor = Color.Gainsboro;
+            btnPenalizaciones.Location = new Point(0, 340);
+            btnPenalizaciones.Name = "btnPenalizaciones";
+            btnPenalizaciones.Padding = new Padding(20, 0, 0, 0);
+            btnPenalizaciones.Size = new Size(250, 60);
+            btnPenalizaciones.TabIndex = 8;
+            btnPenalizaciones.Text = "💰 Multas y Penalidades";
+            btnPenalizaciones.TextAlign = ContentAlignment.MiddleLeft;
+            btnPenalizaciones.UseVisualStyleBackColor = true;
+            btnPenalizaciones.Click += btnPenalizaciones_Click;
+            // 
+            // btnProcesarDevolucion
+            // 
+            btnProcesarDevolucion.Dock = DockStyle.Top;
+            btnProcesarDevolucion.FlatAppearance.BorderSize = 0;
+            btnProcesarDevolucion.FlatStyle = FlatStyle.Flat;
+            btnProcesarDevolucion.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnProcesarDevolucion.ForeColor = Color.Gainsboro;
+            btnProcesarDevolucion.Location = new Point(0, 280);
+            btnProcesarDevolucion.Name = "btnProcesarDevolucion";
+            btnProcesarDevolucion.Padding = new Padding(20, 0, 0, 0);
+            btnProcesarDevolucion.Size = new Size(250, 60);
+            btnProcesarDevolucion.TabIndex = 4;
+            btnProcesarDevolucion.Text = "📦 Procesar Devolución";
+            btnProcesarDevolucion.TextAlign = ContentAlignment.MiddleLeft;
+            btnProcesarDevolucion.UseVisualStyleBackColor = true;
+            btnProcesarDevolucion.Click += btnProcesarDevolucion_Click;
             // 
             // btnConsultarActivos
             // 
@@ -120,12 +177,12 @@
             btnCerrarSesion.FlatAppearance.BorderSize = 0;
             btnCerrarSesion.FlatStyle = FlatStyle.Flat;
             btnCerrarSesion.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnCerrarSesion.ForeColor = Color.FromArgb(220, 53, 69); // Rojo
+            btnCerrarSesion.ForeColor = Color.FromArgb(220, 53, 69);
             btnCerrarSesion.Location = new Point(0, 590);
             btnCerrarSesion.Name = "btnCerrarSesion";
             btnCerrarSesion.Padding = new Padding(20, 0, 0, 0);
             btnCerrarSesion.Size = new Size(250, 60);
-            btnCerrarSesion.TabIndex = 5;
+            btnCerrarSesion.TabIndex = 7;
             btnCerrarSesion.Text = "🚪 Cerrar Sesión";
             btnCerrarSesion.TextAlign = ContentAlignment.MiddleLeft;
             btnCerrarSesion.UseVisualStyleBackColor = true;
@@ -231,5 +288,8 @@
         private System.Windows.Forms.Label lblTituloSeccion;
         private System.Windows.Forms.Label lblUserInfo;
         private System.Windows.Forms.Panel panelContenedor;
+        private System.Windows.Forms.Button btnProcesarDevolucion;
+        private System.Windows.Forms.Button btnHistorialDevoluciones;
+        private System.Windows.Forms.Button btnPenalizaciones;
     }
 }

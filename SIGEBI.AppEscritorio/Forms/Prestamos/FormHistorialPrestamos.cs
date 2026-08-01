@@ -30,6 +30,22 @@ namespace SIGEBI.AppEscritorio.Forms.Prestamos
             }
         }
 
+        private async void btnMostrarTodo_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var historialCompleto = await _servicioPrestamo.ConsultarHistorialCompletoAsync();
+                dgvHistorial.DataSource = historialCompleto;
+                txtIdentificador.Clear();
+                txtIsbn.Clear();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error al cargar el historial", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                dgvHistorial.DataSource = null;
+            }
+        }
+
         private async void btnHistorialRecurso_Click(object sender, EventArgs e)
         {
             try

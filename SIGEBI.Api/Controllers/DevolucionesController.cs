@@ -46,5 +46,13 @@ namespace SIGEBI.Api.Controllers
 
             return Ok(resultado);
         }
+
+        [HttpGet("consultar/devoluciones/todas")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador,Auditor")]
+        public async Task<IActionResult> ConsultarHistorialCompleto()
+        {
+            var resultado = await _servicioDevolucion.ConsultarHistorialCompletoAsync();
+            return Ok(resultado);
+        }
     }
 }

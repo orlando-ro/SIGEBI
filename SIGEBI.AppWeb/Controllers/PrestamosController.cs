@@ -10,10 +10,10 @@ namespace SIGEBI.AppWeb.Controllers
     [Authorize] // Solo requiere estar logueado
     public class PrestamosController : Controller
     {
-        private readonly ServicioPrestamoApi _servicioPrestamoApi;
+        private readonly IServicioPrestamoApi _servicioPrestamoApi;
         private readonly ILogger<PrestamosController> _logger;
 
-        public PrestamosController(ServicioPrestamoApi servicioPrestamoApi, ILogger<PrestamosController> logger)
+        public PrestamosController(IServicioPrestamoApi servicioPrestamoApi, ILogger<PrestamosController> logger)
         {
             _servicioPrestamoApi = servicioPrestamoApi;
             _logger = logger;
@@ -22,8 +22,8 @@ namespace SIGEBI.AppWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            // Extraemos la matrícula directo del Token
-            var identificador = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.Identity?.Name;
+            var identificador = User.FindFirst(ClaimTypes.Email)?.Value
+                     ?? User.FindFirst("email")?.Value;
 
             if (string.IsNullOrWhiteSpace(identificador))
             {
@@ -33,7 +33,7 @@ namespace SIGEBI.AppWeb.Controllers
 
             try
             {
-                // Solo consultamos los préstamos de ESTE usuario
+                
                 var prestamosDto = await _servicioPrestamoApi.ObtenerPrestamosPorUsuarioAsync(identificador);
                 
                 var modelo = prestamosDto.Select(p => new PrestamoItemViewModel

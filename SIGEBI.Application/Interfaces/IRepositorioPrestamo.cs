@@ -22,6 +22,8 @@ namespace SIGEBI.Application.Interfaces
         Task<IEnumerable<Prestamo>> ObtenerActivosPorFechaVencimientoAsync(DateTime fechaObjetivo);
 
         Task<IEnumerable<Prestamo>> ConsultarTodosAsync();
+
+        Task<IEnumerable<Prestamo>> ConsultarHistorialCompletoAsync();
     }
 
 
