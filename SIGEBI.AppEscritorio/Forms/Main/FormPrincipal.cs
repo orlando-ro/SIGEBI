@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SIGEBI.AppEscritorio.Forms.Prestamos;
 using SIGEBI.AppEscritorio.Forms.Solicitudes;
+using SIGEBI.AppEscritorio.Forms.Notificaciones; // Agregado para el nuevo módulo
 using SIGEBI.AppEscritorio.Utils;
 using System;
 using System.Windows.Forms;
@@ -40,7 +41,8 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             btnHistorial.Visible = false;
             btnGestionUsuarios.Visible = false;
             btnCatalogo.Visible = false;
-            btnCategorias.Visible = false; // Agregado aquí
+            btnCategorias.Visible = false; 
+            btnNotificaciones.Visible = false;
 
             if (rol == "PersonalBibliotecario" || rol == "Administrador")
             {
@@ -48,11 +50,14 @@ namespace SIGEBI.AppEscritorio.Forms.Main
                 btnConsultarActivos.Visible = true;
                 btnHistorial.Visible = true;
                 btnCatalogo.Visible = true;
-                btnCategorias.Visible = true; // Agregado aquí
+                btnCategorias.Visible = true; 
             }
-            else if (rol == "Auditor")
+            
+            // Los Auditores y Administradores tienen acceso al historial de notificaciones
+            if (rol == "Auditor" || rol == "Administrador")
             {
                 btnHistorial.Visible = true;
+                btnNotificaciones.Visible = true; 
             }
 
             if (rol == "Administrador")
@@ -122,10 +127,15 @@ namespace SIGEBI.AppEscritorio.Forms.Main
         private void btnGestionUsuarios_Click(object? sender, EventArgs e)
         {
             lblTituloSeccion.Text = "Administración / Gestión de Usuarios";
-
             var formUsuarios = Program.ServiceProvider.GetRequiredService<SIGEBI.AppEscritorio.Forms.Usuarios.formGestionUsuarios>();
-
             AbrirFormularioEnPanel(formUsuarios);
+        }
+
+        private void btnNotificaciones_Click(object? sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Administración / Historial de Alertas";
+            var formNotificaciones = Program.ServiceProvider.GetRequiredService<formGestionNotificaciones>();
+            AbrirFormularioEnPanel(formNotificaciones);
         }
 
         // Botón Cerrar Sesión
