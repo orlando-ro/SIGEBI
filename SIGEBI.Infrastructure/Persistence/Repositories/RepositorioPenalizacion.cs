@@ -71,6 +71,16 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
 
             return idsUsuarios.First();
         }
+
+        public async Task<IEnumerable<Penalizacion>> ObtenerTodasPendientesAsync()
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .Include(p => p.Usuario)
+                .Where(p => !p.Pagada) // Solo traemos las que faltan por pagar
+                .OrderByDescending(p => p.FechaEmision)
+                .ToListAsync();
+        }
     }
 }
 

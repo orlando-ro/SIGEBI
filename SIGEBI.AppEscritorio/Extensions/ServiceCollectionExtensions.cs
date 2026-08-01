@@ -2,15 +2,18 @@
 using Microsoft.Extensions.DependencyInjection;
 using SIGEBI.AppEscritorio.Forms.Auth;
 using SIGEBI.AppEscritorio.Forms.Catalogo;
+using SIGEBI.AppEscritorio.Forms.Devoluciones;
 using SIGEBI.AppEscritorio.Forms.Main;
 using SIGEBI.AppEscritorio.Forms.Notificaciones;
 using SIGEBI.AppEscritorio.Forms.Prestamos;
 using SIGEBI.AppEscritorio.Forms.Solicitudes;
 using SIGEBI.AppEscritorio.Forms.Usuarios;
+using SIGEBI.AppEscritorio.Forms.Solicitudes;
 using SIGEBI.AppEscritorio.Handlers;
 using SIGEBI.AppEscritorio.Services;
 using SIGEBI.AppEscritorio.Services.Implementations;
 using SIGEBI.AppEscritorio.Services.Interfaces;
+using SIGEBI.AppEscritorio.Forms.Penalizaciones;
 using System;
 
 namespace SIGEBI.AppEscritorio.Extensions
@@ -64,6 +67,19 @@ namespace SIGEBI.AppEscritorio.Extensions
                 client.BaseAddress = new Uri(apiBaseUrl);
             }).AddHttpMessageHandler<AuthHandler>();
 
+
+            services.AddHttpClient<IServicioDevolucionApi, ServicioDevolucionApi>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            })
+            .AddHttpMessageHandler<AuthHandler>();
+
+            services.AddHttpClient<IServicioPenalizacionApi, ServicioPenalizacionApi>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            })
+            .AddHttpMessageHandler<AuthHandler>();
+
             // Nota: Aquí abajo iremos agregando los demás servicios (Catálogo, Préstamos, etc.)
             // cuando toque inyectarles el token desde el SessionManager.
 
@@ -85,6 +101,10 @@ namespace SIGEBI.AppEscritorio.Extensions
             services.AddTransient<formGestionCategorias>();
             services.AddTransient<FormCategoriaMantenimiento>();
             services.AddTransient<formGestionNotificaciones>();
+            services.AddTransient<FormProcesarDevolucion>();
+            services.AddTransient<FormHistorialDevoluciones>();
+            services.AddTransient<FormGestionPenalizaciones>();
+
             return services;
         }
     }

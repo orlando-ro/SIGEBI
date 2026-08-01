@@ -11,5 +11,7 @@ namespace SIGEBI.Application.Interfaces
         Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorUsuario(string matriculaONumeroEmpleado);
 
         Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorRecurso(string isbnLibro);
+
+        Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialCompletoAsync();
     }
 }

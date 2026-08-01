@@ -13,5 +13,7 @@ namespace SIGEBI.AppEscritorio.Services.Interfaces
         Task<List<PrestamoResponseDTO>> ConsultarHistorialPrestamosPorRecursoAsync(string isbnLibro);
 
         Task<IEnumerable<PrestamoResponseDTO>> ConsultarTodosAsync();
+
+        Task<List<PrestamoResponseDTO>> ConsultarHistorialCompletoAsync();
     }
 }

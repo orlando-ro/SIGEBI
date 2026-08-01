@@ -120,7 +120,8 @@ namespace SIGEBI.Application.Services
             var penalizacionesPendientes = await _repoPenalizacion.ObtenerPendientesPorUsuarioAsync(usuario.IdUsuario);
 
             if (penalizacionesPendientes == null || !penalizacionesPendientes.Any())
-                throw new NegocioExeption("No se encontraron penalizaciones pendientes para el usuario especificado.");
+               return new List<PenalizacionResponseDTO>();
+
 
             return penalizacionesPendientes.Select(p => MapearPenalizacionResponse(p, usuario));
         }
@@ -165,9 +166,18 @@ namespace SIGEBI.Application.Services
 );
         }
 
-        
-        
-        private static PenalizacionResponseDTO MapearPenalizacionResponse(Penalizacion penalizacion, Usuario usuario)
+
+        public async Task<IEnumerable<PenalizacionResponseDTO>> ObtenerTodasPendientesAsync()
+        {
+            var penalizacionesPendientes = await _repoPenalizacion.ObtenerTodasPendientesAsync();
+
+            if (penalizacionesPendientes == null || !penalizacionesPendientes.Any())
+                throw new NegocioExeption("No se encontraron penalizaciones pendientes en el sistema.");
+
+            return penalizacionesPendientes.Select(p => MapearPenalizacionResponse(p, p.Usuario));
+        }
+
+        private static PenalizacionResponseDTO MapearPenalizacionResponse(Penalizacion penalizacion, Usuario? usuario)
         {
             return new PenalizacionResponseDTO
             {
@@ -178,7 +188,7 @@ namespace SIGEBI.Application.Services
             penalizacion.IdUsuario,
 
                 NombreUsuario =
-            usuario.Nombre,
+            usuario?.Nombre ?? string.Empty,
 
                 Matricula =
             usuario is Estudiante estudiante
@@ -186,7 +196,7 @@ namespace SIGEBI.Application.Services
                 : null,
 
                 NumeroEmpleado =
-            usuario.NumeroEmpleado,
+            usuario?.NumeroEmpleado ?? string.Empty,
 
                 Monto =
             penalizacion.Monto,

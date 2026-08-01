@@ -39,5 +39,13 @@ namespace SIGEBI.Api.Controllers
             var resultado = await _servicioPrenalizacion.ObtenerPendientesPorUsuariosAsync(matriculaONumeroEmpleado);
             return Ok(resultado);
         }
+
+        [HttpGet("Pendientes/Todas")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador")] // Solo staff
+        public async Task<IActionResult> ObtenerTodasPendientes()
+        {
+            var resultado = await _servicioPrenalizacion.ObtenerTodasPendientesAsync();
+            return Ok(resultado);
+        }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SIGEBI.AppEscritorio.Forms.Devoluciones;
+using SIGEBI.AppEscritorio.Forms.Penalizaciones; // 👈 Nuevo Using
 using SIGEBI.AppEscritorio.Forms.Prestamos;
 using SIGEBI.AppEscritorio.Forms.Solicitudes;
 using SIGEBI.AppEscritorio.Forms.Notificaciones; // Agregado para el nuevo módulo
@@ -27,8 +29,6 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             }
 
             ConfigurarAccesosPorRol();
-
-            // 👇 Abrir el Home automáticamente al iniciar sesión
             AbrirFormularioEnPanel(new FormDashboard());
         }
 
@@ -36,26 +36,43 @@ namespace SIGEBI.AppEscritorio.Forms.Main
         {
             string rol = SessionManager.TipoUsuario;
 
+            // Por defecto ocultamos todo
             btnAprobarPrestamos.Visible = false;
             btnConsultarActivos.Visible = false;
+            btnProcesarDevolucion.Visible = false;
+            btnPenalizaciones.Visible = false; // 👈 Oculto por defecto
             btnHistorial.Visible = false;
             btnGestionUsuarios.Visible = false;
             btnCatalogo.Visible = false;
             btnCategorias.Visible = false; 
             btnNotificaciones.Visible = false;
+            btnHistorialDevoluciones.Visible = false;
 
-            if (rol == "PersonalBibliotecario" || rol == "Administrador")
+            if (rol == "PersonalBibliotecario")
             {
                 btnAprobarPrestamos.Visible = true;
                 btnConsultarActivos.Visible = true;
+                btnProcesarDevolucion.Visible = true;
+                btnPenalizaciones.Visible = true; // 👈 Bibliotecario puede cobrar y ver
                 btnHistorial.Visible = true;
                 btnCatalogo.Visible = true;
                 btnCategorias.Visible = true; 
+                btnHistorialDevoluciones.Visible = true;
             }
             
             // Los Auditores y Administradores tienen acceso al historial de notificaciones
             if (rol == "Auditor" || rol == "Administrador")
+            else if (rol == "Administrador")
             {
+                btnAprobarPrestamos.Visible = true;
+                btnConsultarActivos.Visible = true;
+                btnPenalizaciones.Visible = true; // 👈 Admin puede cobrar y ver
+                btnHistorial.Visible = true;
+                btnHistorialDevoluciones.Visible = true;
+            }
+            else if (rol == "Auditor")
+            {
+                // El Auditor NO ve el botón de Penalizaciones porque la API no le autoriza el GET ni el PATCH
                 btnHistorial.Visible = true;
                 btnNotificaciones.Visible = true; 
             }
@@ -63,6 +80,7 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             if (rol == "Administrador")
             {
                 btnGestionUsuarios.Visible = true;
+                btnHistorialDevoluciones.Visible = true;
             }
         }
 
@@ -82,7 +100,6 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             formularioHijo.Show();
         }
 
-        // Botón Inicio
         private void btnInicio_Click(object sender, EventArgs e)
         {
             lblTituloSeccion.Text = "Inicio / Dashboard";
@@ -91,54 +108,47 @@ namespace SIGEBI.AppEscritorio.Forms.Main
 
         private void btnAprobarPrestamos_Click(object? sender, EventArgs e)
         {
-            lblTituloSeccion.Text = "Préstamos y Devoluciones / Gestión de Solicitudes";
+            lblTituloSeccion.Text = "Préstamos / Gestión de Solicitudes";
             var formSolicitudes = Program.ServiceProvider.GetRequiredService<FormGestionSolicitudes>();
             AbrirFormularioEnPanel(formSolicitudes);
         }
 
         private void btnConsultarActivos_Click(object? sender, EventArgs e)
         {
-            lblTituloSeccion.Text = "Préstamos y Devoluciones / Préstamos Activos";
+            lblTituloSeccion.Text = "Préstamos / Préstamos Activos";
             var formActivos = Program.ServiceProvider.GetRequiredService<FormConsultarActivos>();
             AbrirFormularioEnPanel(formActivos);
         }
 
+        private void btnProcesarDevolucion_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Devoluciones / Procesar Devolución";
+            var formProcesarDev = Program.ServiceProvider.GetRequiredService<FormProcesarDevolucion>();
+            AbrirFormularioEnPanel(formProcesarDev);
+        }
+
+        // 👇 Nuevo Evento para abrir Penalizaciones
+        private void btnPenalizaciones_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Caja / Multas y Penalizaciones";
+            var formPenalizaciones = Program.ServiceProvider.GetRequiredService<FormGestionPenalizaciones>();
+            AbrirFormularioEnPanel(formPenalizaciones);
+        }
+
+        private void btnHistorialDevoluciones_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Reportes / Historial de Devoluciones";
+            var formHistorialDev = Program.ServiceProvider.GetRequiredService<FormHistorialDevoluciones>();
+            AbrirFormularioEnPanel(formHistorialDev);
+        }
+
         private void btnHistorial_Click(object? sender, EventArgs e)
         {
-            lblTituloSeccion.Text = "Préstamos y Devoluciones / Historial General";
+            lblTituloSeccion.Text = "Reportes / Historial de Préstamos";
             var formHistorial = Program.ServiceProvider.GetRequiredService<FormHistorialPrestamos>();
             AbrirFormularioEnPanel(formHistorial);
         }
 
-        private void btnCatalogo_Click(object? sender, EventArgs e)
-        {
-            lblTituloSeccion.Text = "Catálogo / Gestión Bibliográfica";
-            var formCatalogo = Program.ServiceProvider.GetRequiredService<SIGEBI.AppEscritorio.Forms.Catalogo.formGestionCatalogo>();
-            AbrirFormularioEnPanel(formCatalogo);
-        }
-
-        private void btnCategorias_Click(object? sender, EventArgs e)
-        {
-            lblTituloSeccion.Text = "Catálogo / Gestión de Categorías";
-            var formCategorias = Program.ServiceProvider.GetRequiredService<SIGEBI.AppEscritorio.Forms.Catalogo.formGestionCategorias>();
-            AbrirFormularioEnPanel(formCategorias);
-        }
-
-        private void btnGestionUsuarios_Click(object? sender, EventArgs e)
-        {
-            lblTituloSeccion.Text = "Administración / Gestión de Usuarios";
-            var formUsuarios = Program.ServiceProvider.GetRequiredService<SIGEBI.AppEscritorio.Forms.Usuarios.formGestionUsuarios>();
-            AbrirFormularioEnPanel(formUsuarios);
-        }
-
-        private void btnNotificaciones_Click(object? sender, EventArgs e)
-        {
-            lblTituloSeccion.Text = "Administración / Historial de Alertas";
-            var formNotificaciones = Program.ServiceProvider.GetRequiredService<formGestionNotificaciones>();
-            AbrirFormularioEnPanel(formNotificaciones);
-        }
-
-        // Botón Cerrar Sesión
         private void btnCerrarSesion_Click(object sender, EventArgs e)
         {
             var confirmacion = MessageBox.Show("¿Está seguro que desea cerrar la sesión actual?", "Cerrar Sesión", MessageBoxButtons.YesNo, MessageBoxIcon.Question);

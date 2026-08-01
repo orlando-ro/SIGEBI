@@ -22,6 +22,7 @@
             lblIsbn = new Label();
             txtIsbn = new TextBox();
             btnHistorialRecurso = new Button();
+            btnMostrarTodo = new Button();
             dgvHistorial = new DataGridView();
             ((System.ComponentModel.ISupportInitialize)dgvHistorial).BeginInit();
             SuspendLayout();
@@ -111,6 +112,23 @@
             btnHistorialRecurso.UseVisualStyleBackColor = false;
             btnHistorialRecurso.Click += btnHistorialRecurso_Click;
             // 
+            // btnMostrarTodo
+            // 
+            btnMostrarTodo.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnMostrarTodo.BackColor = Color.FromArgb(40, 44, 60);
+            btnMostrarTodo.Cursor = Cursors.Hand;
+            btnMostrarTodo.FlatAppearance.BorderSize = 0;
+            btnMostrarTodo.FlatStyle = FlatStyle.Flat;
+            btnMostrarTodo.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnMostrarTodo.ForeColor = Color.White;
+            btnMostrarTodo.Location = new Point(695, 20);
+            btnMostrarTodo.Name = "btnMostrarTodo";
+            btnMostrarTodo.Size = new Size(130, 31);
+            btnMostrarTodo.TabIndex = 8;
+            btnMostrarTodo.Text = "🔄 Mostrar Todo";
+            btnMostrarTodo.UseVisualStyleBackColor = false;
+            btnMostrarTodo.Click += btnMostrarTodo_Click;
+            // 
             // dgvHistorial
             // 
             dgvHistorial.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
@@ -132,6 +150,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(30, 30, 45);
             ClientSize = new Size(850, 590);
+            Controls.Add(btnMostrarTodo);
             Controls.Add(dgvHistorial);
             Controls.Add(btnHistorialRecurso);
             Controls.Add(txtIsbn);
@@ -156,6 +175,7 @@
         private System.Windows.Forms.Label lblIsbn;
         private System.Windows.Forms.TextBox txtIsbn;
         private System.Windows.Forms.Button btnHistorialRecurso;
+        private System.Windows.Forms.Button btnMostrarTodo;
         private System.Windows.Forms.DataGridView dgvHistorial;
     }
 }
