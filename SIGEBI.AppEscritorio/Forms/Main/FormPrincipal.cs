@@ -3,6 +3,7 @@ using SIGEBI.AppEscritorio.Forms.Devoluciones;
 using SIGEBI.AppEscritorio.Forms.Penalizaciones; // 👈 Nuevo Using
 using SIGEBI.AppEscritorio.Forms.Prestamos;
 using SIGEBI.AppEscritorio.Forms.Solicitudes;
+using SIGEBI.AppEscritorio.Forms.Notificaciones; // Agregado para el nuevo módulo
 using SIGEBI.AppEscritorio.Utils;
 using System;
 using System.Windows.Forms;
@@ -14,6 +15,8 @@ namespace SIGEBI.AppEscritorio.Forms.Main
         public FormPrincipal()
         {
             InitializeComponent();
+
+            this.WindowState = FormWindowState.Maximized;
         }
 
         private void FormPrincipal_Load(object? sender, EventArgs e)
@@ -39,6 +42,10 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             btnProcesarDevolucion.Visible = false;
             btnPenalizaciones.Visible = false; // 👈 Oculto por defecto
             btnHistorial.Visible = false;
+            btnGestionUsuarios.Visible = false;
+            btnCatalogo.Visible = false;
+            btnCategorias.Visible = false; 
+            btnNotificaciones.Visible = false;
             btnHistorialDevoluciones.Visible = false;
 
             if (rol == "PersonalBibliotecario")
@@ -48,8 +55,13 @@ namespace SIGEBI.AppEscritorio.Forms.Main
                 btnProcesarDevolucion.Visible = true;
                 btnPenalizaciones.Visible = true; // 👈 Bibliotecario puede cobrar y ver
                 btnHistorial.Visible = true;
+                btnCatalogo.Visible = true;
+                btnCategorias.Visible = true; 
                 btnHistorialDevoluciones.Visible = true;
             }
+            
+            // Los Auditores y Administradores tienen acceso al historial de notificaciones
+            if (rol == "Auditor" || rol == "Administrador")
             else if (rol == "Administrador")
             {
                 btnAprobarPrestamos.Visible = true;
@@ -62,6 +74,12 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             {
                 // El Auditor NO ve el botón de Penalizaciones porque la API no le autoriza el GET ni el PATCH
                 btnHistorial.Visible = true;
+                btnNotificaciones.Visible = true; 
+            }
+
+            if (rol == "Administrador")
+            {
+                btnGestionUsuarios.Visible = true;
                 btnHistorialDevoluciones.Visible = true;
             }
         }

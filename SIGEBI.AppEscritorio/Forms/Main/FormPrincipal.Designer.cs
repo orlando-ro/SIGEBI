@@ -15,12 +15,16 @@
         private void InitializeComponent()
         {
             panelMenu = new Panel();
+            btnNotificaciones = new Button();
+            btnGestionUsuarios = new Button();
             btnHistorial = new Button();
             btnHistorialDevoluciones = new Button();
             btnPenalizaciones = new Button();
             btnProcesarDevolucion = new Button();
             btnConsultarActivos = new Button();
             btnAprobarPrestamos = new Button();
+            btnCategorias = new Button();
+            btnCatalogo = new Button();
             btnInicio = new Button();
             btnCerrarSesion = new Button();
             panelLogo = new Panel();
@@ -37,12 +41,16 @@
             // panelMenu
             // 
             panelMenu.BackColor = Color.FromArgb(20, 24, 38);
+            panelMenu.Controls.Add(btnNotificaciones);
+            panelMenu.Controls.Add(btnGestionUsuarios);
             panelMenu.Controls.Add(btnHistorial);
             panelMenu.Controls.Add(btnHistorialDevoluciones);
             panelMenu.Controls.Add(btnPenalizaciones);
             panelMenu.Controls.Add(btnProcesarDevolucion);
             panelMenu.Controls.Add(btnConsultarActivos);
             panelMenu.Controls.Add(btnAprobarPrestamos);
+            panelMenu.Controls.Add(btnCategorias);
+            panelMenu.Controls.Add(btnCatalogo);
             panelMenu.Controls.Add(btnInicio);
             panelMenu.Controls.Add(btnCerrarSesion);
             panelMenu.Controls.Add(panelLogo);
@@ -52,6 +60,40 @@
             panelMenu.Size = new Size(250, 650);
             panelMenu.TabIndex = 0;
             // 
+            // btnNotificaciones
+            // 
+            btnNotificaciones.Dock = DockStyle.Top;
+            btnNotificaciones.FlatAppearance.BorderSize = 0;
+            btnNotificaciones.FlatStyle = FlatStyle.Flat;
+            btnNotificaciones.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnNotificaciones.ForeColor = Color.Gainsboro;
+            btnNotificaciones.Location = new Point(0, 520);
+            btnNotificaciones.Name = "btnNotificaciones";
+            btnNotificaciones.Padding = new Padding(20, 0, 0, 0);
+            btnNotificaciones.Size = new Size(250, 60);
+            btnNotificaciones.TabIndex = 8;
+            btnNotificaciones.Text = "🔔 Historial de Alertas";
+            btnNotificaciones.TextAlign = ContentAlignment.MiddleLeft;
+            btnNotificaciones.UseVisualStyleBackColor = true;
+            btnNotificaciones.Click += btnNotificaciones_Click;
+            // 
+            // btnGestionUsuarios
+            // 
+            btnGestionUsuarios.Dock = DockStyle.Top;
+            btnGestionUsuarios.FlatAppearance.BorderSize = 0;
+            btnGestionUsuarios.FlatStyle = FlatStyle.Flat;
+            btnGestionUsuarios.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnGestionUsuarios.ForeColor = Color.Gainsboro;
+            btnGestionUsuarios.Location = new Point(0, 460);
+            btnGestionUsuarios.Name = "btnGestionUsuarios";
+            btnGestionUsuarios.Padding = new Padding(20, 0, 0, 0);
+            btnGestionUsuarios.Size = new Size(250, 60);
+            btnGestionUsuarios.TabIndex = 6;
+            btnGestionUsuarios.Text = "👥 Gestión de Usuarios";
+            btnGestionUsuarios.TextAlign = ContentAlignment.MiddleLeft;
+            btnGestionUsuarios.UseVisualStyleBackColor = true;
+            btnGestionUsuarios.Click += btnGestionUsuarios_Click;
+            // 
             // btnHistorial
             // 
             btnHistorial.Dock = DockStyle.Top;
@@ -59,10 +101,13 @@
             btnHistorial.FlatStyle = FlatStyle.Flat;
             btnHistorial.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnHistorial.ForeColor = Color.Gainsboro;
+            btnHistorial.Location = new Point(0, 400);
             btnHistorial.Location = new Point(0, 460);
             btnHistorial.Name = "btnHistorial";
             btnHistorial.Padding = new Padding(20, 0, 0, 0);
             btnHistorial.Size = new Size(250, 60);
+            btnHistorial.TabIndex = 5;
+            btnHistorial.Text = "📁 Historial General";
             btnHistorial.TabIndex = 6;
             btnHistorial.Text = "📁 Historial Préstamos";
             btnHistorial.TextAlign = ContentAlignment.MiddleLeft;
@@ -127,11 +172,11 @@
             btnConsultarActivos.FlatStyle = FlatStyle.Flat;
             btnConsultarActivos.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnConsultarActivos.ForeColor = Color.Gainsboro;
-            btnConsultarActivos.Location = new Point(0, 220);
+            btnConsultarActivos.Location = new Point(0, 340);
             btnConsultarActivos.Name = "btnConsultarActivos";
             btnConsultarActivos.Padding = new Padding(20, 0, 0, 0);
             btnConsultarActivos.Size = new Size(250, 60);
-            btnConsultarActivos.TabIndex = 3;
+            btnConsultarActivos.TabIndex = 4;
             btnConsultarActivos.Text = "🔍 Préstamos Activos";
             btnConsultarActivos.TextAlign = ContentAlignment.MiddleLeft;
             btnConsultarActivos.UseVisualStyleBackColor = true;
@@ -144,15 +189,49 @@
             btnAprobarPrestamos.FlatStyle = FlatStyle.Flat;
             btnAprobarPrestamos.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnAprobarPrestamos.ForeColor = Color.Gainsboro;
-            btnAprobarPrestamos.Location = new Point(0, 160);
+            btnAprobarPrestamos.Location = new Point(0, 280);
             btnAprobarPrestamos.Name = "btnAprobarPrestamos";
             btnAprobarPrestamos.Padding = new Padding(20, 0, 0, 0);
             btnAprobarPrestamos.Size = new Size(250, 60);
-            btnAprobarPrestamos.TabIndex = 2;
+            btnAprobarPrestamos.TabIndex = 3;
             btnAprobarPrestamos.Text = "📝 Solicitudes Pendientes";
             btnAprobarPrestamos.TextAlign = ContentAlignment.MiddleLeft;
             btnAprobarPrestamos.UseVisualStyleBackColor = true;
             btnAprobarPrestamos.Click += btnAprobarPrestamos_Click;
+            // 
+            // btnCategorias
+            // 
+            btnCategorias.Dock = DockStyle.Top;
+            btnCategorias.FlatAppearance.BorderSize = 0;
+            btnCategorias.FlatStyle = FlatStyle.Flat;
+            btnCategorias.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnCategorias.ForeColor = Color.Gainsboro;
+            btnCategorias.Location = new Point(0, 220);
+            btnCategorias.Name = "btnCategorias";
+            btnCategorias.Padding = new Padding(20, 0, 0, 0);
+            btnCategorias.Size = new Size(250, 60);
+            btnCategorias.TabIndex = 2;
+            btnCategorias.Text = "🏷️ Gestión Categorías";
+            btnCategorias.TextAlign = ContentAlignment.MiddleLeft;
+            btnCategorias.UseVisualStyleBackColor = true;
+            btnCategorias.Click += btnCategorias_Click;
+            // 
+            // btnCatalogo
+            // 
+            btnCatalogo.Dock = DockStyle.Top;
+            btnCatalogo.FlatAppearance.BorderSize = 0;
+            btnCatalogo.FlatStyle = FlatStyle.Flat;
+            btnCatalogo.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnCatalogo.ForeColor = Color.Gainsboro;
+            btnCatalogo.Location = new Point(0, 160);
+            btnCatalogo.Name = "btnCatalogo";
+            btnCatalogo.Padding = new Padding(20, 0, 0, 0);
+            btnCatalogo.Size = new Size(250, 60);
+            btnCatalogo.TabIndex = 1;
+            btnCatalogo.Text = "📚 Catálogo Bibliográfico";
+            btnCatalogo.TextAlign = ContentAlignment.MiddleLeft;
+            btnCatalogo.UseVisualStyleBackColor = true;
+            btnCatalogo.Click += btnCatalogo_Click;
             // 
             // btnInicio
             // 
@@ -165,7 +244,7 @@
             btnInicio.Name = "btnInicio";
             btnInicio.Padding = new Padding(20, 0, 0, 0);
             btnInicio.Size = new Size(250, 60);
-            btnInicio.TabIndex = 1;
+            btnInicio.TabIndex = 0;
             btnInicio.Text = "🏠 Inicio / Dashboard";
             btnInicio.TextAlign = ContentAlignment.MiddleLeft;
             btnInicio.UseVisualStyleBackColor = true;
@@ -282,6 +361,10 @@
         private System.Windows.Forms.Button btnAprobarPrestamos;
         private System.Windows.Forms.Button btnConsultarActivos;
         private System.Windows.Forms.Button btnHistorial;
+        private System.Windows.Forms.Button btnGestionUsuarios;
+        private System.Windows.Forms.Button btnNotificaciones; // Agregado en las declaraciones
+        private System.Windows.Forms.Button btnCatalogo;
+        private System.Windows.Forms.Button btnCategorias;
         private System.Windows.Forms.Button btnInicio;
         private System.Windows.Forms.Button btnCerrarSesion;
         private System.Windows.Forms.Panel panelHeader;

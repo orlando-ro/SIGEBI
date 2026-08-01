@@ -22,6 +22,15 @@ namespace SIGEBI.Api.Controllers
             _GestorUsuarios = GestorUsuarios;
         }
 
+        // GET: api/usuario
+        [HttpGet]
+        [Authorize(Roles = "Administrador")] // Protegemos la lista completa
+        public async Task<IActionResult> ObtenerTodos()
+        {
+            var usuarios = await _GestorUsuarios.ConsultarTodosAsync();
+            return Ok(usuarios);
+        }
+
         // GET: api/usuarios/5
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerPorId(int id)
