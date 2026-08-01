@@ -80,8 +80,13 @@ namespace SIGEBI.AppEscritorio.Extensions
             })
             .AddHttpMessageHandler<AuthHandler>();
 
-            // Nota: Aquí abajo iremos agregando los demás servicios (Catálogo, Préstamos, etc.)
-            // cuando toque inyectarles el token desde el SessionManager.
+
+            services.AddHttpClient<IServicioAuditoriaApi, ServicioAuditoriaApi>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            }) .AddHttpMessageHandler<AuthHandler>();
+
+
 
             return services;
         }
