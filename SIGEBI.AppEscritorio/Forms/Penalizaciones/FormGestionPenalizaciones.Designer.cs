@@ -14,16 +14,16 @@
 
         private void InitializeComponent()
         {
-            lblTitulo = new Label();
-            lblBusqueda = new Label();
-            txtBusqueda = new TextBox();
-            btnBuscar = new Button();
-            btnMostrarTodo = new Button();
-            dgvPenalizaciones = new DataGridView();
-            panelAcciones = new Panel();
-            lblMotivoResolucion = new Label();
-            txtMotivoResolucion = new TextBox();
-            btnRegistrarPago = new Button();
+            lblTitulo = new System.Windows.Forms.Label();
+            lblBusqueda = new System.Windows.Forms.Label();
+            txtBusqueda = new System.Windows.Forms.TextBox();
+            btnBuscar = new System.Windows.Forms.Button();
+            btnMostrarTodo = new System.Windows.Forms.Button();
+            dgvPenalizaciones = new System.Windows.Forms.DataGridView();
+            panelAcciones = new System.Windows.Forms.Panel();
+            lblMotivoResolucion = new System.Windows.Forms.Label();
+            txtMotivoResolucion = new System.Windows.Forms.TextBox();
+            btnRegistrarPago = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)dgvPenalizaciones).BeginInit();
             panelAcciones.SuspendLayout();
             SuspendLayout();
@@ -31,47 +31,47 @@
             // lblTitulo
             // 
             lblTitulo.AutoSize = true;
-            lblTitulo.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
-            lblTitulo.ForeColor = Color.White;
-            lblTitulo.Location = new Point(25, 20);
+            lblTitulo.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            lblTitulo.ForeColor = System.Drawing.Color.White;
+            lblTitulo.Location = new System.Drawing.Point(25, 20);
             lblTitulo.Name = "lblTitulo";
-            lblTitulo.Size = new Size(310, 32);
+            lblTitulo.Size = new System.Drawing.Size(310, 32);
             lblTitulo.TabIndex = 0;
             lblTitulo.Text = "Gestión de Penalizaciones";
             // 
             // lblBusqueda
             // 
             lblBusqueda.AutoSize = true;
-            lblBusqueda.ForeColor = Color.Gainsboro;
-            lblBusqueda.Location = new Point(25, 75);
+            lblBusqueda.ForeColor = System.Drawing.Color.Gainsboro;
+            lblBusqueda.Location = new System.Drawing.Point(25, 75);
             lblBusqueda.Name = "lblBusqueda";
-            lblBusqueda.Size = new Size(177, 20);
+            lblBusqueda.Size = new System.Drawing.Size(177, 20);
             lblBusqueda.TabIndex = 1;
             lblBusqueda.Text = "Matrícula / N° Empleado:";
             // 
             // txtBusqueda
             // 
-            txtBusqueda.BackColor = Color.FromArgb(40, 40, 60);
-            txtBusqueda.BorderStyle = BorderStyle.FixedSingle;
-            txtBusqueda.Font = new Font("Segoe UI", 10.5F);
-            txtBusqueda.ForeColor = Color.White;
-            txtBusqueda.Location = new Point(25, 100);
+            txtBusqueda.BackColor = System.Drawing.Color.FromArgb(40, 40, 60);
+            txtBusqueda.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            txtBusqueda.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            txtBusqueda.ForeColor = System.Drawing.Color.White;
+            txtBusqueda.Location = new System.Drawing.Point(25, 100);
             txtBusqueda.Name = "txtBusqueda";
             txtBusqueda.PlaceholderText = "Ej: 2025-2050";
-            txtBusqueda.Size = new Size(250, 31);
+            txtBusqueda.Size = new System.Drawing.Size(250, 31);
             txtBusqueda.TabIndex = 2;
             // 
             // btnBuscar
             // 
-            btnBuscar.BackColor = Color.FromArgb(13, 110, 253);
-            btnBuscar.Cursor = Cursors.Hand;
+            btnBuscar.BackColor = System.Drawing.Color.FromArgb(13, 110, 253);
+            btnBuscar.Cursor = System.Windows.Forms.Cursors.Hand;
             btnBuscar.FlatAppearance.BorderSize = 0;
-            btnBuscar.FlatStyle = FlatStyle.Flat;
-            btnBuscar.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            btnBuscar.ForeColor = Color.White;
-            btnBuscar.Location = new Point(290, 100);
+            btnBuscar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnBuscar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            btnBuscar.ForeColor = System.Drawing.Color.White;
+            btnBuscar.Location = new System.Drawing.Point(290, 100);
             btnBuscar.Name = "btnBuscar";
-            btnBuscar.Size = new Size(120, 31);
+            btnBuscar.Size = new System.Drawing.Size(120, 31);
             btnBuscar.TabIndex = 3;
             btnBuscar.Text = "🔍 Buscar";
             btnBuscar.UseVisualStyleBackColor = false;
@@ -79,82 +79,82 @@
             // 
             // btnMostrarTodo
             // 
-            btnMostrarTodo.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnMostrarTodo.BackColor = Color.FromArgb(40, 44, 60);
-            btnMostrarTodo.Cursor = Cursors.Hand;
+            btnMostrarTodo.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            btnMostrarTodo.BackColor = System.Drawing.Color.FromArgb(40, 44, 60);
+            btnMostrarTodo.Cursor = System.Windows.Forms.Cursors.Hand;
             btnMostrarTodo.FlatAppearance.BorderSize = 0;
-            btnMostrarTodo.FlatStyle = FlatStyle.Flat;
-            btnMostrarTodo.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            btnMostrarTodo.ForeColor = Color.White;
-            btnMostrarTodo.Location = new Point(695, 100);
+            btnMostrarTodo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnMostrarTodo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            btnMostrarTodo.ForeColor = System.Drawing.Color.White;
+            btnMostrarTodo.Location = new System.Drawing.Point(695, 100);
             btnMostrarTodo.Name = "btnMostrarTodo";
-            btnMostrarTodo.Size = new Size(130, 31);
+            btnMostrarTodo.Size = new System.Drawing.Size(130, 31);
             btnMostrarTodo.TabIndex = 9;
-            btnMostrarTodo.Text = "🔄 Mostrar Todo";
+            btnMostrarTodo.Text = "🔄 Recargar";
             btnMostrarTodo.UseVisualStyleBackColor = false;
             btnMostrarTodo.Click += btnMostrarTodo_Click;
             // 
             // dgvPenalizaciones
             // 
             dgvPenalizaciones.AllowUserToAddRows = false;
-            dgvPenalizaciones.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            dgvPenalizaciones.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvPenalizaciones.BackgroundColor = Color.FromArgb(25, 25, 35);
-            dgvPenalizaciones.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvPenalizaciones.Location = new Point(25, 150);
+            dgvPenalizaciones.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            dgvPenalizaciones.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            dgvPenalizaciones.BackgroundColor = System.Drawing.Color.FromArgb(25, 25, 35);
+            dgvPenalizaciones.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvPenalizaciones.Location = new System.Drawing.Point(25, 150);
             dgvPenalizaciones.MultiSelect = false;
             dgvPenalizaciones.Name = "dgvPenalizaciones";
             dgvPenalizaciones.ReadOnly = true;
             dgvPenalizaciones.RowHeadersWidth = 51;
-            dgvPenalizaciones.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvPenalizaciones.Size = new Size(800, 300);
+            dgvPenalizaciones.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            dgvPenalizaciones.Size = new System.Drawing.Size(800, 300);
             dgvPenalizaciones.TabIndex = 4;
             // 
             // panelAcciones
             // 
-            panelAcciones.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            panelAcciones.BackColor = Color.FromArgb(20, 24, 38);
+            panelAcciones.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            panelAcciones.BackColor = System.Drawing.Color.FromArgb(20, 24, 38);
             panelAcciones.Controls.Add(lblMotivoResolucion);
             panelAcciones.Controls.Add(txtMotivoResolucion);
             panelAcciones.Controls.Add(btnRegistrarPago);
-            panelAcciones.Location = new Point(25, 470);
+            panelAcciones.Location = new System.Drawing.Point(25, 470);
             panelAcciones.Name = "panelAcciones";
-            panelAcciones.Size = new Size(800, 100);
+            panelAcciones.Size = new System.Drawing.Size(800, 100);
             panelAcciones.TabIndex = 5;
             // 
             // lblMotivoResolucion
             // 
             lblMotivoResolucion.AutoSize = true;
-            lblMotivoResolucion.ForeColor = Color.Gainsboro;
-            lblMotivoResolucion.Location = new Point(20, 20);
+            lblMotivoResolucion.ForeColor = System.Drawing.Color.Gainsboro;
+            lblMotivoResolucion.Location = new System.Drawing.Point(20, 20);
             lblMotivoResolucion.Name = "lblMotivoResolucion";
-            lblMotivoResolucion.Size = new Size(335, 20);
+            lblMotivoResolucion.Size = new System.Drawing.Size(335, 20);
             lblMotivoResolucion.TabIndex = 6;
             lblMotivoResolucion.Text = "Motivo de Resolución (Ej: Efectivo, Exoneración):";
             // 
             // txtMotivoResolucion
             // 
-            txtMotivoResolucion.BackColor = Color.FromArgb(40, 40, 60);
-            txtMotivoResolucion.BorderStyle = BorderStyle.FixedSingle;
-            txtMotivoResolucion.Font = new Font("Segoe UI", 10.5F);
-            txtMotivoResolucion.ForeColor = Color.White;
-            txtMotivoResolucion.Location = new Point(20, 45);
+            txtMotivoResolucion.BackColor = System.Drawing.Color.FromArgb(40, 40, 60);
+            txtMotivoResolucion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            txtMotivoResolucion.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            txtMotivoResolucion.ForeColor = System.Drawing.Color.White;
+            txtMotivoResolucion.Location = new System.Drawing.Point(20, 45);
             txtMotivoResolucion.Name = "txtMotivoResolucion";
             txtMotivoResolucion.PlaceholderText = "Escriba el método de pago...";
-            txtMotivoResolucion.Size = new Size(450, 31);
+            txtMotivoResolucion.Size = new System.Drawing.Size(450, 31);
             txtMotivoResolucion.TabIndex = 7;
             // 
             // btnRegistrarPago
             // 
-            btnRegistrarPago.BackColor = Color.FromArgb(25, 135, 84);
-            btnRegistrarPago.Cursor = Cursors.Hand;
+            btnRegistrarPago.BackColor = System.Drawing.Color.FromArgb(25, 135, 84);
+            btnRegistrarPago.Cursor = System.Windows.Forms.Cursors.Hand;
             btnRegistrarPago.FlatAppearance.BorderSize = 0;
-            btnRegistrarPago.FlatStyle = FlatStyle.Flat;
-            btnRegistrarPago.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnRegistrarPago.ForeColor = Color.White;
-            btnRegistrarPago.Location = new Point(550, 40);
+            btnRegistrarPago.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnRegistrarPago.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnRegistrarPago.ForeColor = System.Drawing.Color.White;
+            btnRegistrarPago.Location = new System.Drawing.Point(550, 40);
             btnRegistrarPago.Name = "btnRegistrarPago";
-            btnRegistrarPago.Size = new Size(230, 40);
+            btnRegistrarPago.Size = new System.Drawing.Size(230, 40);
             btnRegistrarPago.TabIndex = 8;
             btnRegistrarPago.Text = "💲 Registrar Pago";
             btnRegistrarPago.UseVisualStyleBackColor = false;
@@ -162,10 +162,10 @@
             // 
             // FormGestionPenalizaciones
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(30, 30, 45);
-            ClientSize = new Size(850, 590);
+            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.FromArgb(30, 30, 45);
+            ClientSize = new System.Drawing.Size(850, 590);
             Controls.Add(btnMostrarTodo);
             Controls.Add(panelAcciones);
             Controls.Add(dgvPenalizaciones);
@@ -173,7 +173,7 @@
             Controls.Add(txtBusqueda);
             Controls.Add(lblBusqueda);
             Controls.Add(lblTitulo);
-            FormBorderStyle = FormBorderStyle.None;
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             Name = "FormGestionPenalizaciones";
             Text = "FormGestionPenalizaciones";
             Load += FormGestionPenalizaciones_Load;

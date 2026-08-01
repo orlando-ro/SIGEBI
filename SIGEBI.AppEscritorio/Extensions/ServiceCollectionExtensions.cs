@@ -14,6 +14,7 @@ using SIGEBI.AppEscritorio.Services;
 using SIGEBI.AppEscritorio.Services.Implementations;
 using SIGEBI.AppEscritorio.Services.Interfaces;
 using SIGEBI.AppEscritorio.Forms.Penalizaciones;
+using SIGEBI.AppEscritorio.Forms.Auditoria;
 using System;
 
 namespace SIGEBI.AppEscritorio.Extensions
@@ -109,6 +110,7 @@ namespace SIGEBI.AppEscritorio.Extensions
             services.AddTransient<FormProcesarDevolucion>();
             services.AddTransient<FormHistorialDevoluciones>();
             services.AddTransient<FormGestionPenalizaciones>();
+            services.AddTransient<FormAuditoria>();
 
             return services;
         }

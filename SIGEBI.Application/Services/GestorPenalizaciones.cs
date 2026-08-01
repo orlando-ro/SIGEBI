@@ -172,7 +172,7 @@ namespace SIGEBI.Application.Services
             var penalizacionesPendientes = await _repoPenalizacion.ObtenerTodasPendientesAsync();
 
             if (penalizacionesPendientes == null || !penalizacionesPendientes.Any())
-                throw new NegocioExeption("No se encontraron penalizaciones pendientes en el sistema.");
+                return new List<PenalizacionResponseDTO>();
 
             return penalizacionesPendientes.Select(p => MapearPenalizacionResponse(p, p.Usuario));
         }

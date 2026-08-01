@@ -2,6 +2,8 @@
 using SIGEBI.AppEscritorio.Services.Interfaces;
 using SIGEBI.AppEscritorio.Utils;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SIGEBI.AppEscritorio.Forms.Penalizaciones
@@ -16,14 +18,36 @@ namespace SIGEBI.AppEscritorio.Forms.Penalizaciones
             _servicioPenalizacion = servicioPenalizacion;
         }
 
-        private void FormGestionPenalizaciones_Load(object sender, EventArgs e)
+        // 1. Carga automática con control de seguridad
+        private async void FormGestionPenalizaciones_Load(object sender, EventArgs e)
         {
-            // Seguridad: Solo Bibliotecarios y Administradores pueden registrar pagos.
-            // (Aunque en FormPrincipal ya restringimos la entrada, es buena práctica blindar el panel de acciones).
             if (SessionManager.TipoUsuario != "PersonalBibliotecario" && SessionManager.TipoUsuario != "Administrador")
             {
                 panelAcciones.Visible = false;
                 dgvPenalizaciones.Height += panelAcciones.Height;
+            }
+
+            await RecargarPendientesAsync();
+        }
+
+        // 2. Método centralizado
+        private async Task RecargarPendientesAsync()
+        {
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+                var pendientes = await _servicioPenalizacion.ObtenerTodasPendientesAsync();
+                dgvPenalizaciones.DataSource = pendientes.ToList();
+                txtMotivoResolucion.Clear();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error al cargar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                dgvPenalizaciones.DataSource = null;
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
             }
         }
 
@@ -38,31 +62,23 @@ namespace SIGEBI.AppEscritorio.Forms.Penalizaciones
                 return;
             }
 
-            await CargarPendientes(identificador);
+            await CargarPendientesUsuario(identificador);
         }
 
+        // 3. El botón ahora funciona como "Refrescar"
         private async void btnMostrarTodo_Click(object sender, EventArgs e)
         {
-            try
-            {
-                var pendientes = await _servicioPenalizacion.ObtenerTodasPendientesAsync();
-                dgvPenalizaciones.DataSource = pendientes.ToList();
-                txtMotivoResolucion.Clear();
-                txtBusqueda.Clear();
+            txtBusqueda.Clear();
+            await RecargarPendientesAsync();
 
-                if (!pendientes.Any())
-                {
-                    MessageBox.Show("No hay penalizaciones pendientes en el sistema.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception ex)
+            // Si después de recargar manual la tabla está vacía, mostramos aviso
+            if (dgvPenalizaciones.Rows.Count == 0)
             {
-                MessageBox.Show(ex.Message, "Error al cargar", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                dgvPenalizaciones.DataSource = null;
+                MessageBox.Show("No hay penalizaciones pendientes en el sistema.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
-        private async System.Threading.Tasks.Task CargarPendientes(string identificador)
+        private async Task CargarPendientesUsuario(string identificador)
         {
             try
             {
@@ -100,7 +116,6 @@ namespace SIGEBI.AppEscritorio.Forms.Penalizaciones
 
             int idPenalizacion = Convert.ToInt32(dgvPenalizaciones.CurrentRow.Cells["IdPenalizacion"].Value);
 
-            // Extraemos el identificador de la fila seleccionada por si cambió el TextBox de búsqueda
             string matricula = dgvPenalizaciones.CurrentRow.Cells["Matricula"].Value?.ToString() ?? "";
             string empleado = dgvPenalizaciones.CurrentRow.Cells["NumeroEmpleado"].Value?.ToString() ?? "";
             string identificadorFinal = !string.IsNullOrEmpty(matricula) ? matricula : empleado;
@@ -116,8 +131,15 @@ namespace SIGEBI.AppEscritorio.Forms.Penalizaciones
                 await _servicioPenalizacion.ProcesarPagoMultaAsync(idPenalizacion, peticion);
                 MessageBox.Show($"El pago de la penalización #{idPenalizacion} ha sido registrado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                // Recargamos la tabla con el usuario actual
-                await CargarPendientes(txtBusqueda.Text.Trim());
+                // Si el textbox de búsqueda tiene texto, recarga solo ese usuario; si no, recarga todo
+                if (!string.IsNullOrEmpty(txtBusqueda.Text.Trim()))
+                {
+                    await CargarPendientesUsuario(txtBusqueda.Text.Trim());
+                }
+                else
+                {
+                    await RecargarPendientesAsync();
+                }
             }
             catch (Exception ex)
             {
