@@ -8,7 +8,7 @@ using SIGEBI.AppEscritorio.Forms.Notificaciones;
 using SIGEBI.AppEscritorio.Forms.Prestamos;
 using SIGEBI.AppEscritorio.Forms.Solicitudes;
 using SIGEBI.AppEscritorio.Forms.Usuarios;
-using SIGEBI.AppEscritorio.Forms.Solicitudes;
+//using SIGEBI.AppEscritorio.Forms.Solicitudes;
 using SIGEBI.AppEscritorio.Handlers;
 using SIGEBI.AppEscritorio.Services;
 using SIGEBI.AppEscritorio.Services.Implementations;

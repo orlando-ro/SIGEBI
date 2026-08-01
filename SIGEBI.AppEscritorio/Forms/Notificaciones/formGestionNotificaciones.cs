@@ -113,5 +113,10 @@ namespace SIGEBI.AppEscritorio.Forms.Notificaciones
                 MessageBox.Show($"No se pudo cargar el historial: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void formGestionNotificaciones_Load_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }

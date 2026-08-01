@@ -7,6 +7,8 @@ using SIGEBI.AppEscritorio.Forms.Notificaciones; // Agregado para el nuevo módu
 using SIGEBI.AppEscritorio.Utils;
 using System;
 using System.Windows.Forms;
+using SIGEBI.AppEscritorio.Forms.Usuarios;
+using SIGEBI.AppEscritorio.Forms.Catalogo;
 
 namespace SIGEBI.AppEscritorio.Forms.Main
 {
@@ -36,51 +38,47 @@ namespace SIGEBI.AppEscritorio.Forms.Main
         {
             string rol = SessionManager.TipoUsuario;
 
-            // Por defecto ocultamos todo
+            // 1. Por defecto apagamos TODO (Seguridad estricta)
             btnAprobarPrestamos.Visible = false;
             btnConsultarActivos.Visible = false;
             btnProcesarDevolucion.Visible = false;
-            btnPenalizaciones.Visible = false; // 👈 Oculto por defecto
+            btnPenalizaciones.Visible = false;
             btnHistorial.Visible = false;
+            btnHistorialDevoluciones.Visible = false;
             btnGestionUsuarios.Visible = false;
             btnCatalogo.Visible = false;
-            btnCategorias.Visible = false; 
+            btnCategorias.Visible = false;
             btnNotificaciones.Visible = false;
-            btnHistorialDevoluciones.Visible = false;
 
-            if (rol == "PersonalBibliotecario")
+            // 2. Encendemos los botones específicamente para cada rol
+            switch (rol)
             {
-                btnAprobarPrestamos.Visible = true;
-                btnConsultarActivos.Visible = true;
-                btnProcesarDevolucion.Visible = true;
-                btnPenalizaciones.Visible = true; // 👈 Bibliotecario puede cobrar y ver
-                btnHistorial.Visible = true;
-                btnCatalogo.Visible = true;
-                btnCategorias.Visible = true; 
-                btnHistorialDevoluciones.Visible = true;
-            }
-            
-            // Los Auditores y Administradores tienen acceso al historial de notificaciones
-            if (rol == "Auditor" || rol == "Administrador")
-            else if (rol == "Administrador")
-            {
-                btnAprobarPrestamos.Visible = true;
-                btnConsultarActivos.Visible = true;
-                btnPenalizaciones.Visible = true; // 👈 Admin puede cobrar y ver
-                btnHistorial.Visible = true;
-                btnHistorialDevoluciones.Visible = true;
-            }
-            else if (rol == "Auditor")
-            {
-                // El Auditor NO ve el botón de Penalizaciones porque la API no le autoriza el GET ni el PATCH
-                btnHistorial.Visible = true;
-                btnNotificaciones.Visible = true; 
-            }
+                case "PersonalBibliotecario":
+                    btnAprobarPrestamos.Visible = true;
+                    btnConsultarActivos.Visible = true;
+                    btnProcesarDevolucion.Visible = true;
+                    btnPenalizaciones.Visible = true;
+                    btnHistorial.Visible = true;
+                    btnHistorialDevoluciones.Visible = true;
+                    btnCatalogo.Visible = true;
+                    btnCategorias.Visible = true;
+                    break;
 
-            if (rol == "Administrador")
-            {
-                btnGestionUsuarios.Visible = true;
-                btnHistorialDevoluciones.Visible = true;
+                case "Administrador":
+                    btnAprobarPrestamos.Visible = true;
+                    btnConsultarActivos.Visible = true;
+                    btnPenalizaciones.Visible = true;
+                    btnHistorial.Visible = true;
+                    btnHistorialDevoluciones.Visible = true;
+                    btnGestionUsuarios.Visible = true;
+                    btnNotificaciones.Visible = true;
+                    break;
+
+                case "Auditor":
+                    btnHistorial.Visible = true;
+                    btnHistorialDevoluciones.Visible = true;
+                    btnNotificaciones.Visible = true;
+                    break;
             }
         }
 
@@ -147,6 +145,38 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             lblTituloSeccion.Text = "Reportes / Historial de Préstamos";
             var formHistorial = Program.ServiceProvider.GetRequiredService<FormHistorialPrestamos>();
             AbrirFormularioEnPanel(formHistorial);
+        }
+
+        private void btnNotificaciones_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Alertas / Historial de Notificaciones";
+            var formNotificaciones = Program.ServiceProvider.GetRequiredService<formGestionNotificaciones>();
+            AbrirFormularioEnPanel(formNotificaciones);
+            
+        }
+
+        private void btnGestionUsuarios_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Administración / Gestión de Usuarios";
+             var formUsuarios = Program.ServiceProvider.GetRequiredService<formGestionUsuarios>();
+             AbrirFormularioEnPanel(formUsuarios);
+           
+        }
+
+        private void btnCategorias_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Catálogo / Gestión de Categorías";
+             var formCategorias = Program.ServiceProvider.GetRequiredService<formGestionCategorias>();
+             AbrirFormularioEnPanel(formCategorias);
+           
+        }
+
+        private void btnCatalogo_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Catálogo / Recursos Bibliográficos";
+             var formCatalogo = Program.ServiceProvider.GetRequiredService<formGestionCatalogo>();
+             AbrirFormularioEnPanel(formCatalogo);
+           
         }
 
         private void btnCerrarSesion_Click(object sender, EventArgs e)

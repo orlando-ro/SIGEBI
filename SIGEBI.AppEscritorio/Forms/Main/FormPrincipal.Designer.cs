@@ -102,13 +102,10 @@
             btnHistorial.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnHistorial.ForeColor = Color.Gainsboro;
             btnHistorial.Location = new Point(0, 400);
-            btnHistorial.Location = new Point(0, 460);
             btnHistorial.Name = "btnHistorial";
             btnHistorial.Padding = new Padding(20, 0, 0, 0);
             btnHistorial.Size = new Size(250, 60);
             btnHistorial.TabIndex = 5;
-            btnHistorial.Text = "📁 Historial General";
-            btnHistorial.TabIndex = 6;
             btnHistorial.Text = "📁 Historial Préstamos";
             btnHistorial.TextAlign = ContentAlignment.MiddleLeft;
             btnHistorial.UseVisualStyleBackColor = true;
