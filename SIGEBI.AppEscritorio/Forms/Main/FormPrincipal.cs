@@ -12,6 +12,8 @@ namespace SIGEBI.AppEscritorio.Forms.Main
         public FormPrincipal()
         {
             InitializeComponent();
+
+            this.WindowState = FormWindowState.Maximized;
         }
 
         private void FormPrincipal_Load(object? sender, EventArgs e)
@@ -36,13 +38,17 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             btnAprobarPrestamos.Visible = false;
             btnConsultarActivos.Visible = false;
             btnHistorial.Visible = false;
-            btnGestionUsuarios.Visible = false; 
+            btnGestionUsuarios.Visible = false;
+            btnCatalogo.Visible = false;
+            btnCategorias.Visible = false; // Agregado aquí
 
             if (rol == "PersonalBibliotecario" || rol == "Administrador")
             {
                 btnAprobarPrestamos.Visible = true;
                 btnConsultarActivos.Visible = true;
                 btnHistorial.Visible = true;
+                btnCatalogo.Visible = true;
+                btnCategorias.Visible = true; // Agregado aquí
             }
             else if (rol == "Auditor")
             {
@@ -51,7 +57,7 @@ namespace SIGEBI.AppEscritorio.Forms.Main
 
             if (rol == "Administrador")
             {
-                btnGestionUsuarios.Visible = true; 
+                btnGestionUsuarios.Visible = true;
             }
         }
 
@@ -99,6 +105,20 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             AbrirFormularioEnPanel(formHistorial);
         }
 
+        private void btnCatalogo_Click(object? sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Catálogo / Gestión Bibliográfica";
+            var formCatalogo = Program.ServiceProvider.GetRequiredService<SIGEBI.AppEscritorio.Forms.Catalogo.formGestionCatalogo>();
+            AbrirFormularioEnPanel(formCatalogo);
+        }
+
+        private void btnCategorias_Click(object? sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Catálogo / Gestión de Categorías";
+            var formCategorias = Program.ServiceProvider.GetRequiredService<SIGEBI.AppEscritorio.Forms.Catalogo.formGestionCategorias>();
+            AbrirFormularioEnPanel(formCategorias);
+        }
+
         private void btnGestionUsuarios_Click(object? sender, EventArgs e)
         {
             lblTituloSeccion.Text = "Administración / Gestión de Usuarios";
@@ -108,14 +128,13 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             AbrirFormularioEnPanel(formUsuarios);
         }
 
-        // 👇 Botón Cerrar Sesión
+        // Botón Cerrar Sesión
         private void btnCerrarSesion_Click(object sender, EventArgs e)
         {
             var confirmacion = MessageBox.Show("¿Está seguro que desea cerrar la sesión actual?", "Cerrar Sesión", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (confirmacion == DialogResult.Yes)
             {
-                // Reiniciar la aplicación vuelve a levantar la pantalla de Login del Program.cs
                 Application.Restart();
             }
         }

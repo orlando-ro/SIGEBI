@@ -107,7 +107,6 @@ namespace SIGEBI.Api
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthentication(); 
             app.UseAuthorization();  
 
