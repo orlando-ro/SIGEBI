@@ -15,6 +15,7 @@
         private void InitializeComponent()
         {
             panelMenu = new System.Windows.Forms.Panel();
+            btnCentroReportes = new System.Windows.Forms.Button();
             btnAuditoria = new System.Windows.Forms.Button();
             btnNotificaciones = new System.Windows.Forms.Button();
             btnGestionUsuarios = new System.Windows.Forms.Button();
@@ -42,6 +43,7 @@
             // panelMenu
             // 
             panelMenu.BackColor = System.Drawing.Color.FromArgb(20, 24, 38);
+            panelMenu.Controls.Add(btnCentroReportes);
             panelMenu.Controls.Add(btnAuditoria);
             panelMenu.Controls.Add(btnNotificaciones);
             panelMenu.Controls.Add(btnGestionUsuarios);
@@ -61,6 +63,23 @@
             panelMenu.Name = "panelMenu";
             panelMenu.Size = new System.Drawing.Size(250, 800);
             panelMenu.TabIndex = 0;
+            // 
+            // btnCentroReportes
+            // 
+            btnCentroReportes.Dock = System.Windows.Forms.DockStyle.Top;
+            btnCentroReportes.FlatAppearance.BorderSize = 0;
+            btnCentroReportes.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnCentroReportes.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnCentroReportes.ForeColor = System.Drawing.Color.Gainsboro;
+            btnCentroReportes.Location = new System.Drawing.Point(0, 640);
+            btnCentroReportes.Name = "btnCentroReportes";
+            btnCentroReportes.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
+            btnCentroReportes.Size = new System.Drawing.Size(250, 60);
+            btnCentroReportes.TabIndex = 10;
+            btnCentroReportes.Text = "📊 Centro de Reportes";
+            btnCentroReportes.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            btnCentroReportes.UseVisualStyleBackColor = true;
+            btnCentroReportes.Click += btnCentroReportes_Click;
             // 
             // btnAuditoria
             // 
@@ -141,7 +160,7 @@
             btnHistorialDevoluciones.Name = "btnHistorialDevoluciones";
             btnHistorialDevoluciones.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
             btnHistorialDevoluciones.Size = new System.Drawing.Size(250, 60);
-            btnHistorialDevoluciones.TabIndex = 10;
+            btnHistorialDevoluciones.TabIndex = 11;
             btnHistorialDevoluciones.Text = "📁 Historial Devoluciones";
             btnHistorialDevoluciones.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             btnHistorialDevoluciones.UseVisualStyleBackColor = true;
@@ -379,7 +398,8 @@
         private System.Windows.Forms.Button btnHistorial;
         private System.Windows.Forms.Button btnGestionUsuarios;
         private System.Windows.Forms.Button btnNotificaciones;
-        private System.Windows.Forms.Button btnAuditoria; 
+        private System.Windows.Forms.Button btnAuditoria;
+        private System.Windows.Forms.Button btnCentroReportes;
         private System.Windows.Forms.Button btnCatalogo;
         private System.Windows.Forms.Button btnCategorias;
         private System.Windows.Forms.Button btnInicio;
