@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SIGEBI.AppEscritorio.Forms.Prestamos;
 using SIGEBI.AppEscritorio.Forms.Solicitudes;
-using SIGEBI.AppEscritorio.Forms.Notificaciones; // Agregado para el nuevo módulo
+using SIGEBI.AppEscritorio.Forms.Notificaciones; 
 using SIGEBI.AppEscritorio.Utils;
 using System;
 using System.Windows.Forms;
@@ -53,7 +53,6 @@ namespace SIGEBI.AppEscritorio.Forms.Main
                 btnCategorias.Visible = true; 
             }
             
-            // Los Auditores y Administradores tienen acceso al historial de notificaciones
             if (rol == "Auditor" || rol == "Administrador")
             {
                 btnHistorial.Visible = true;
