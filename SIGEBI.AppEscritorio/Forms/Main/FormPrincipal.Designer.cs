@@ -15,6 +15,7 @@
         private void InitializeComponent()
         {
             panelMenu = new Panel();
+            btnNotificaciones = new Button();
             btnGestionUsuarios = new Button();
             btnHistorial = new Button();
             btnConsultarActivos = new Button();
@@ -37,6 +38,7 @@
             // panelMenu
             // 
             panelMenu.BackColor = Color.FromArgb(20, 24, 38);
+            panelMenu.Controls.Add(btnNotificaciones);
             panelMenu.Controls.Add(btnGestionUsuarios);
             panelMenu.Controls.Add(btnHistorial);
             panelMenu.Controls.Add(btnConsultarActivos);
@@ -51,6 +53,23 @@
             panelMenu.Name = "panelMenu";
             panelMenu.Size = new Size(250, 650);
             panelMenu.TabIndex = 0;
+            // 
+            // btnNotificaciones
+            // 
+            btnNotificaciones.Dock = DockStyle.Top;
+            btnNotificaciones.FlatAppearance.BorderSize = 0;
+            btnNotificaciones.FlatStyle = FlatStyle.Flat;
+            btnNotificaciones.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnNotificaciones.ForeColor = Color.Gainsboro;
+            btnNotificaciones.Location = new Point(0, 520);
+            btnNotificaciones.Name = "btnNotificaciones";
+            btnNotificaciones.Padding = new Padding(20, 0, 0, 0);
+            btnNotificaciones.Size = new Size(250, 60);
+            btnNotificaciones.TabIndex = 8;
+            btnNotificaciones.Text = "🔔 Historial de Alertas";
+            btnNotificaciones.TextAlign = ContentAlignment.MiddleLeft;
+            btnNotificaciones.UseVisualStyleBackColor = true;
+            btnNotificaciones.Click += btnNotificaciones_Click;
             // 
             // btnGestionUsuarios
             // 
@@ -283,6 +302,7 @@
         private System.Windows.Forms.Button btnConsultarActivos;
         private System.Windows.Forms.Button btnHistorial;
         private System.Windows.Forms.Button btnGestionUsuarios;
+        private System.Windows.Forms.Button btnNotificaciones; // Agregado en las declaraciones
         private System.Windows.Forms.Button btnCatalogo;
         private System.Windows.Forms.Button btnCategorias;
         private System.Windows.Forms.Button btnInicio;
