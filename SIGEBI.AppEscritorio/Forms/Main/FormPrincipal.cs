@@ -9,7 +9,8 @@ using System;
 using System.Windows.Forms;
 using SIGEBI.AppEscritorio.Forms.Usuarios;
 using SIGEBI.AppEscritorio.Forms.Catalogo;
-using SIGEBI.AppEscritorio.Forms.Auditoria; // 👈 Referencia al nuevo módulo
+using SIGEBI.AppEscritorio.Forms.Auditoria;
+using SIGEBI.AppEscritorio.Forms.Reportes; 
 
 namespace SIGEBI.AppEscritorio.Forms.Main
 {
@@ -38,7 +39,7 @@ namespace SIGEBI.AppEscritorio.Forms.Main
         {
             string rol = SessionManager.TipoUsuario;
 
-            
+            // 1. Apagamos todo por seguridad por defecto
             btnAprobarPrestamos.Visible = false;
             btnConsultarActivos.Visible = false;
             btnProcesarDevolucion.Visible = false;
@@ -49,9 +50,10 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             btnCatalogo.Visible = false;
             btnCategorias.Visible = false;
             btnNotificaciones.Visible = false;
-            btnAuditoria.Visible = false; 
+            btnAuditoria.Visible = false;
+            btnCentroReportes.Visible = false;
 
-            
+            // 2. Encendemos según el rol
             switch (rol)
             {
                 case "PersonalBibliotecario":
@@ -63,17 +65,22 @@ namespace SIGEBI.AppEscritorio.Forms.Main
                     btnHistorialDevoluciones.Visible = true;
                     btnCatalogo.Visible = true;
                     btnCategorias.Visible = true;
+                    btnCentroReportes.Visible = true;
                     break;
 
                 case "Administrador":
                     btnAprobarPrestamos.Visible = true;
                     btnConsultarActivos.Visible = true;
+                    btnProcesarDevolucion.Visible = true; 
                     btnPenalizaciones.Visible = true;
                     btnHistorial.Visible = true;
                     btnHistorialDevoluciones.Visible = true;
                     btnGestionUsuarios.Visible = true;
+                    btnCatalogo.Visible = true; 
+                    btnCategorias.Visible = true; 
                     btnNotificaciones.Visible = true;
-                    btnAuditoria.Visible = true; 
+                    btnAuditoria.Visible = true;
+                    btnCentroReportes.Visible = true; 
                     break;
 
                 case "Auditor":
@@ -81,6 +88,7 @@ namespace SIGEBI.AppEscritorio.Forms.Main
                     btnHistorialDevoluciones.Visible = true;
                     btnNotificaciones.Visible = true;
                     btnAuditoria.Visible = true;
+                    btnCentroReportes.Visible = true; 
                     break;
             }
         }
@@ -177,12 +185,19 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             AbrirFormularioEnPanel(formCatalogo);
         }
 
-        // 👇 Nuevo Evento para abrir Auditoría
         private void btnAuditoria_Click(object sender, EventArgs e)
         {
             lblTituloSeccion.Text = "Seguridad / Registro de Auditoría";
             var formAuditoria = Program.ServiceProvider.GetRequiredService<FormAuditoria>();
             AbrirFormularioEnPanel(formAuditoria);
+        }
+
+        // 👇 Evento del nuevo botón de Reportes
+        private void btnCentroReportes_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Analítica / Centro de Reportes PDF";
+            var formReportes = Program.ServiceProvider.GetRequiredService<FormCentroReportes>();
+            AbrirFormularioEnPanel(formReportes);
         }
 
         private void btnCerrarSesion_Click(object sender, EventArgs e)
