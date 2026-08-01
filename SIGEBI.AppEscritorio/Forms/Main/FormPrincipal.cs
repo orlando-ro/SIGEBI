@@ -1,14 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SIGEBI.AppEscritorio.Forms.Devoluciones;
-using SIGEBI.AppEscritorio.Forms.Penalizaciones; // 👈 Nuevo Using
+using SIGEBI.AppEscritorio.Forms.Penalizaciones;
 using SIGEBI.AppEscritorio.Forms.Prestamos;
 using SIGEBI.AppEscritorio.Forms.Solicitudes;
-using SIGEBI.AppEscritorio.Forms.Notificaciones; // Agregado para el nuevo módulo
+using SIGEBI.AppEscritorio.Forms.Notificaciones;
 using SIGEBI.AppEscritorio.Utils;
 using System;
 using System.Windows.Forms;
 using SIGEBI.AppEscritorio.Forms.Usuarios;
 using SIGEBI.AppEscritorio.Forms.Catalogo;
+using SIGEBI.AppEscritorio.Forms.Auditoria; // 👈 Referencia al nuevo módulo
 
 namespace SIGEBI.AppEscritorio.Forms.Main
 {
@@ -17,7 +18,6 @@ namespace SIGEBI.AppEscritorio.Forms.Main
         public FormPrincipal()
         {
             InitializeComponent();
-
             this.WindowState = FormWindowState.Maximized;
         }
 
@@ -38,7 +38,7 @@ namespace SIGEBI.AppEscritorio.Forms.Main
         {
             string rol = SessionManager.TipoUsuario;
 
-            // 1. Por defecto apagamos TODO (Seguridad estricta)
+            
             btnAprobarPrestamos.Visible = false;
             btnConsultarActivos.Visible = false;
             btnProcesarDevolucion.Visible = false;
@@ -49,8 +49,9 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             btnCatalogo.Visible = false;
             btnCategorias.Visible = false;
             btnNotificaciones.Visible = false;
+            btnAuditoria.Visible = false; 
 
-            // 2. Encendemos los botones específicamente para cada rol
+            
             switch (rol)
             {
                 case "PersonalBibliotecario":
@@ -72,12 +73,14 @@ namespace SIGEBI.AppEscritorio.Forms.Main
                     btnHistorialDevoluciones.Visible = true;
                     btnGestionUsuarios.Visible = true;
                     btnNotificaciones.Visible = true;
+                    btnAuditoria.Visible = true; 
                     break;
 
                 case "Auditor":
                     btnHistorial.Visible = true;
                     btnHistorialDevoluciones.Visible = true;
                     btnNotificaciones.Visible = true;
+                    btnAuditoria.Visible = true;
                     break;
             }
         }
@@ -125,7 +128,6 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             AbrirFormularioEnPanel(formProcesarDev);
         }
 
-        // 👇 Nuevo Evento para abrir Penalizaciones
         private void btnPenalizaciones_Click(object sender, EventArgs e)
         {
             lblTituloSeccion.Text = "Caja / Multas y Penalizaciones";
@@ -152,31 +154,35 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             lblTituloSeccion.Text = "Alertas / Historial de Notificaciones";
             var formNotificaciones = Program.ServiceProvider.GetRequiredService<formGestionNotificaciones>();
             AbrirFormularioEnPanel(formNotificaciones);
-            
         }
 
         private void btnGestionUsuarios_Click(object sender, EventArgs e)
         {
             lblTituloSeccion.Text = "Administración / Gestión de Usuarios";
-             var formUsuarios = Program.ServiceProvider.GetRequiredService<formGestionUsuarios>();
-             AbrirFormularioEnPanel(formUsuarios);
-           
+            var formUsuarios = Program.ServiceProvider.GetRequiredService<formGestionUsuarios>();
+            AbrirFormularioEnPanel(formUsuarios);
         }
 
         private void btnCategorias_Click(object sender, EventArgs e)
         {
             lblTituloSeccion.Text = "Catálogo / Gestión de Categorías";
-             var formCategorias = Program.ServiceProvider.GetRequiredService<formGestionCategorias>();
-             AbrirFormularioEnPanel(formCategorias);
-           
+            var formCategorias = Program.ServiceProvider.GetRequiredService<formGestionCategorias>();
+            AbrirFormularioEnPanel(formCategorias);
         }
 
         private void btnCatalogo_Click(object sender, EventArgs e)
         {
             lblTituloSeccion.Text = "Catálogo / Recursos Bibliográficos";
-             var formCatalogo = Program.ServiceProvider.GetRequiredService<formGestionCatalogo>();
-             AbrirFormularioEnPanel(formCatalogo);
-           
+            var formCatalogo = Program.ServiceProvider.GetRequiredService<formGestionCatalogo>();
+            AbrirFormularioEnPanel(formCatalogo);
+        }
+
+        // 👇 Nuevo Evento para abrir Auditoría
+        private void btnAuditoria_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Seguridad / Registro de Auditoría";
+            var formAuditoria = Program.ServiceProvider.GetRequiredService<FormAuditoria>();
+            AbrirFormularioEnPanel(formAuditoria);
         }
 
         private void btnCerrarSesion_Click(object sender, EventArgs e)
