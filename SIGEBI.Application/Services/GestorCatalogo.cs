@@ -151,6 +151,33 @@ namespace SIGEBI.Application.Services
                 detalles: detallesAuditoria
             );
         }
+        public async Task AgregarEjemplaresAsync(string isbn, int cantidadNuevos, int idUsuarioResponsable)
+        {
+            var libro = await _repositorioLibro.BuscarLibroPorIsbnAsync(isbn);
+
+            if (libro == null)
+                throw new NegocioExeption($"No se encontró ningún libro con el ISBN {isbn}.");
+
+            int copiasActuales = libro.Ejemplares != null ? libro.Ejemplares.Count : 0;
+
+            for (int i = 1; i <= cantidadNuevos; i++)
+            {
+                int numeroCorrelativo = copiasActuales + i;
+                string codigoFisico = $"{isbn}-{numeroCorrelativo:D2}";
+
+                var ejemplar = new Ejemplar(isbn, codigoFisico);
+                libro.AgregarEjemplar(ejemplar);
+            }
+
+            await _repositorioLibro.ActualizarAsync(libro);
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+                 idResponsable: idUsuarioResponsable,
+                 tipoAccion: "Ingreso de nuevos ejemplares",
+                 entidadAfectada: "Libro/Ejemplar",
+                 detalles: $"Se agregaron {cantidadNuevos} nuevos ejemplares físicos al libro '{libro.Titulo}' (ISBN: {isbn})."
+            );
+        }
 
         public async Task EliminarLibroAsync(string isbn, int idUsuarioResponsable)
         {

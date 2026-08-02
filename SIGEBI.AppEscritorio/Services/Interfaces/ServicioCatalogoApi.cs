@@ -77,5 +77,15 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
             await response.ProcesarErrorApiAsync();
             return true;
         }
+        public async Task<bool> AgregarEjemplaresAsync(string isbn, int cantidad)
+        {
+            var request = new { Cantidad = cantidad };
+
+            var response = await _httpClient.PostAsJsonAsync($"Catalogo/{isbn}/ejemplares", request);
+
+            await response.ProcesarErrorApiAsync();
+
+            return true;
+        }
     }
 }
