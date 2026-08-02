@@ -52,6 +52,57 @@
             panelMenu.Size = new Size(250, 650);
             panelMenu.TabIndex = 0;
             // 
+            // btnCentroReportes
+            // 
+            btnCentroReportes.Dock = System.Windows.Forms.DockStyle.Top;
+            btnCentroReportes.FlatAppearance.BorderSize = 0;
+            btnCentroReportes.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnCentroReportes.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnCentroReportes.ForeColor = System.Drawing.Color.Gainsboro;
+            btnCentroReportes.Location = new System.Drawing.Point(0, 640);
+            btnCentroReportes.Name = "btnCentroReportes";
+            btnCentroReportes.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
+            btnCentroReportes.Size = new System.Drawing.Size(250, 60);
+            btnCentroReportes.TabIndex = 10;
+            btnCentroReportes.Text = "📊 Centro de Reportes";
+            btnCentroReportes.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            btnCentroReportes.UseVisualStyleBackColor = true;
+            btnCentroReportes.Click += btnCentroReportes_Click;
+            // 
+            // btnAuditoria
+            // 
+            btnAuditoria.Dock = System.Windows.Forms.DockStyle.Top;
+            btnAuditoria.FlatAppearance.BorderSize = 0;
+            btnAuditoria.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnAuditoria.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnAuditoria.ForeColor = System.Drawing.Color.Gainsboro;
+            btnAuditoria.Location = new System.Drawing.Point(0, 580);
+            btnAuditoria.Name = "btnAuditoria";
+            btnAuditoria.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
+            btnAuditoria.Size = new System.Drawing.Size(250, 60);
+            btnAuditoria.TabIndex = 9;
+            btnAuditoria.Text = "🛡️ Auditoría del Sistema";
+            btnAuditoria.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            btnAuditoria.UseVisualStyleBackColor = true;
+            btnAuditoria.Click += btnAuditoria_Click;
+            // 
+            // btnNotificaciones
+            // 
+            btnNotificaciones.Dock = System.Windows.Forms.DockStyle.Top;
+            btnNotificaciones.FlatAppearance.BorderSize = 0;
+            btnNotificaciones.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnNotificaciones.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnNotificaciones.ForeColor = System.Drawing.Color.Gainsboro;
+            btnNotificaciones.Location = new System.Drawing.Point(0, 520);
+            btnNotificaciones.Name = "btnNotificaciones";
+            btnNotificaciones.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
+            btnNotificaciones.Size = new System.Drawing.Size(250, 60);
+            btnNotificaciones.TabIndex = 8;
+            btnNotificaciones.Text = "🔔 Notificaciones";
+            btnNotificaciones.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            btnNotificaciones.UseVisualStyleBackColor = true;
+            btnNotificaciones.Click += btnNotificaciones_Click;
+            // 
             // btnGestionUsuarios
             // 
             btnGestionUsuarios.Dock = DockStyle.Top;
