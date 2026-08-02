@@ -44,11 +44,17 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
 
         private async Task CargarCategoriasAsync()
         {
-            var categorias = await _servicioCategoriaApi.ConsultarTodasAsync();
-
-            cmbCategoria.DataSource = categorias.ToList();
-            cmbCategoria.DisplayMember = "Nombre";
-            cmbCategoria.ValueMember = "IdCategoria";
+            try
+            {
+                var categorias = await _servicioCategoriaApi.ConsultarTodasAsync();
+                cmbCategoria.DataSource = categorias.ToList();
+                cmbCategoria.DisplayMember = "Nombre";
+                cmbCategoria.ValueMember = "IdCategoria";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar categorías: {ex.Message}", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         public void CargarDatosParaEdicion(LibroResponseDTO libro)
@@ -57,12 +63,12 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
             lblTitulo.Text = "Editar Libro";
 
             txtIsbn.Text = libro.ISBN;
-            txtIsbn.Enabled = false; 
+            txtIsbn.Enabled = false;
             txtTitulo.Text = libro.Titulo;
             txtAutor.Text = libro.NombreAutor;
             txtAnio.Text = libro.AnioPublicacion.ToString();
             txtCopias.Text = libro.CopiasDisponibles.ToString();
-            txtCopias.Enabled = false; 
+            txtCopias.Enabled = false;
 
             if (cmbCategoria.Items.Count > 0)
             {
@@ -102,43 +108,45 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
                 return;
             }
 
-            btnGuardar.Enabled = false;
-            btnGuardar.Text = "Guardando...";
-            bool exito;
-
-            if (_esModoEdicion)
+            try
             {
-                var updateDto = new LibroUpdateDTO
+                btnGuardar.Enabled = false;
+                btnGuardar.Text = "Guardando...";
+
+                if (_esModoEdicion)
                 {
-                    Titulo = txtTitulo.Text.Trim(),
-                    NombreAutor = txtAutor.Text.Trim(),
-                    AnioPublicacion = anio,
-                    IdCategoria = (int)cmbCategoria.SelectedValue
-                };
-                exito = await _servicioCatalogoApi.ActualizarLibroAsync(txtIsbn.Text.Trim(), updateDto);
-            }
-            else
-            {
-                exito = await _servicioCatalogoApi.RegistrarLibroAsync(
-                    txtIsbn.Text.Trim(),
-                    txtTitulo.Text.Trim(),
-                    txtAutor.Text.Trim(),
-                    anio,
-                    copias,
-                    (int)cmbCategoria.SelectedValue,
-                    _rutaImagenSeleccionada
-                );
-            }
+                    var updateDto = new LibroUpdateDTO
+                    {
+                        Titulo = txtTitulo.Text.Trim(),
+                        NombreAutor = txtAutor.Text.Trim(),
+                        AnioPublicacion = anio,
+                        IdCategoria = (int)cmbCategoria.SelectedValue
+                    };
+                    await _servicioCatalogoApi.ActualizarLibroAsync(txtIsbn.Text.Trim(), updateDto);
+                }
+                else
+                {
+                    await _servicioCatalogoApi.RegistrarLibroAsync(
+                        txtIsbn.Text.Trim(),
+                        txtTitulo.Text.Trim(),
+                        txtAutor.Text.Trim(),
+                        anio,
+                        copias,
+                        (int)cmbCategoria.SelectedValue,
+                        _rutaImagenSeleccionada
+                    );
+                }
 
-            if (exito)
-            {
                 MessageBox.Show($"Libro {(_esModoEdicion ? "actualizado" : "registrado")} exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Ocurrió un error al procesar la solicitud.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Aviso del Sistema", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
                 btnGuardar.Enabled = true;
                 btnGuardar.Text = "Guardar";
             }

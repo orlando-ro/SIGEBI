@@ -39,30 +39,37 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
 
         private async Task CargarLibrosGrid()
         {
-            dgvLibros.DataSource = null;
-            var listaLibros = await _servicioCatalogoApi.ConsultarTodosAsync();
-            dgvLibros.DataSource = listaLibros.ToList();
-
-            if (dgvLibros.Columns["UrlImagen"] != null)
-                dgvLibros.Columns["UrlImagen"].Visible = false;
-
-            dgvLibros.RowTemplate.Height = 80;
-
-            if (!dgvLibros.Columns.Contains("PortadaCol"))
+            try
             {
-                var imgCol = new DataGridViewImageColumn
+                dgvLibros.DataSource = null;
+                var listaLibros = await _servicioCatalogoApi.ConsultarTodosAsync();
+                dgvLibros.DataSource = listaLibros.ToList();
+
+                if (dgvLibros.Columns["UrlImagen"] != null)
+                    dgvLibros.Columns["UrlImagen"].Visible = false;
+
+                dgvLibros.RowTemplate.Height = 80;
+
+                if (!dgvLibros.Columns.Contains("PortadaCol"))
                 {
-                    Name = "PortadaCol",
-                    HeaderText = "Portada",
-                    ImageLayout = DataGridViewImageCellLayout.Zoom,
-                    Width = 60
-                };
+                    var imgCol = new DataGridViewImageColumn
+                    {
+                        Name = "PortadaCol",
+                        HeaderText = "Portada",
+                        ImageLayout = DataGridViewImageCellLayout.Zoom,
+                        Width = 60
+                    };
 
-                imgCol.DefaultCellStyle.NullValue = new Bitmap(1, 1);
-                dgvLibros.Columns.Insert(0, imgCol);
+                    imgCol.DefaultCellStyle.NullValue = new Bitmap(1, 1);
+                    dgvLibros.Columns.Insert(0, imgCol);
+                }
+
+                CargarImagenesGridAsync();
             }
-
-            CargarImagenesGridAsync();
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error de Conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private async void CargarImagenesGridAsync()
@@ -77,7 +84,7 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
 
             foreach (DataGridViewRow row in dgvLibros.Rows)
             {
-                row.Cells["PortadaCol"].Value = new Bitmap(1, 1); 
+                row.Cells["PortadaCol"].Value = new Bitmap(1, 1);
 
                 var url = row.Cells["UrlImagen"].Value?.ToString();
 
@@ -95,9 +102,7 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
                         using var ms = new System.IO.MemoryStream(imageBytes);
                         row.Cells["PortadaCol"].Value = Image.FromStream(ms);
                     }
-                    catch
-                    {
-                    }
+                    catch { }
                 }
             }
         }
@@ -112,15 +117,27 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
                 return;
             }
 
-            var libro = await _servicioCatalogoApi.BuscarPorIsbnAsync(isbn);
+            try
+            {
+                btnBuscar.Enabled = false;
+                var libro = await _servicioCatalogoApi.BuscarPorIsbnAsync(isbn);
 
-            if (libro != null)
-            {
-                dgvLibros.DataSource = new[] { libro }.ToList();
+                if (libro != null)
+                {
+                    dgvLibros.DataSource = new[] { libro }.ToList();
+                }
+                else
+                {
+                    MessageBox.Show("No se encontró ningún libro con ese ISBN.", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("No se encontró ningún libro con ese ISBN.", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                btnBuscar.Enabled = true;
             }
         }
 
@@ -139,15 +156,21 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
 
             if (confirmacion == DialogResult.Yes)
             {
-                bool exito = await _servicioCatalogoApi.DesactivarLibroAsync(isbn);
-                if (exito)
+                try
                 {
+                    btnDesactivar.Enabled = false;
+                    await _servicioCatalogoApi.DesactivarLibroAsync(isbn);
+
                     MessageBox.Show("Libro desactivado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await CargarLibrosGrid();
                 }
-                else
+                catch (Exception ex)
                 {
-                    MessageBox.Show("Error al intentar desactivar el libro.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Aviso del Sistema", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                finally
+                {
+                    btnDesactivar.Enabled = true;
                 }
             }
         }
