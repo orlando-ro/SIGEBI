@@ -130,6 +130,11 @@ namespace SIGEBI.Application.Services
             usuario.Nombre = dto.Nombre.Trim();
             usuario.Email = dto.Email.Trim();
 
+            if (!string.IsNullOrWhiteSpace(dto.NuevaContrasena))
+            {
+                usuario.Password = BCrypt.Net.BCrypt.HashPassword(dto.NuevaContrasena.Trim());
+            }
+
             if (!string.IsNullOrWhiteSpace(dto.Estado))
             {
                 string estadoNormalizado = dto.Estado.Trim();

@@ -34,7 +34,7 @@
             lblTitulo.Location = new Point(65, 54);
             lblTitulo.Margin = new Padding(6, 0, 6, 0);
             lblTitulo.Name = "lblTitulo";
-            lblTitulo.Size = new Size(346, 59);
+            lblTitulo.Size = new Size(384, 65);
             lblTitulo.TabIndex = 0;
             lblTitulo.Text = "Acceso a SIGEBI";
             // 
@@ -42,24 +42,24 @@
             // 
             lblIdentificador.AutoSize = true;
             lblIdentificador.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblIdentificador.ForeColor = Color.Gainsboro; 
+            lblIdentificador.ForeColor = Color.Gainsboro;
             lblIdentificador.Location = new Point(65, 182);
             lblIdentificador.Margin = new Padding(6, 0, 6, 0);
             lblIdentificador.Name = "lblIdentificador";
-            lblIdentificador.Size = new Size(204, 32);
+            lblIdentificador.Size = new Size(303, 37);
             lblIdentificador.TabIndex = 1;
-            lblIdentificador.Text = "Correo Electrónico:";
+            lblIdentificador.Text = "Número de Empleado:";
             // 
             // txtIdentificador
             // 
-            txtIdentificador.BackColor = Color.FromArgb(20, 24, 38); 
+            txtIdentificador.BackColor = Color.FromArgb(20, 24, 38);
             txtIdentificador.BorderStyle = BorderStyle.FixedSingle;
             txtIdentificador.Font = new Font("Segoe UI", 11F);
             txtIdentificador.ForeColor = Color.White;
             txtIdentificador.Location = new Point(65, 225);
             txtIdentificador.Margin = new Padding(6);
             txtIdentificador.Name = "txtIdentificador";
-            txtIdentificador.Size = new Size(572, 39);
+            txtIdentificador.Size = new Size(572, 47);
             txtIdentificador.TabIndex = 2;
             // 
             // lblPassword
@@ -70,7 +70,7 @@
             lblPassword.Location = new Point(65, 331);
             lblPassword.Margin = new Padding(6, 0, 6, 0);
             lblPassword.Name = "lblPassword";
-            lblPassword.Size = new Size(139, 32);
+            lblPassword.Size = new Size(169, 37);
             lblPassword.TabIndex = 3;
             lblPassword.Text = "Contraseña:";
             // 
@@ -84,7 +84,7 @@
             txtPassword.Margin = new Padding(6);
             txtPassword.Name = "txtPassword";
             txtPassword.PasswordChar = '●';
-            txtPassword.Size = new Size(572, 39);
+            txtPassword.Size = new Size(572, 47);
             txtPassword.TabIndex = 4;
             // 
             // btnLogin
