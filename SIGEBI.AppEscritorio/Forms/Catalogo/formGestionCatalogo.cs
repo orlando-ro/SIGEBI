@@ -34,7 +34,6 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
         private async void FormGestionCatalogo_Load(object? sender, EventArgs e)
         {
             await CargarLibrosGrid();
-            btnEjemplares.Visible = false;
         }
 
         private async Task CargarLibrosGrid()
@@ -214,8 +213,23 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
 
         private void BtnEjemplares_Click(object? sender, EventArgs e)
         {
-            if (dgvLibros.SelectedRows.Count == 0) return;
-            MessageBox.Show("Aquí abriremos FormGestionEjemplares para este libro.", "Próximo paso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (dgvLibros.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Seleccione un libro para gestionar sus ejemplares.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string isbn = dgvLibros.SelectedRows[0].Cells["ISBN"].Value?.ToString() ?? "";
+            string titulo = dgvLibros.SelectedRows[0].Cells["Titulo"].Value?.ToString() ?? "";
+
+            var formModal = Program.ServiceProvider.GetRequiredService<FormGestionEjemplares>();
+
+            formModal.CargarDatosLibro(isbn, titulo);
+
+            if (formModal.ShowDialog() == DialogResult.OK)
+            {
+                _ = CargarLibrosGrid();
+            }
         }
     }
 }

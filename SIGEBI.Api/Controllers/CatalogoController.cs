@@ -123,5 +123,19 @@ namespace SIGEBI.Api.Controllers
             await _gestorCatalogo.EliminarLibroAsync(isbn, idResponsable);
             return Ok(new { mensaje = "Libro Desactivado" });
         }
+
+        [HttpPost("{isbn}/ejemplares")]
+        [Authorize(Roles = "Administrador,PersonalBibliotecario")]
+        public async Task<IActionResult> AgregarEjemplares(string isbn, [FromBody] AgregarEjemplaresRequestDTO request)
+        {
+            if (request.Cantidad <= 0)
+                return BadRequest(new { mensaje = "La cantidad de ejemplares a agregar debe ser mayor a cero." });
+
+            int idResponsable = ObtenerIdResponsable();
+
+            await _gestorCatalogo.AgregarEjemplaresAsync(isbn, request.Cantidad, idResponsable);
+
+            return Ok(new { mensaje = $"Se han agregado {request.Cantidad} ejemplares exitosamente al catálogo." });
+        }
     }
 }
