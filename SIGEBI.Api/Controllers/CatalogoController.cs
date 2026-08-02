@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SIGEBI.Api.Controllers
 {
-    // Clase exclusiva de la API para recibir el multipart/form-data
+    // DTOa exclusivos de la API, puede cambiarse y agregar una carpeta DTOs.Api si se desea mantenerlos separados de los DTOs de la aplicación.
     public class RegistrarLibroApiRequest
     {
         public string ISBN { get; set; } = string.Empty;
@@ -16,6 +16,15 @@ namespace SIGEBI.Api.Controllers
         public string NombreAutor { get; set; } = string.Empty;
         public int AnioPublicacion { get; set; }
         public int CopiasTotales { get; set; }
+        public int IdCategoria { get; set; }
+        public IFormFile? Imagen { get; set; }
+    }
+
+    public class ActualizarLibroApiRequest
+    {
+        public string Titulo { get; set; } = string.Empty;
+        public string NombreAutor { get; set; } = string.Empty;
+        public int AnioPublicacion { get; set; }
         public int IdCategoria { get; set; }
         public IFormFile? Imagen { get; set; }
     }
@@ -85,7 +94,6 @@ namespace SIGEBI.Api.Controllers
                 }
             }
 
-            // Mapeo al DTO (Agnóstico a la web)
             var dto = new LibroRequestDTO
             {
                 ISBN = request.ISBN,
@@ -102,18 +110,41 @@ namespace SIGEBI.Api.Controllers
             return Ok(new { Mensaje = "Libro y ejemplares registrados exitosamente." });
         }
 
-      
         [HttpPut("{isbn}")]
         [Authorize(Roles = "Administrador,PersonalBibliotecario")]
-        public async Task<IActionResult> ActualizarLibro(string isbn, [FromBody] LibroUpdateDTO request)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> ActualizarLibro(string isbn, [FromForm] ActualizarLibroApiRequest request)
         {
             int idResponsable = ObtenerIdResponsable();
 
-            await _gestorCatalogo.ActualizarLibroAsync(isbn, request, idResponsable);
-            return Ok(new { mensaje = "Libro actualizado" });
+            byte[]? bytesImagen = null;
+            string? extensionArchivo = null;
+
+            if (request.Imagen != null && request.Imagen.Length > 0)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await request.Imagen.CopyToAsync(memoryStream);
+                    bytesImagen = memoryStream.ToArray();
+                    extensionArchivo = Path.GetExtension(request.Imagen.FileName);
+                }
+            }
+
+            var dto = new LibroUpdateDTO
+            {
+                Titulo = request.Titulo,
+                NombreAutor = request.NombreAutor,
+                AnioPublicacion = request.AnioPublicacion,
+                IdCategoria = request.IdCategoria,
+                ContenidoImagen = bytesImagen,
+                ExtensionImagen = extensionArchivo
+            };
+
+            await _gestorCatalogo.ActualizarLibroAsync(isbn, dto, idResponsable);
+            return Ok(new { mensaje = "Libro actualizado exitosamente." });
         }
 
-        
+
         [HttpPut("{isbn}/desactivar")]
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DesactivarLibro(string isbn)

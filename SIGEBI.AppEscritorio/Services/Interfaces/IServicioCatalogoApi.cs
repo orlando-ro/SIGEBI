@@ -11,9 +11,9 @@ namespace SIGEBI.AppEscritorio.Services.Interfaces
     {
         Task<IEnumerable<LibroResponseDTO>> ConsultarTodosAsync();
         Task<LibroResponseDTO?> BuscarPorIsbnAsync(string isbn);
-        Task<bool> ActualizarLibroAsync(string isbn, LibroUpdateDTO request);
         Task<bool> DesactivarLibroAsync(string isbn);
         Task<bool> RegistrarLibroAsync(string isbn, string titulo, string autor, int anio, int copias, int idCategoria, string? rutaImagen);
         Task<bool> AgregarEjemplaresAsync(string isbn, int cantidad);
+        Task<bool> ActualizarLibroAsync(string isbn, LibroUpdateDTO request, string? rutaImagen = null);
     }
 }
