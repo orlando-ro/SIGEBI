@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace SIGEBI.AppEscritorio.Services.Helper
 {
-    public class ApiHelper
+    public static class ApiHelper
     {
-        public static async Task ProcesarErrorApiAsync(HttpResponseMessage respuesta)
+        public static async Task ProcesarErrorApiAsync(this HttpResponseMessage respuesta)
         {
-            // Si la respuesta fue exitosa (200-299), salimos del método sin hacer nada.
             if (respuesta.IsSuccessStatusCode) return;
 
             var error = await respuesta.Content.ReadAsStringAsync();
@@ -19,17 +16,24 @@ namespace SIGEBI.AppEscritorio.Services.Helper
             try
             {
                 var json = JsonDocument.Parse(error);
-                // Buscamos la propiedad "mensaje" que envía tu backend en los BadRequest/NotFound
+
                 if (json.RootElement.TryGetProperty("mensaje", out var mensajeProp))
                 {
-                    throw new Exception(mensajeProp.GetString());
+                    var extraido = mensajeProp.GetString();
+                    if (!string.IsNullOrWhiteSpace(extraido))
+                    {
+                        throw new Exception(extraido);
+                    }
                 }
                 throw new Exception("Error al procesar la solicitud en el servidor.");
             }
             catch (JsonException)
             {
-                // Si la API se cae o devuelve un HTML de error (como un 500 del servidor)
-                throw new Exception(string.IsNullOrEmpty(error) ? "Error de conexión con la API." : error);
+                string mensajeSeguro = (!string.IsNullOrWhiteSpace(error) && error.Length < 200)
+                    ? error
+                    : "Error crítico de conexión o respuesta inválida del servidor.";
+
+                throw new Exception(mensajeSeguro);
             }
         }
     }
