@@ -108,5 +108,10 @@ namespace SIGEBI.AppEscritorio.Forms.Notificaciones
                 MessageBox.Show(ex.Message, "Error de Conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void formGestionNotificaciones_Load_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }

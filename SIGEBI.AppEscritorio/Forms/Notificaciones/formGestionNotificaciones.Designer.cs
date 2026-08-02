@@ -145,6 +145,7 @@
             FormBorderStyle = FormBorderStyle.None;
             Name = "formGestionNotificaciones";
             Text = "Historial de Notificaciones";
+            Load += formGestionNotificaciones_Load_1;
             panelAcciones.ResumeLayout(false);
             panelAcciones.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)nudDiasAntelacion).EndInit();

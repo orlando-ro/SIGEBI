@@ -52,15 +52,11 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
         {
             var response = await _httpClient.GetAsync(url);
 
-            if (response.IsSuccessStatusCode)
-            {
-                // Leemos los bytes crudos del archivo PDF directamente
-                return await response.Content.ReadAsByteArrayAsync();
-            }
-
-            // Si hay error (400, 401, 500), usamos nuestro helper global
+            // Evaluamos error. Si falla, el helper lanza la excepción y corta el flujo.
             await ApiHelper.ProcesarErrorApiAsync(response);
-            return Array.Empty<byte>();
+
+            // Si pasa el Helper limpio, devolvemos los bytes del PDF
+            return await response.Content.ReadAsByteArrayAsync();
         }
     }
 }

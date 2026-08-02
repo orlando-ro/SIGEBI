@@ -1,6 +1,7 @@
 ﻿using SIGEBI.AppEscritorio.DTOs.Auditoria;
 using SIGEBI.AppEscritorio.Services.Helper;
 using SIGEBI.AppEscritorio.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -19,7 +20,6 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
 
         public async Task<List<AuditoriaResponseDTO>> ConsultarHistorialAuditoriaAsync(int? idResponsable = null, string? entidadAfectada = null)
         {
-            
             var queryParams = new List<string>();
             if (idResponsable.HasValue)
                 queryParams.Add($"idResponsable={idResponsable}");
@@ -29,18 +29,13 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
 
             string queryString = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : "";
 
-            
             var response = await _httpClient.GetAsync($"RegistroAuditoria/ConsultarRegistrosAuditoria{queryString}");
 
-            if (response.IsSuccessStatusCode)
-            {
-                var registros = await response.Content.ReadFromJsonAsync<List<AuditoriaResponseDTO>>();
-                return registros ?? new List<AuditoriaResponseDTO>();
-            }
-
-            
+            // Si hay error, el ApiHelper lanzará la excepción hacia el Formulario
             await ApiHelper.ProcesarErrorApiAsync(response);
-            return new List<AuditoriaResponseDTO>();
+
+            // Si llegamos aquí, fue un éxito (Status 200)
+            return await response.Content.ReadFromJsonAsync<List<AuditoriaResponseDTO>>() ?? new List<AuditoriaResponseDTO>();
         }
     }
 }

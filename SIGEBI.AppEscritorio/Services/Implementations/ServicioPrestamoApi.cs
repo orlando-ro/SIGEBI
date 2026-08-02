@@ -27,7 +27,6 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
 
         public async Task<List<PrestamoResponseDTO>> ConsultarHistorialPrestamosPorRecursoAsync(string isbnLibro)
         {
-            
             var response = await _Httpclient.GetAsync($"Prestamos/historial/recurso/{isbnLibro}");
             await ApiHelper.ProcesarErrorApiAsync(response);
 
@@ -66,7 +65,6 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
             return await response.Content.ReadFromJsonAsync<List<PrestamoResponseDTO>>() ?? new();
         }
 
-       
         public async Task<List<PrestamoResponseDTO>> ConsultarHistorialCompletoAsync()
         {
             var response = await _Httpclient.GetAsync("Prestamos/historial/todos");

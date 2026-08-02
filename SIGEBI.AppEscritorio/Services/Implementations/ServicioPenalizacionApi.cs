@@ -1,7 +1,6 @@
 ﻿using SIGEBI.AppEscritorio.DTOs.Penalizaciones;
 using SIGEBI.AppEscritorio.Services.Helper;
 using SIGEBI.AppEscritorio.Services.Interfaces;
-using SIGEBI.AppEscritorio.Utils;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -18,7 +17,6 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
             _httpClient = httpClient;
         }
 
-       
         public async Task ProcesarPagoMultaAsync(int idPenalizacion, PenalizacionRequestDTO peticion)
         {
             var response = await _httpClient.PatchAsJsonAsync($"Penalizaciones/RegistrarPago/{idPenalizacion}", peticion);
