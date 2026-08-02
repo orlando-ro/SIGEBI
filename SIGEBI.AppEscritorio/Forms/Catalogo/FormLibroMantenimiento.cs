@@ -76,9 +76,6 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
                             .ToList().FindIndex(c => c.Nombre == libro.Categoria);
                 if (index >= 0) cmbCategoria.SelectedIndex = index;
             }
-
-            picPortada.Visible = false;
-            btnSeleccionarImagen.Visible = false;
         }
 
         private void BtnSeleccionarImagen_Click(object? sender, EventArgs e)
@@ -90,7 +87,11 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 _rutaImagenSeleccionada = openFileDialog.FileName;
-                picPortada.Image = Image.FromFile(_rutaImagenSeleccionada);
+
+                using (var ms = new System.IO.MemoryStream(System.IO.File.ReadAllBytes(_rutaImagenSeleccionada)))
+                {
+                    picPortada.Image = Image.FromStream(ms);
+                }
             }
         }
 
@@ -122,7 +123,7 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
                         AnioPublicacion = anio,
                         IdCategoria = (int)cmbCategoria.SelectedValue
                     };
-                    await _servicioCatalogoApi.ActualizarLibroAsync(txtIsbn.Text.Trim(), updateDto);
+                    await _servicioCatalogoApi.ActualizarLibroAsync(txtIsbn.Text.Trim(), updateDto, _rutaImagenSeleccionada);
                 }
                 else
                 {

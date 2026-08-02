@@ -40,9 +40,27 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
             return await response.Content.ReadFromJsonAsync<LibroResponseDTO>();
         }
 
-        public async Task<bool> ActualizarLibroAsync(string isbn, LibroUpdateDTO request)
+        public async Task<bool> ActualizarLibroAsync(string isbn, LibroUpdateDTO request, string? rutaImagen = null)
         {
-            var response = await _httpClient.PutAsJsonAsync($"Catalogo/{isbn}", request);
+            using var content = new MultipartFormDataContent();
+
+            content.Add(new StringContent(request.Titulo), "Titulo");
+            content.Add(new StringContent(request.NombreAutor), "NombreAutor");
+            content.Add(new StringContent(request.AnioPublicacion.ToString()), "AnioPublicacion");
+            content.Add(new StringContent(request.IdCategoria.ToString()), "IdCategoria");
+
+            if (!string.IsNullOrEmpty(rutaImagen) && File.Exists(rutaImagen))
+            {
+                var fileStream = new FileStream(rutaImagen, FileMode.Open, FileAccess.Read);
+                var streamContent = new StreamContent(fileStream);
+                string extension = Path.GetExtension(rutaImagen).ToLower();
+                string mimeType = extension == ".png" ? "image/png" : "image/jpeg";
+
+                streamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
+                content.Add(streamContent, "Imagen", Path.GetFileName(rutaImagen));
+            }
+
+            var response = await _httpClient.PutAsync($"Catalogo/{isbn}", content);
             await response.ProcesarErrorApiAsync();
             return true;
         }
@@ -69,7 +87,10 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
             {
                 var fileStream = new FileStream(rutaImagen, FileMode.Open, FileAccess.Read);
                 var streamContent = new StreamContent(fileStream);
-                streamContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+                string extension = Path.GetExtension(rutaImagen).ToLower();
+                string mimeType = extension == ".png" ? "image/png" : "image/jpeg";
+
+                streamContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
                 content.Add(streamContent, "Imagen", Path.GetFileName(rutaImagen));
             }
 

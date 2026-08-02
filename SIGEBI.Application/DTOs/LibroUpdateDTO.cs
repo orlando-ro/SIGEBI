@@ -12,5 +12,7 @@ namespace SIGEBI.Application.DTOs
         public string NombreAutor { get; set; } = string.Empty;
         public int AnioPublicacion { get; set; }
         public int IdCategoria { get; set; }
+        public byte[]? ContenidoImagen { get; set; }
+        public string? ExtensionImagen { get; set; }
     }
 }

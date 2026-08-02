@@ -123,6 +123,16 @@ namespace SIGEBI.Application.Services
 
             var cambios = new List<string>();
 
+            if (dto.ContenidoImagen != null && dto.ContenidoImagen.Length > 0)
+            {
+                using var stream = new MemoryStream(dto.ContenidoImagen);
+                string extension = dto.ExtensionImagen ?? ".jpg";
+                string urlImagen = await _storageService.GuardarImagenAsync(stream, extension, "images/libros");
+
+                libro.AsignarImagen(urlImagen);
+                cambios.Add("Se actualizó la imagen de portada");
+            }
+
             if (libro.Titulo != dto.Titulo)
                 cambios.Add($"Título: '{libro.Titulo}' -> '{dto.Titulo}'");
 
