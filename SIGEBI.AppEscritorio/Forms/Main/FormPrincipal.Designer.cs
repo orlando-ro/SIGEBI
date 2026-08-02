@@ -110,7 +110,7 @@
             btnNotificaciones.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
             btnNotificaciones.Size = new System.Drawing.Size(250, 60);
             btnNotificaciones.TabIndex = 8;
-            btnNotificaciones.Text = "🔔 Historial de Alertas";
+            btnNotificaciones.Text = "🔔 Notificaciones";
             btnNotificaciones.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             btnNotificaciones.UseVisualStyleBackColor = true;
             btnNotificaciones.Click += btnNotificaciones_Click;

@@ -54,19 +54,25 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
                 Descripcion = txtDescripcion.Text.Trim()
             };
 
-            bool exito = _esModoEdicion
-                ? await _servicioCategoriaApi.ActualizarCategoriaAsync(_idCategoriaActual, requestDto)
-                : await _servicioCategoriaApi.RegistrarCategoriaAsync(requestDto);
+            try
+            {
+                bool exito = _esModoEdicion
+                    ? await _servicioCategoriaApi.ActualizarCategoriaAsync(_idCategoriaActual, requestDto)
+                    : await _servicioCategoriaApi.RegistrarCategoriaAsync(requestDto);
 
-            if (exito)
-            {
-                MessageBox.Show($"Categoría {(_esModoEdicion ? "actualizada" : "registrada")} exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.DialogResult = DialogResult.OK;
-                this.Close();
+                if (exito)
+                {
+                    MessageBox.Show($"Categoría {(_esModoEdicion ? "actualizada" : "registrada")} exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Ocurrió un error al procesar la solicitud.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
                 btnGuardar.Enabled = true;
                 btnGuardar.Text = "Guardar";
             }

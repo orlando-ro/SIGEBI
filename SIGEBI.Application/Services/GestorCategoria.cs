@@ -90,5 +90,28 @@ namespace SIGEBI.Application.Services
                 Descripcion = categoria.Descripcion
             };
         }
+
+        public async Task EliminarCategoriaAsync(int idCategoria, int idResponsable)
+        {
+            var categoria = await _repositorio.ObtenerPorIdAsync(idCategoria);
+            if (categoria == null)
+                throw new NegocioExeption("La categoría no existe o ya fue eliminada.");
+
+            try
+            {
+                await _repositorio.EliminarAsync(categoria);
+
+                await _servicioAuditoria.RegistrarAccionAsync(
+                    idResponsable: idResponsable,
+                    tipoAccion: "Eliminar categoría",
+                    entidadAfectada: "Categoria",
+                    detalles: $"Se ha eliminado la categoría {categoria.Nombre} con ID {idCategoria}."
+                );
+            }
+            catch (Exception)
+            {
+                throw new NegocioExeption("No se puede eliminar esta categoría porque actualmente hay libros en el catálogo que la están utilizando.");
+            }
+        }
     }
 }
