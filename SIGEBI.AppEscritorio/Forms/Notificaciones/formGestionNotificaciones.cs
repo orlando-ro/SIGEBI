@@ -60,21 +60,16 @@ namespace SIGEBI.AppEscritorio.Forms.Notificaciones
                 {
                     btnDispararVencimientos.Enabled = false;
 
-                    bool exito = await _servicioNotificacionApi.TriggerVencimientosAsync(diasSeleccionados);
+                    // El ApiHelper lanzará la excepción si el backend retorna algún error de validación
+                    await _servicioNotificacionApi.TriggerVencimientosAsync(diasSeleccionados);
 
-                    if (exito)
-                    {
-                        MessageBox.Show($"Las alertas a {diasSeleccionados} días se han generado y enviado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        await CargarHistorialAsync();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Ocurrió un problema al intentar generar las alertas.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    MessageBox.Show($"Las alertas a {diasSeleccionados} días se han generado y enviado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await CargarHistorialAsync();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error de conexión: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // Atrapamos la respuesta limpia proveniente del backend
+                    MessageBox.Show(ex.Message, "Aviso del Sistema", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 finally
                 {
@@ -110,13 +105,8 @@ namespace SIGEBI.AppEscritorio.Forms.Notificaciones
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"No se pudo cargar el historial: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error de Conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void formGestionNotificaciones_Load_1(object sender, EventArgs e)
-        {
-
         }
     }
 }
