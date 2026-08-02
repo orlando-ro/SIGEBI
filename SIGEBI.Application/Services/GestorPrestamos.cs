@@ -161,14 +161,22 @@ namespace SIGEBI.Application.Services
                 "Este usuario no tiene ningun historial de prestamos ");
         }
 
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialCompletoAsync()
+        {
+            return await ConsultarYMapearAsync(
+                 () => _repoPrestamo.ConsultarHistorialCompletoAsync(),
+                 "No hay registros de préstamos en el historial del sistema."
+             );
+        }
+
         private async Task<IEnumerable<PrestamoResponseDTO>> ConsultarYMapearAsync(
             Func<Task<IEnumerable<Prestamo>>> obtenerPrestamos,
             string mensajeSiVacio)
         {
             var prestamos = await obtenerPrestamos();
 
-            if (!prestamos.Any())
-                throw new NegocioExeption(mensajeSiVacio);
+            if (prestamos == null || !prestamos.Any())
+               return Enumerable.Empty<PrestamoResponseDTO>();
 
             return prestamos.Select(p => MapearPrestamoResponse(p, p.Usuario));
         }

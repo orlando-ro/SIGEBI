@@ -1,5 +1,6 @@
 ﻿using SIGEBI.AppEscritorio.Services.Interfaces;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SIGEBI.AppEscritorio.Forms.Prestamos
@@ -14,20 +15,37 @@ namespace SIGEBI.AppEscritorio.Forms.Prestamos
             _servicioPrestamo = servicioPrestamo;
         }
 
-        // 👇 NUEVO BOTÓN
-        private async void btnMostrarTodos_Click(object sender, EventArgs e)
+        // 1. Cargamos todo automáticamente al abrir el formulario
+        private async void FormConsultarActivos_Load(object sender, EventArgs e)
+        {
+            await RecargarTablaAsync();
+        }
+
+        // 2. Método centralizado para cargar los datos
+        private async Task RecargarTablaAsync()
         {
             try
             {
+                this.Cursor = Cursors.WaitCursor;
                 var resultados = await _servicioPrestamo.ConsultarTodosAsync();
                 dgvPrestamos.DataSource = resultados;
-                txtIdentificador.Clear();
-                txtIsbn.Clear();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error al cargar", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
+        }
+
+        // 3. El botón ahora funciona como "Refrescar"
+        private async void btnMostrarTodos_Click(object sender, EventArgs e)
+        {
+            txtIdentificador.Clear();
+            txtIsbn.Clear();
+            await RecargarTablaAsync();
         }
 
         private async void btnBuscarPorUsuario_Click(object sender, EventArgs e)
@@ -60,10 +78,6 @@ namespace SIGEBI.AppEscritorio.Forms.Prestamos
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void FormConsultarActivos_Load(object sender, EventArgs e)
-        {
         }
     }
 }

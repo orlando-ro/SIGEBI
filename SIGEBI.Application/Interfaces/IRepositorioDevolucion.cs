@@ -13,5 +13,7 @@ namespace SIGEBI.Application.Interfaces
         Task<IEnumerable<Devolucion>> ConsultarHistorialPorUsuario(int IdUsuario);
 
         Task<IEnumerable<Devolucion>> ConsultarHistorialPorRecurso(string isbnLibro);
+
+        Task<IEnumerable<Devolucion>> ConsultarHistorialCompletoAsync();
     }
 }

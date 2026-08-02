@@ -2,15 +2,8 @@
 {
     partial class FormLogin
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -22,10 +15,6 @@
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             lblTitulo = new Label();
@@ -40,9 +29,9 @@
             // lblTitulo
             // 
             lblTitulo.AutoSize = true;
-            lblTitulo.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
-            lblTitulo.ForeColor = Color.FromArgb(33, 37, 41);
-            lblTitulo.Location = new Point(65, 64);
+            lblTitulo.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            lblTitulo.ForeColor = Color.White;
+            lblTitulo.Location = new Point(65, 54);
             lblTitulo.Margin = new Padding(6, 0, 6, 0);
             lblTitulo.Name = "lblTitulo";
             lblTitulo.Size = new Size(346, 59);
@@ -52,28 +41,33 @@
             // lblIdentificador
             // 
             lblIdentificador.AutoSize = true;
-            lblIdentificador.Font = new Font("Segoe UI", 9F);
-            lblIdentificador.Location = new Point(65, 192);
+            lblIdentificador.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblIdentificador.ForeColor = Color.Gainsboro; 
+            lblIdentificador.Location = new Point(65, 182);
             lblIdentificador.Margin = new Padding(6, 0, 6, 0);
             lblIdentificador.Name = "lblIdentificador";
             lblIdentificador.Size = new Size(204, 32);
             lblIdentificador.TabIndex = 1;
-            lblIdentificador.Text = "Correo Eletrónico:";
+            lblIdentificador.Text = "Correo Electrónico:";
             // 
             // txtIdentificador
             // 
-            txtIdentificador.Font = new Font("Segoe UI", 10F);
-            txtIdentificador.Location = new Point(65, 235);
-            txtIdentificador.Margin = new Padding(6, 6, 6, 6);
+            txtIdentificador.BackColor = Color.FromArgb(20, 24, 38); 
+            txtIdentificador.BorderStyle = BorderStyle.FixedSingle;
+            txtIdentificador.Font = new Font("Segoe UI", 11F);
+            txtIdentificador.ForeColor = Color.White;
+            txtIdentificador.Location = new Point(65, 225);
+            txtIdentificador.Margin = new Padding(6);
             txtIdentificador.Name = "txtIdentificador";
-            txtIdentificador.Size = new Size(572, 43);
+            txtIdentificador.Size = new Size(572, 39);
             txtIdentificador.TabIndex = 2;
             // 
             // lblPassword
             // 
             lblPassword.AutoSize = true;
-            lblPassword.Font = new Font("Segoe UI", 9F);
-            lblPassword.Location = new Point(65, 341);
+            lblPassword.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblPassword.ForeColor = Color.Gainsboro;
+            lblPassword.Location = new Point(65, 331);
             lblPassword.Margin = new Padding(6, 0, 6, 0);
             lblPassword.Name = "lblPassword";
             lblPassword.Size = new Size(139, 32);
@@ -82,12 +76,15 @@
             // 
             // txtPassword
             // 
-            txtPassword.Font = new Font("Segoe UI", 10F);
-            txtPassword.Location = new Point(65, 384);
-            txtPassword.Margin = new Padding(6, 6, 6, 6);
+            txtPassword.BackColor = Color.FromArgb(20, 24, 38);
+            txtPassword.BorderStyle = BorderStyle.FixedSingle;
+            txtPassword.Font = new Font("Segoe UI", 11F);
+            txtPassword.ForeColor = Color.White;
+            txtPassword.Location = new Point(65, 374);
+            txtPassword.Margin = new Padding(6);
             txtPassword.Name = "txtPassword";
             txtPassword.PasswordChar = '●';
-            txtPassword.Size = new Size(572, 43);
+            txtPassword.Size = new Size(572, 39);
             txtPassword.TabIndex = 4;
             // 
             // btnLogin
@@ -96,21 +93,21 @@
             btnLogin.Cursor = Cursors.Hand;
             btnLogin.FlatAppearance.BorderSize = 0;
             btnLogin.FlatStyle = FlatStyle.Flat;
-            btnLogin.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnLogin.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             btnLogin.ForeColor = Color.White;
-            btnLogin.Location = new Point(65, 555);
-            btnLogin.Margin = new Padding(6, 6, 6, 6);
+            btnLogin.Location = new Point(65, 545);
+            btnLogin.Margin = new Padding(6);
             btnLogin.Name = "btnLogin";
-            btnLogin.Size = new Size(576, 96);
+            btnLogin.Size = new Size(576, 85);
             btnLogin.TabIndex = 6;
             btnLogin.Text = "Iniciar Sesión";
             btnLogin.UseVisualStyleBackColor = false;
             // 
             // lblError
             // 
-            lblError.Font = new Font("Segoe UI", 9F);
-            lblError.ForeColor = Color.Crimson;
-            lblError.Location = new Point(65, 459);
+            lblError.Font = new Font("Segoe UI", 9.5F);
+            lblError.ForeColor = Color.FromArgb(220, 53, 69);
+            lblError.Location = new Point(65, 449);
             lblError.Margin = new Padding(6, 0, 6, 0);
             lblError.Name = "lblError";
             lblError.Size = new Size(576, 85);
@@ -122,7 +119,7 @@
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.White;
+            BackColor = Color.FromArgb(30, 30, 45);
             ClientSize = new Size(713, 727);
             Controls.Add(btnLogin);
             Controls.Add(lblError);
@@ -132,7 +129,7 @@
             Controls.Add(lblIdentificador);
             Controls.Add(lblTitulo);
             FormBorderStyle = FormBorderStyle.FixedDialog;
-            Margin = new Padding(6, 6, 6, 6);
+            Margin = new Padding(6);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "FormLogin";

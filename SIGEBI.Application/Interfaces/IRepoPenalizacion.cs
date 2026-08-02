@@ -11,5 +11,7 @@ namespace SIGEBI.Application.Interfaces
            string matriculaONumeroEmpleado
        );
 
+
+        Task<IEnumerable<Penalizacion>> ObtenerTodasPendientesAsync();
     }
 }
