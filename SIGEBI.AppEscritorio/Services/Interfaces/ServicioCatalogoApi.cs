@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Threading.Tasks;
 using SIGEBI.AppEscritorio.DTOs.Catalogo;
 using SIGEBI.AppEscritorio.Services.Interfaces;
+using SIGEBI.AppEscritorio.Services.Helper;
 
 namespace SIGEBI.AppEscritorio.Services.Implementations
 {
@@ -24,30 +22,36 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
 
         public async Task<IEnumerable<LibroResponseDTO>> ConsultarTodosAsync()
         {
-            try
-            {
-                var resultado = await _httpClient.GetFromJsonAsync<IEnumerable<LibroResponseDTO>>("Catalogo");
-                return resultado ?? new List<LibroResponseDTO>();
-            }
-            catch { return new List<LibroResponseDTO>(); }
+            var response = await _httpClient.GetAsync("Catalogo");
+            await response.ProcesarErrorApiAsync();
+
+            var resultado = await response.Content.ReadFromJsonAsync<IEnumerable<LibroResponseDTO>>();
+            return resultado ?? new List<LibroResponseDTO>();
         }
 
         public async Task<LibroResponseDTO?> BuscarPorIsbnAsync(string isbn)
         {
-            try { return await _httpClient.GetFromJsonAsync<LibroResponseDTO>($"Catalogo/{isbn}"); }
-            catch { return null; }
+            var response = await _httpClient.GetAsync($"Catalogo/{isbn}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return null;
+
+            await response.ProcesarErrorApiAsync();
+            return await response.Content.ReadFromJsonAsync<LibroResponseDTO>();
         }
 
         public async Task<bool> ActualizarLibroAsync(string isbn, LibroUpdateDTO request)
         {
             var response = await _httpClient.PutAsJsonAsync($"Catalogo/{isbn}", request);
-            return response.IsSuccessStatusCode;
+            await response.ProcesarErrorApiAsync();
+            return true;
         }
 
         public async Task<bool> DesactivarLibroAsync(string isbn)
         {
             var response = await _httpClient.PutAsJsonAsync($"Catalogo/{isbn}/desactivar", (object?)null);
-            return response.IsSuccessStatusCode;
+            await response.ProcesarErrorApiAsync();
+            return true;
         }
 
         public async Task<bool> RegistrarLibroAsync(string isbn, string titulo, string autor, int anio, int copias, int idCategoria, string? rutaImagen)
@@ -61,7 +65,6 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
             content.Add(new StringContent(copias.ToString()), "CopiasTotales");
             content.Add(new StringContent(idCategoria.ToString()), "IdCategoria");
 
-            // Si el usuario selecciono una foto, se adjunta al form
             if (!string.IsNullOrEmpty(rutaImagen) && File.Exists(rutaImagen))
             {
                 var fileStream = new FileStream(rutaImagen, FileMode.Open, FileAccess.Read);
@@ -71,7 +74,8 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
             }
 
             var response = await _httpClient.PostAsync("Catalogo/registrar", content);
-            return response.IsSuccessStatusCode;
+            await response.ProcesarErrorApiAsync();
+            return true;
         }
     }
 }
