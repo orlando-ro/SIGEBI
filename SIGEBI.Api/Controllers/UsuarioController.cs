@@ -72,7 +72,7 @@ namespace SIGEBI.Api.Controllers
         {
             int idResponsable = ObtenerIdResponsable();
             await _GestorUsuarios.ActualizarUsuarioAsync(id, request, idResponsable);
-            return Ok( new { mesanje = "Usuario actualizado"}); // 200 Ok
+            return Ok( new { mensaje = "Usuario actualizado"}); // 200 Ok
         }
 
         // PUT: api/usuarios/identificador/EMP-001
