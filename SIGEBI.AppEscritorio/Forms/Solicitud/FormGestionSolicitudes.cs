@@ -1,7 +1,7 @@
 ﻿using SIGEBI.AppEscritorio.DTOs.Prestamos;
 using SIGEBI.AppEscritorio.DTOs.Solicitudes;
 using SIGEBI.AppEscritorio.Services.Interfaces;
-using SIGEBI.AppEscritorio.Utils; // 👈 Para acceder al SessionManager
+using SIGEBI.AppEscritorio.Utils;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -37,7 +37,6 @@ namespace SIGEBI.AppEscritorio.Forms.Solicitudes
             await CargarSolicitudesPendientes();
         }
 
-        // 👇 NUEVO: Evento para cambiar el texto de ayuda (Placeholder)
         private void cmbCriterioBusqueda_SelectedIndexChanged(object sender, EventArgs e)
         {
             string criterio = cmbCriterioBusqueda.SelectedItem?.ToString() ?? "";
@@ -173,6 +172,10 @@ namespace SIGEBI.AppEscritorio.Forms.Solicitudes
             {
                 MessageBox.Show(ex.Message, "Error al rechazar", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void dgvSolicitudes_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
         }
     }
 }

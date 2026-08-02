@@ -13,6 +13,9 @@
         #region Windows Form Designer generated code
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             lblTitulo = new System.Windows.Forms.Label();
             cmbCriterio = new System.Windows.Forms.ComboBox();
             txtBusqueda = new System.Windows.Forms.TextBox();
@@ -29,7 +32,7 @@
             lblTitulo.ForeColor = System.Drawing.Color.White;
             lblTitulo.Location = new System.Drawing.Point(25, 20);
             lblTitulo.Name = "lblTitulo";
-            lblTitulo.Size = new System.Drawing.Size(302, 32);
+            lblTitulo.Size = new System.Drawing.Size(307, 32);
             lblTitulo.TabIndex = 0;
             lblTitulo.Text = "Historial de Devoluciones";
             // 
@@ -95,17 +98,48 @@
             // dgvHistorial
             // 
             dgvHistorial.AllowUserToAddRows = false;
+            dgvHistorial.AllowUserToDeleteRows = false;
+            dgvHistorial.AllowUserToResizeRows = false;
             dgvHistorial.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             dgvHistorial.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            dgvHistorial.BackgroundColor = System.Drawing.Color.FromArgb(25, 25, 35);
-            dgvHistorial.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvHistorial.BackgroundColor = System.Drawing.Color.FromArgb(20, 24, 38);
+            dgvHistorial.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dgvHistorial.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvHistorial.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(15, 18, 28);
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(15, 18, 28);
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            dgvHistorial.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dgvHistorial.ColumnHeadersHeight = 45;
+            dgvHistorial.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(30, 34, 48);
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(13, 110, 253);
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            dgvHistorial.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(38, 43, 60);
+            dgvHistorial.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+            dgvHistorial.EnableHeadersVisualStyles = false;
+            dgvHistorial.GridColor = System.Drawing.Color.FromArgb(70, 75, 90);
             dgvHistorial.Location = new System.Drawing.Point(25, 125);
+            dgvHistorial.MultiSelect = false;
             dgvHistorial.Name = "dgvHistorial";
             dgvHistorial.ReadOnly = true;
+            dgvHistorial.RowHeadersVisible = false;
             dgvHistorial.RowHeadersWidth = 51;
+            dgvHistorial.RowTemplate.Height = 40;
             dgvHistorial.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             dgvHistorial.Size = new System.Drawing.Size(800, 440);
             dgvHistorial.TabIndex = 4;
+            dgvHistorial.CellContentClick += dgvHistorial_CellContentClick;
             // 
             // FormHistorialDevoluciones
             // 

@@ -146,5 +146,9 @@ namespace SIGEBI.AppEscritorio.Forms.Penalizaciones
                 MessageBox.Show(ex.Message, "Error al registrar el pago", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void dgvPenalizaciones_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+        }
     }
 }

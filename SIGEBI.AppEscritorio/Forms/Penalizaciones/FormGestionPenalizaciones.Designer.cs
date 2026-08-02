@@ -14,6 +14,9 @@
 
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             lblTitulo = new System.Windows.Forms.Label();
             lblBusqueda = new System.Windows.Forms.Label();
             txtBusqueda = new System.Windows.Forms.TextBox();
@@ -97,18 +100,48 @@
             // dgvPenalizaciones
             // 
             dgvPenalizaciones.AllowUserToAddRows = false;
+            dgvPenalizaciones.AllowUserToDeleteRows = false;
+            dgvPenalizaciones.AllowUserToResizeRows = false;
             dgvPenalizaciones.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             dgvPenalizaciones.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            dgvPenalizaciones.BackgroundColor = System.Drawing.Color.FromArgb(25, 25, 35);
-            dgvPenalizaciones.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvPenalizaciones.BackgroundColor = System.Drawing.Color.FromArgb(20, 24, 38);
+            dgvPenalizaciones.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dgvPenalizaciones.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvPenalizaciones.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(15, 18, 28);
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(15, 18, 28);
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            dgvPenalizaciones.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dgvPenalizaciones.ColumnHeadersHeight = 45;
+            dgvPenalizaciones.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(30, 34, 48);
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(13, 110, 253);
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            dgvPenalizaciones.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(38, 43, 60);
+            dgvPenalizaciones.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+            dgvPenalizaciones.EnableHeadersVisualStyles = false;
+            dgvPenalizaciones.GridColor = System.Drawing.Color.FromArgb(70, 75, 90);
             dgvPenalizaciones.Location = new System.Drawing.Point(25, 150);
             dgvPenalizaciones.MultiSelect = false;
             dgvPenalizaciones.Name = "dgvPenalizaciones";
             dgvPenalizaciones.ReadOnly = true;
+            dgvPenalizaciones.RowHeadersVisible = false;
             dgvPenalizaciones.RowHeadersWidth = 51;
+            dgvPenalizaciones.RowTemplate.Height = 40;
             dgvPenalizaciones.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             dgvPenalizaciones.Size = new System.Drawing.Size(800, 300);
             dgvPenalizaciones.TabIndex = 4;
+            dgvPenalizaciones.CellContentClick += dgvPenalizaciones_CellContentClick;
             // 
             // panelAcciones
             // 
@@ -128,7 +161,7 @@
             lblMotivoResolucion.ForeColor = System.Drawing.Color.Gainsboro;
             lblMotivoResolucion.Location = new System.Drawing.Point(20, 20);
             lblMotivoResolucion.Name = "lblMotivoResolucion";
-            lblMotivoResolucion.Size = new System.Drawing.Size(335, 20);
+            lblMotivoResolucion.Size = new System.Drawing.Size(330, 20);
             lblMotivoResolucion.TabIndex = 6;
             lblMotivoResolucion.Text = "Motivo de Resolución (Ej: Efectivo, Exoneración):";
             // 

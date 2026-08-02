@@ -85,5 +85,9 @@ namespace SIGEBI.AppEscritorio.Forms.Devoluciones
             txtBusqueda.Clear();
             await RecargarHistorialAsync();
         }
+
+        private void dgvHistorial_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+        }
     }
 }

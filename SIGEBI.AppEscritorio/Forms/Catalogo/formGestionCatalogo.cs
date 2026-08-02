@@ -231,5 +231,10 @@ namespace SIGEBI.AppEscritorio.Forms.Catalogo
                 _ = CargarLibrosGrid();
             }
         }
+
+        private void dgvLibros_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }
