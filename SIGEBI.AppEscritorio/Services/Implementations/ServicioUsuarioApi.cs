@@ -10,6 +10,7 @@ using System.Net.Http.Json;
 using SIGEBI.AppEscritorio.DTOs.Usuarios;
 using SIGEBI.AppEscritorio.Services.Interfaces;
 using SIGEBI.AppEscritorio.Utils;
+using SIGEBI.AppEscritorio.Services.Helper;
 
 namespace SIGEBI.AppEscritorio.Services.Implementations
 {
@@ -33,64 +34,60 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
 
         public async Task<IEnumerable<UsuarioResponseDTO>> ObtenerTodosAsync()
         {
-            try
-            {
-                // Hace un GET a la ruta base "Usuario"
-                var resultado = await _httpClient.GetFromJsonAsync<IEnumerable<UsuarioResponseDTO>>("Usuario");
-                return resultado ?? new List<UsuarioResponseDTO>();
-            }
-            catch
-            {
-                // En caso de error de conexión, devolvemos una lista vacía para que no se caiga la app
-                return new List<UsuarioResponseDTO>();
-            }
+            var response = await _httpClient.GetAsync("Usuario");
+            await response.ProcesarErrorApiAsync();
+
+            var resultado = await response.Content.ReadFromJsonAsync<IEnumerable<UsuarioResponseDTO>>();
+            return resultado ?? new List<UsuarioResponseDTO>();
         }
 
         public async Task<UsuarioResponseDTO?> ObtenerPorIdAsync(int id)
         {
             ConfigurarAutenticacion();
-            try
-            {
-                return await _httpClient.GetFromJsonAsync<UsuarioResponseDTO>($"Usuario/{id}");
-            }
-            catch
-            {
-                return null;
-            }
+            var response = await _httpClient.GetAsync($"Usuario/{id}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound) return null;
+
+            await response.ProcesarErrorApiAsync();
+            return await response.Content.ReadFromJsonAsync<UsuarioResponseDTO>();
         }
 
         public async Task<UsuarioResponseDTO?> ObtenerPorIdentificadorAsync(string identificador)
         {
             ConfigurarAutenticacion();
-            try
-            {
-                return await _httpClient.GetFromJsonAsync<UsuarioResponseDTO>($"Usuario/identificador/{identificador}");
-            }
-            catch
-            {
-                return null;
-            }
+            var response = await _httpClient.GetAsync($"Usuario/identificador/{identificador}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound) return null;
+
+            await response.ProcesarErrorApiAsync();
+            return await response.Content.ReadFromJsonAsync<UsuarioResponseDTO>();
         }
 
         public async Task<bool> RegistrarUsuarioAsync(UsuarioRequestDTO request)
         {
             ConfigurarAutenticacion();
             var response = await _httpClient.PostAsJsonAsync("Usuario/registrar", request);
-            return response.IsSuccessStatusCode;
+
+            await response.ProcesarErrorApiAsync();
+            return true;
         }
 
         public async Task<bool> ActualizarUsuarioAsync(int id, UsuarioUpdateRequestDTO request)
         {
             ConfigurarAutenticacion();
             var response = await _httpClient.PutAsJsonAsync($"Usuario/{id}", request);
-            return response.IsSuccessStatusCode;
+
+            await response.ProcesarErrorApiAsync();
+            return true;
         }
 
         public async Task<bool> SuspenderUsuarioAsync(int id)
         {
             ConfigurarAutenticacion();
             var response = await _httpClient.PutAsJsonAsync($"Usuario/{id}/suspender", (object?)null);
-            return response.IsSuccessStatusCode;
+
+            await response.ProcesarErrorApiAsync();
+            return true;
         }
     }
 }

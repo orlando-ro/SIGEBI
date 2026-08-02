@@ -31,15 +31,22 @@ namespace SIGEBI.AppEscritorio.Forms.Usuarios
 
         private async Task CargarUsuariosGrid()
         {
-            dgvUsuarios.DataSource = null;
-            var listaUsuarios = await _servicioUsuarioApi.ObtenerTodosAsync();
-            dgvUsuarios.DataSource = listaUsuarios.ToList();
+            try
+            {
+                dgvUsuarios.DataSource = null;
+                var listaUsuarios = await _servicioUsuarioApi.ObtenerTodosAsync();
+                dgvUsuarios.DataSource = listaUsuarios.ToList();
 
-            if (dgvUsuarios.Columns["IdUsuario"] != null)
-                dgvUsuarios.Columns["IdUsuario"].Visible = false;
+                if (dgvUsuarios.Columns["IdUsuario"] != null)
+                    dgvUsuarios.Columns["IdUsuario"].Visible = false;
 
-            if (dgvUsuarios.Columns["HabilitadoParaPrestamos"] != null)
-                dgvUsuarios.Columns["HabilitadoParaPrestamos"].HeaderText = "Puede Prestar";
+                if (dgvUsuarios.Columns["HabilitadoParaPrestamos"] != null)
+                    dgvUsuarios.Columns["HabilitadoParaPrestamos"].HeaderText = "Puede Prestar";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error de Conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         // --- FUNCIONALIDAD: BUSCAR USUARIO ---
@@ -53,15 +60,27 @@ namespace SIGEBI.AppEscritorio.Forms.Usuarios
                 return;
             }
 
-            var usuario = await _servicioUsuarioApi.ObtenerPorIdentificadorAsync(busqueda);
+            try
+            {
+                btnBuscar.Enabled = false;
+                var usuario = await _servicioUsuarioApi.ObtenerPorIdentificadorAsync(busqueda);
 
-            if (usuario != null)
-            {
-                dgvUsuarios.DataSource = new[] { usuario }.ToList();
+                if (usuario != null)
+                {
+                    dgvUsuarios.DataSource = new[] { usuario }.ToList();
+                }
+                else
+                {
+                    MessageBox.Show("No se encontró ningún usuario con ese identificador.", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("No se encontró ningún usuario con ese identificador.", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(ex.Message, "Error de Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                btnBuscar.Enabled = true;
             }
         }
 
@@ -81,16 +100,21 @@ namespace SIGEBI.AppEscritorio.Forms.Usuarios
 
             if (confirmacion == DialogResult.Yes)
             {
-                bool exito = await _servicioUsuarioApi.SuspenderUsuarioAsync(idUsuario);
-
-                if (exito)
+                try
                 {
+                    btnSuspender.Enabled = false;
+                    await _servicioUsuarioApi.SuspenderUsuarioAsync(idUsuario);
+
                     MessageBox.Show("Usuario suspendido exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await CargarUsuariosGrid();
                 }
-                else
+                catch (Exception ex)
                 {
-                    MessageBox.Show("Ocurrió un error al intentar suspender al usuario.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Aviso del Sistema", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                finally
+                {
+                    btnSuspender.Enabled = true;
                 }
             }
         }
