@@ -59,5 +59,15 @@ namespace SIGEBI.Api.Controllers
             await _GestorCategoria.ActualizarCategoriaAsync(id, request, idResponsable);
             return Ok(new { mensaje = "Categoría actualizada exitosamente." });
         }
+
+        //DELETE: api/categoria/{id}
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador,PersonalBibliotecario")]
+        public async Task<IActionResult> EliminarCategoria(int id)
+        {
+            int idResponsable = ObtenerIdResponsable();
+            await _GestorCategoria.EliminarCategoriaAsync(id, idResponsable);
+            return Ok(new { mensaje = "Categoría eliminada exitosamente." });
+        }
     }
 }
