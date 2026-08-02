@@ -1,12 +1,9 @@
 ﻿using SIGEBI.AppEscritorio.DTOs.Prestamos;
 using SIGEBI.AppEscritorio.Services.Helper;
 using SIGEBI.AppEscritorio.Services.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SIGEBI.AppEscritorio.Services.Implementations
@@ -23,17 +20,18 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
         public async Task<PrestamoResponseDTO?> AprobarYCrearPrestamoAsync(PrestamoRequestDTO peticion)
         {
             var response = await _Httpclient.PostAsJsonAsync("Prestamos/aprobar", peticion);
-            await ApiHelper.ProcesarErrorApiAsync(response); // filtro de errores 
+            await ApiHelper.ProcesarErrorApiAsync(response);
 
             return await response.Content.ReadFromJsonAsync<PrestamoResponseDTO>();
         }
 
         public async Task<List<PrestamoResponseDTO>> ConsultarHistorialPrestamosPorRecursoAsync(string isbnLibro)
         {
-            var response = await _Httpclient.GetAsync($"Prestamos/activos/recurso/{isbnLibro}");
+            
+            var response = await _Httpclient.GetAsync($"Prestamos/historial/recurso/{isbnLibro}");
             await ApiHelper.ProcesarErrorApiAsync(response);
 
-            return await response.Content.ReadFromJsonAsync < List < PrestamoResponseDTO >>() ?? new();
+            return await response.Content.ReadFromJsonAsync<List<PrestamoResponseDTO>>() ?? new();
         }
 
         public async Task<List<PrestamoResponseDTO>> ConsultarHistorialPrestamosPorUsuarioAsync(string identificador)
@@ -42,9 +40,7 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
             await ApiHelper.ProcesarErrorApiAsync(response);
 
             return await response.Content.ReadFromJsonAsync<List<PrestamoResponseDTO>>() ?? new();
-
         }
-        
 
         public async Task<List<PrestamoResponseDTO>> ConsultarPrestamosActivosPorRecursoAsync(string isbnLibro)
         {
@@ -53,7 +49,6 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
 
             return await response.Content.ReadFromJsonAsync<List<PrestamoResponseDTO>>() ?? new();
         }
-        
 
         public async Task<List<PrestamoResponseDTO>> ConsultarPrestamosActivosPorUsuarioAsync(string identificador)
         {
@@ -67,6 +62,16 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
         {
             var response = await _Httpclient.GetAsync("Prestamos/activos");
             await ApiHelper.ProcesarErrorApiAsync(response);
+
+            return await response.Content.ReadFromJsonAsync<List<PrestamoResponseDTO>>() ?? new();
+        }
+
+       
+        public async Task<List<PrestamoResponseDTO>> ConsultarHistorialCompletoAsync()
+        {
+            var response = await _Httpclient.GetAsync("Prestamos/historial/todos");
+            await ApiHelper.ProcesarErrorApiAsync(response);
+
             return await response.Content.ReadFromJsonAsync<List<PrestamoResponseDTO>>() ?? new();
         }
     }

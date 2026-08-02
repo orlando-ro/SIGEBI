@@ -33,7 +33,7 @@
             lblTitulo.ForeColor = Color.White;
             lblTitulo.Location = new Point(25, 25);
             lblTitulo.Name = "lblTitulo";
-            lblTitulo.Size = new Size(558, 59);
+            lblTitulo.Size = new Size(358, 37);
             lblTitulo.TabIndex = 0;
             lblTitulo.Text = "Historial de Notificaciones";
             // 
@@ -72,7 +72,7 @@
             lblDiasAntelacion.ForeColor = Color.Gainsboro;
             lblDiasAntelacion.Location = new Point(229, 31);
             lblDiasAntelacion.Name = "lblDiasAntelacion";
-            lblDiasAntelacion.Size = new Size(220, 37);
+            lblDiasAntelacion.Size = new Size(136, 23);
             lblDiasAntelacion.TabIndex = 4;
             lblDiasAntelacion.Text = "Días antelación:";
             // 
@@ -84,7 +84,7 @@
             nudDiasAntelacion.Maximum = new decimal(new int[] { 7, 0, 0, 0 });
             nudDiasAntelacion.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudDiasAntelacion.Name = "nudDiasAntelacion";
-            nudDiasAntelacion.Size = new Size(70, 47);
+            nudDiasAntelacion.Size = new Size(70, 32);
             nudDiasAntelacion.TabIndex = 5;
             nudDiasAntelacion.Value = new decimal(new int[] { 3, 0, 0, 0 });
             // 
@@ -145,6 +145,7 @@
             FormBorderStyle = FormBorderStyle.None;
             Name = "formGestionNotificaciones";
             Text = "Historial de Notificaciones";
+            Load += formGestionNotificaciones_Load_1;
             panelAcciones.ResumeLayout(false);
             panelAcciones.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)nudDiasAntelacion).EndInit();

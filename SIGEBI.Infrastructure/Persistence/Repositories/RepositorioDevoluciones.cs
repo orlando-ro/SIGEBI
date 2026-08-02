@@ -56,5 +56,18 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
                         .ThenInclude(e => e.Libro)
                 .FirstOrDefaultAsync(d => d.IdPrestamo == idPrestamo);
         }
+
+        public async Task<IEnumerable<Devolucion>> ConsultarHistorialCompletoAsync()
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .Include(d => d.Prestamo)
+                    .ThenInclude(p => p!.Usuario)
+                .Include(d => d.Prestamo)
+                    .ThenInclude(p => p!.EjemplaresAprestar)
+                        .ThenInclude(e => e.Libro)
+                .OrderByDescending(d => d.FechaDevolucion)
+                .ToListAsync();
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using SIGEBI.AppEscritorio.Services.Interfaces;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SIGEBI.AppEscritorio.Forms.Prestamos
@@ -12,6 +13,40 @@ namespace SIGEBI.AppEscritorio.Forms.Prestamos
         {
             InitializeComponent();
             _servicioPrestamo = servicioPrestamo;
+        }
+
+        // 1. Cargamos el historial automáticamente al abrir el formulario
+        private async void FormHistorialPrestamos_Load(object sender, EventArgs e)
+        {
+            await RecargarHistorialAsync();
+        }
+
+        // 2. Método centralizado
+        private async Task RecargarHistorialAsync()
+        {
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+                var historialCompleto = await _servicioPrestamo.ConsultarHistorialCompletoAsync();
+                dgvHistorial.DataSource = historialCompleto;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error al cargar el historial", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                dgvHistorial.DataSource = null;
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
+        }
+
+        // 3. El botón ahora funciona como "Refrescar"
+        private async void btnMostrarTodo_Click(object sender, EventArgs e)
+        {
+            txtIdentificador.Clear();
+            txtIsbn.Clear();
+            await RecargarHistorialAsync();
         }
 
         private async void btnHistorialUsuario_Click(object sender, EventArgs e)
@@ -44,10 +79,6 @@ namespace SIGEBI.AppEscritorio.Forms.Prestamos
             {
                 MessageBox.Show(ex.Message, "Error de Auditoría", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void FormHistorialPrestamos_Load(object sender, EventArgs e)
-        {
         }
     }
 }

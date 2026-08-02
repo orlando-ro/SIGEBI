@@ -95,5 +95,16 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
                 .Where(p => p.Estado == "Activo" || p.Estado == "Prestado")
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Prestamo>> ConsultarHistorialCompletoAsync()
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .Include(p => p.Usuario)
+                .Include(p => p.EjemplaresAprestar)
+                    .ThenInclude(e => e.Libro)
+                .OrderByDescending(p => p.FechaInicio)
+                .ToListAsync();
+        }
     }
 }

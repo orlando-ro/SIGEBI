@@ -1,12 +1,17 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SIGEBI.AppEscritorio.Forms.Auditoria;
 using SIGEBI.AppEscritorio.Forms.Auth;
 using SIGEBI.AppEscritorio.Forms.Catalogo;
+using SIGEBI.AppEscritorio.Forms.Devoluciones;
 using SIGEBI.AppEscritorio.Forms.Main;
 using SIGEBI.AppEscritorio.Forms.Notificaciones;
+using SIGEBI.AppEscritorio.Forms.Penalizaciones;
 using SIGEBI.AppEscritorio.Forms.Prestamos;
+using SIGEBI.AppEscritorio.Forms.Reportes;
 using SIGEBI.AppEscritorio.Forms.Solicitudes;
 using SIGEBI.AppEscritorio.Forms.Usuarios;
+//using SIGEBI.AppEscritorio.Forms.Solicitudes;
 using SIGEBI.AppEscritorio.Handlers;
 using SIGEBI.AppEscritorio.Services;
 using SIGEBI.AppEscritorio.Services.Implementations;
@@ -64,8 +69,31 @@ namespace SIGEBI.AppEscritorio.Extensions
                 client.BaseAddress = new Uri(apiBaseUrl);
             }).AddHttpMessageHandler<AuthHandler>();
 
-            // Nota: Aquí abajo iremos agregando los demás servicios (Catálogo, Préstamos, etc.)
-            // cuando toque inyectarles el token desde el SessionManager.
+
+            services.AddHttpClient<IServicioDevolucionApi, ServicioDevolucionApi>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            })
+            .AddHttpMessageHandler<AuthHandler>();
+
+            services.AddHttpClient<IServicioPenalizacionApi, ServicioPenalizacionApi>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            })
+            .AddHttpMessageHandler<AuthHandler>();
+
+
+            services.AddHttpClient<IServicioAuditoriaApi, ServicioAuditoriaApi>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            }) .AddHttpMessageHandler<AuthHandler>();
+
+            services.AddHttpClient<IServicioReportesApi, ServicioReportesApi>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            }).AddHttpMessageHandler<AuthHandler>();
+
+
 
             return services;
         }
@@ -85,6 +113,12 @@ namespace SIGEBI.AppEscritorio.Extensions
             services.AddTransient<formGestionCategorias>();
             services.AddTransient<FormCategoriaMantenimiento>();
             services.AddTransient<formGestionNotificaciones>();
+            services.AddTransient<FormProcesarDevolucion>();
+            services.AddTransient<FormHistorialDevoluciones>();
+            services.AddTransient<FormGestionPenalizaciones>();
+            services.AddTransient<FormAuditoria>();
+            services.AddTransient<FormCentroReportes>();
+
             return services;
         }
     }

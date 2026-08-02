@@ -15,7 +15,7 @@ namespace SIGEBI.AppWeb.Services
 
         public async Task<List<PrestamoResponseDTO>> ObtenerPrestamosPorUsuarioAsync(string identificador)
         {
-            var response = await _httpClient.GetAsync($"prestamos/usuario/{identificador}");
+            var response = await _httpClient.GetAsync($"prestamos/activos/usuario/{identificador}");
 
             if (response.IsSuccessStatusCode)
             {

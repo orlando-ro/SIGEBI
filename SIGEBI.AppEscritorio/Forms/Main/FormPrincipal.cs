@@ -1,10 +1,16 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SIGEBI.AppEscritorio.Forms.Devoluciones;
+using SIGEBI.AppEscritorio.Forms.Penalizaciones;
 using SIGEBI.AppEscritorio.Forms.Prestamos;
 using SIGEBI.AppEscritorio.Forms.Solicitudes;
-using SIGEBI.AppEscritorio.Forms.Notificaciones; 
+using SIGEBI.AppEscritorio.Forms.Notificaciones;
 using SIGEBI.AppEscritorio.Utils;
 using System;
 using System.Windows.Forms;
+using SIGEBI.AppEscritorio.Forms.Usuarios;
+using SIGEBI.AppEscritorio.Forms.Catalogo;
+using SIGEBI.AppEscritorio.Forms.Auditoria;
+using SIGEBI.AppEscritorio.Forms.Reportes; 
 
 namespace SIGEBI.AppEscritorio.Forms.Main
 {
@@ -13,7 +19,6 @@ namespace SIGEBI.AppEscritorio.Forms.Main
         public FormPrincipal()
         {
             InitializeComponent();
-
             this.WindowState = FormWindowState.Maximized;
         }
 
@@ -27,8 +32,6 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             }
 
             ConfigurarAccesosPorRol();
-
-            // 👇 Abrir el Home automáticamente al iniciar sesión
             AbrirFormularioEnPanel(new FormDashboard());
         }
 
@@ -36,32 +39,57 @@ namespace SIGEBI.AppEscritorio.Forms.Main
         {
             string rol = SessionManager.TipoUsuario;
 
+            // 1. Apagamos todo por seguridad por defecto
             btnAprobarPrestamos.Visible = false;
             btnConsultarActivos.Visible = false;
+            btnProcesarDevolucion.Visible = false;
+            btnPenalizaciones.Visible = false;
             btnHistorial.Visible = false;
+            btnHistorialDevoluciones.Visible = false;
             btnGestionUsuarios.Visible = false;
             btnCatalogo.Visible = false;
-            btnCategorias.Visible = false; 
+            btnCategorias.Visible = false;
             btnNotificaciones.Visible = false;
+            btnAuditoria.Visible = false;
+            btnCentroReportes.Visible = false;
 
-            if (rol == "PersonalBibliotecario" || rol == "Administrador")
+            // 2. Encendemos según el rol
+            switch (rol)
             {
-                btnAprobarPrestamos.Visible = true;
-                btnConsultarActivos.Visible = true;
-                btnHistorial.Visible = true;
-                btnCatalogo.Visible = true;
-                btnCategorias.Visible = true; 
-            }
-            
-            if (rol == "Auditor" || rol == "Administrador")
-            {
-                btnHistorial.Visible = true;
-                btnNotificaciones.Visible = true; 
-            }
+                case "PersonalBibliotecario":
+                    btnAprobarPrestamos.Visible = true;
+                    btnConsultarActivos.Visible = true;
+                    btnProcesarDevolucion.Visible = true;
+                    btnPenalizaciones.Visible = true;
+                    btnHistorial.Visible = true;
+                    btnHistorialDevoluciones.Visible = true;
+                    btnCatalogo.Visible = true;
+                    btnCategorias.Visible = true;
+                    btnCentroReportes.Visible = true;
+                    break;
 
-            if (rol == "Administrador")
-            {
-                btnGestionUsuarios.Visible = true;
+                case "Administrador":
+                    btnAprobarPrestamos.Visible = true;
+                    btnConsultarActivos.Visible = true;
+                    btnProcesarDevolucion.Visible = true; 
+                    btnPenalizaciones.Visible = true;
+                    btnHistorial.Visible = true;
+                    btnHistorialDevoluciones.Visible = true;
+                    btnGestionUsuarios.Visible = true;
+                    btnCatalogo.Visible = true; 
+                    btnCategorias.Visible = true; 
+                    btnNotificaciones.Visible = true;
+                    btnAuditoria.Visible = true;
+                    btnCentroReportes.Visible = true; 
+                    break;
+
+                case "Auditor":
+                    btnHistorial.Visible = true;
+                    btnHistorialDevoluciones.Visible = true;
+                    btnNotificaciones.Visible = true;
+                    btnAuditoria.Visible = true;
+                    btnCentroReportes.Visible = true; 
+                    break;
             }
         }
 
@@ -81,7 +109,6 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             formularioHijo.Show();
         }
 
-        // Botón Inicio
         private void btnInicio_Click(object sender, EventArgs e)
         {
             lblTituloSeccion.Text = "Inicio / Dashboard";
@@ -90,54 +117,89 @@ namespace SIGEBI.AppEscritorio.Forms.Main
 
         private void btnAprobarPrestamos_Click(object? sender, EventArgs e)
         {
-            lblTituloSeccion.Text = "Préstamos y Devoluciones / Gestión de Solicitudes";
+            lblTituloSeccion.Text = "Préstamos / Gestión de Solicitudes";
             var formSolicitudes = Program.ServiceProvider.GetRequiredService<FormGestionSolicitudes>();
             AbrirFormularioEnPanel(formSolicitudes);
         }
 
         private void btnConsultarActivos_Click(object? sender, EventArgs e)
         {
-            lblTituloSeccion.Text = "Préstamos y Devoluciones / Préstamos Activos";
+            lblTituloSeccion.Text = "Préstamos / Préstamos Activos";
             var formActivos = Program.ServiceProvider.GetRequiredService<FormConsultarActivos>();
             AbrirFormularioEnPanel(formActivos);
         }
 
+        private void btnProcesarDevolucion_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Devoluciones / Procesar Devolución";
+            var formProcesarDev = Program.ServiceProvider.GetRequiredService<FormProcesarDevolucion>();
+            AbrirFormularioEnPanel(formProcesarDev);
+        }
+
+        private void btnPenalizaciones_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Caja / Multas y Penalizaciones";
+            var formPenalizaciones = Program.ServiceProvider.GetRequiredService<FormGestionPenalizaciones>();
+            AbrirFormularioEnPanel(formPenalizaciones);
+        }
+
+        private void btnHistorialDevoluciones_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Reportes / Historial de Devoluciones";
+            var formHistorialDev = Program.ServiceProvider.GetRequiredService<FormHistorialDevoluciones>();
+            AbrirFormularioEnPanel(formHistorialDev);
+        }
+
         private void btnHistorial_Click(object? sender, EventArgs e)
         {
-            lblTituloSeccion.Text = "Préstamos y Devoluciones / Historial General";
+            lblTituloSeccion.Text = "Reportes / Historial de Préstamos";
             var formHistorial = Program.ServiceProvider.GetRequiredService<FormHistorialPrestamos>();
             AbrirFormularioEnPanel(formHistorial);
         }
 
-        private void btnCatalogo_Click(object? sender, EventArgs e)
+        private void btnNotificaciones_Click(object sender, EventArgs e)
         {
-            lblTituloSeccion.Text = "Catálogo / Gestión Bibliográfica";
-            var formCatalogo = Program.ServiceProvider.GetRequiredService<SIGEBI.AppEscritorio.Forms.Catalogo.formGestionCatalogo>();
-            AbrirFormularioEnPanel(formCatalogo);
-        }
-
-        private void btnCategorias_Click(object? sender, EventArgs e)
-        {
-            lblTituloSeccion.Text = "Catálogo / Gestión de Categorías";
-            var formCategorias = Program.ServiceProvider.GetRequiredService<SIGEBI.AppEscritorio.Forms.Catalogo.formGestionCategorias>();
-            AbrirFormularioEnPanel(formCategorias);
-        }
-
-        private void btnGestionUsuarios_Click(object? sender, EventArgs e)
-        {
-            lblTituloSeccion.Text = "Administración / Gestión de Usuarios";
-            var formUsuarios = Program.ServiceProvider.GetRequiredService<SIGEBI.AppEscritorio.Forms.Usuarios.formGestionUsuarios>();
-            AbrirFormularioEnPanel(formUsuarios);
-        }
-
-        private void btnNotificaciones_Click(object? sender, EventArgs e)
-        {
-            lblTituloSeccion.Text = "Administración / Historial de Alertas";
+            lblTituloSeccion.Text = "Alertas / Historial de Notificaciones";
             var formNotificaciones = Program.ServiceProvider.GetRequiredService<formGestionNotificaciones>();
             AbrirFormularioEnPanel(formNotificaciones);
         }
 
-        // Botón Cerrar Sesión
+        private void btnGestionUsuarios_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Administración / Gestión de Usuarios";
+            var formUsuarios = Program.ServiceProvider.GetRequiredService<formGestionUsuarios>();
+            AbrirFormularioEnPanel(formUsuarios);
+        }
+
+        private void btnCategorias_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Catálogo / Gestión de Categorías";
+            var formCategorias = Program.ServiceProvider.GetRequiredService<formGestionCategorias>();
+            AbrirFormularioEnPanel(formCategorias);
+        }
+
+        private void btnCatalogo_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Catálogo / Recursos Bibliográficos";
+            var formCatalogo = Program.ServiceProvider.GetRequiredService<formGestionCatalogo>();
+            AbrirFormularioEnPanel(formCatalogo);
+        }
+
+        private void btnAuditoria_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Seguridad / Registro de Auditoría";
+            var formAuditoria = Program.ServiceProvider.GetRequiredService<FormAuditoria>();
+            AbrirFormularioEnPanel(formAuditoria);
+        }
+
+        // 👇 Evento del nuevo botón de Reportes
+        private void btnCentroReportes_Click(object sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Analítica / Centro de Reportes PDF";
+            var formReportes = Program.ServiceProvider.GetRequiredService<FormCentroReportes>();
+            AbrirFormularioEnPanel(formReportes);
+        }
+
         private void btnCerrarSesion_Click(object sender, EventArgs e)
         {
             var confirmacion = MessageBox.Show("¿Está seguro que desea cerrar la sesión actual?", "Cerrar Sesión", MessageBoxButtons.YesNo, MessageBoxIcon.Question);

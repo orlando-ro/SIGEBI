@@ -167,13 +167,28 @@ namespace SIGEBI.Application.Services
             if (devolucion.Prestamo == null)
                 throw new NegocioExeption("La devolucion no tiene un prestamo asociado");
 
+            // Calculamos dinámicamente los valores en base a las reglas de tu negocio
+            int diasRetraso = devolucion.Prestamo.CalcularDiasRetraso();
+            bool generoPenalizacion = diasRetraso > 0 || devolucion.RequierePenalizacionPorDano();
+
             return MapearDevolucionesResponse(
                 devolucion,
                 devolucion.Prestamo,
-                0,
-                false,
-                0
+                devolucion.IdBibliotecario, 
+                generoPenalizacion,         
+                diasRetraso                 
             );
+        }
+
+
+        public async Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialCompletoAsync()
+        {
+            var devoluciones = await _repoDevolucion.ConsultarHistorialCompletoAsync();
+
+            if (devoluciones == null || !devoluciones.Any())
+                throw new NegocioExeption("No hay devoluciones registradas en el sistema.");
+
+            return devoluciones.Select(MapearDevolucionesResponse);
         }
 
         private DevolucionResponseDTO MapearDevolucionesResponse(

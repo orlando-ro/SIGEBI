@@ -71,5 +71,13 @@ namespace SIGEBI.Api.Controllers
             return Ok(resultado);
 
         }
+
+        [HttpGet("historial/todos")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador,Auditor")]
+        public async Task<IActionResult> ConsultarHistorialCompleto()
+        {
+            var resultado = await _iservicioPrestamo.ConsultarHistorialCompletoAsync();
+            return Ok(resultado);
+        }
     }
 }
