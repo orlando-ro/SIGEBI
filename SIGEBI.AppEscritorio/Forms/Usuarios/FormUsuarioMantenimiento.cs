@@ -66,65 +66,61 @@ namespace SIGEBI.AppEscritorio.Forms.Usuarios
 
         private async void BtnGuardar_Click(object? sender, EventArgs e)
         {
-            // 1. Validaciones básicas
             if (string.IsNullOrWhiteSpace(txtNombre.Text) || string.IsNullOrWhiteSpace(txtEmail.Text))
             {
                 MessageBox.Show("El nombre y el correo son obligatorios.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            btnGuardar.Enabled = false;
-            btnGuardar.Text = "Guardando...";
-
-            bool exito = false;
-
-            // 2. Ejecutar Lógica de Creación o Edición
-            if (_esModoEdicion)
+            if (!_esModoEdicion && string.IsNullOrWhiteSpace(txtPassword.Text))
             {
-                var updateDto = new UsuarioUpdateRequestDTO
-                {
-                    Nombre = txtNombre.Text.Trim(),
-                    Email = txtEmail.Text.Trim(),
-                    Matricula = txtMatricula.Text.Trim(),
-                    NumeroEmpleado = txtNumeroEmpleado.Text.Trim(),
-                    Estado = cmbEstado.SelectedItem?.ToString()
-                };
-
-                exito = await _servicioUsuarioApi.ActualizarUsuarioAsync(_idUsuarioActual, updateDto);
+                MessageBox.Show("La contraseña es obligatoria para usuarios nuevos.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            else
+
+            try
             {
-                if (string.IsNullOrWhiteSpace(txtPassword.Text))
+                btnGuardar.Enabled = false;
+                btnGuardar.Text = "Guardando...";
+
+                if (_esModoEdicion)
                 {
-                    MessageBox.Show("La contraseña es obligatoria para usuarios nuevos.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    btnGuardar.Enabled = true;
-                    btnGuardar.Text = "Guardar";
-                    return;
+                    var updateDto = new UsuarioUpdateRequestDTO
+                    {
+                        Nombre = txtNombre.Text.Trim(),
+                        Email = txtEmail.Text.Trim(),
+                        Matricula = txtMatricula.Text.Trim(),
+                        NumeroEmpleado = txtNumeroEmpleado.Text.Trim(),
+                        Estado = cmbEstado.SelectedItem?.ToString()
+                    };
+
+                    await _servicioUsuarioApi.ActualizarUsuarioAsync(_idUsuarioActual, updateDto);
+                }
+                else
+                {
+                    var createDto = new UsuarioRequestDTO
+                    {
+                        Nombre = txtNombre.Text.Trim(),
+                        Email = txtEmail.Text.Trim(),
+                        TipoUsuario = cmbTipoUsuario.SelectedItem?.ToString() ?? "Estudiante",
+                        Password = txtPassword.Text.Trim(),
+                        Matricula = txtMatricula.Text.Trim(),
+                        NumeroEmpleado = txtNumeroEmpleado.Text.Trim()
+                    };
+
+                    await _servicioUsuarioApi.RegistrarUsuarioAsync(createDto);
                 }
 
-                var createDto = new UsuarioRequestDTO
-                {
-                    Nombre = txtNombre.Text.Trim(),
-                    Email = txtEmail.Text.Trim(),
-                    TipoUsuario = cmbTipoUsuario.SelectedItem?.ToString() ?? "Estudiante",
-                    Password = txtPassword.Text.Trim(),
-                    Matricula = txtMatricula.Text.Trim(),
-                    NumeroEmpleado = txtNumeroEmpleado.Text.Trim()
-                };
-
-                exito = await _servicioUsuarioApi.RegistrarUsuarioAsync(createDto);
-            }
-
-            // 3. Manejo del resultado
-            if (exito)
-            {
                 MessageBox.Show($"Usuario {(_esModoEdicion ? "actualizado" : "creado")} exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Ocurrió un error en el servidor. Revise los datos y vuelva a intentar.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Aviso del Sistema", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
                 btnGuardar.Enabled = true;
                 btnGuardar.Text = "Guardar";
             }
