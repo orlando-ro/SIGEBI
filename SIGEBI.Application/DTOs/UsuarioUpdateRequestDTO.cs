@@ -9,7 +9,6 @@ namespace SIGEBI.Application.DTOs
 {
     public class UsuarioUpdateRequestDTO
     {
-
         [Required(ErrorMessage = "El nombre es obligatorio.")]
         public string Nombre { get; set; } = string.Empty;
 
@@ -24,5 +23,8 @@ namespace SIGEBI.Application.DTOs
         public string? NumeroEmpleado { get; set; }
 
         public string? Estado { get; set; }
+
+        [StringLength(100)]
+        public string? NuevaContrasena { get; set; }
     }
 }

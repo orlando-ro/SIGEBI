@@ -23,5 +23,8 @@ namespace SIGEBI.AppEscritorio.DTOs.Usuarios
 
         [JsonPropertyName("estado")]
         public string? Estado { get; set; }
+
+        [JsonPropertyName("nuevaContrasena")]
+        public string? NuevaContrasena { get; set; }
     }
 }

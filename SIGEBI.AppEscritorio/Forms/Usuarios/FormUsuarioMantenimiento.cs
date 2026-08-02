@@ -60,8 +60,8 @@ namespace SIGEBI.AppEscritorio.Forms.Usuarios
             cmbEstado.Visible = true;
             lblEstado.Visible = true;
 
-            txtPassword.Visible = false;
-            lblPassword.Visible = false;
+            lblPassword.Text = "Nueva Clave (Opc.)";
+            txtPassword.Text = "";
         }
 
         private async void BtnGuardar_Click(object? sender, EventArgs e)
@@ -91,7 +91,8 @@ namespace SIGEBI.AppEscritorio.Forms.Usuarios
                         Email = txtEmail.Text.Trim(),
                         Matricula = txtMatricula.Text.Trim(),
                         NumeroEmpleado = txtNumeroEmpleado.Text.Trim(),
-                        Estado = cmbEstado.SelectedItem?.ToString()
+                        Estado = cmbEstado.SelectedItem?.ToString(),
+                        NuevaContrasena = string.IsNullOrWhiteSpace(txtPassword.Text) ? null : txtPassword.Text.Trim()
                     };
 
                     await _servicioUsuarioApi.ActualizarUsuarioAsync(_idUsuarioActual, updateDto);
