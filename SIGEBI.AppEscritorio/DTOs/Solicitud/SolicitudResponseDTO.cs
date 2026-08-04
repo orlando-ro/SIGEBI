@@ -32,5 +32,11 @@ namespace SIGEBI.AppEscritorio.DTOs.Solicitudes
 
         [JsonPropertyName("titulosLibros")]
         public List<string> TitulosLibros { get; set; } = new();
+
+        [JsonIgnore]
+        public string ISBNsMostrados => ISBNs != null ? string.Join(", ", ISBNs) : string.Empty;
+
+        [JsonIgnore]
+        public string LibrosSolicitados => TitulosLibros != null ? string.Join(" | ", TitulosLibros) : string.Empty;
     }
 }
