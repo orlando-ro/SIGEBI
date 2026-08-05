@@ -27,7 +27,6 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
         {
             var response = await _httpClient.GetAsync($"Penalizaciones/Pendientes/Usuario/{MatriculaONumeroEmpleado}");
             await ApiHelper.ProcesarErrorApiAsync(response);
-
             return await response.Content.ReadFromJsonAsync<List<PenalizacionResponseDTO>>() ?? new();
         }
 
@@ -35,7 +34,21 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
         {
             var response = await _httpClient.GetAsync("Penalizaciones/Pendientes/Todas");
             await ApiHelper.ProcesarErrorApiAsync(response);
+            return await response.Content.ReadFromJsonAsync<List<PenalizacionResponseDTO>>() ?? new();
+        }
 
+        // Implementación del Historial
+        public async Task<IEnumerable<PenalizacionResponseDTO>> ObtenerHistorialPorUsuarioAsync(string identificador)
+        {
+            var response = await _httpClient.GetAsync($"Penalizaciones/Historial/Usuario/{identificador}");
+            await ApiHelper.ProcesarErrorApiAsync(response);
+            return await response.Content.ReadFromJsonAsync<List<PenalizacionResponseDTO>>() ?? new();
+        }
+
+        public async Task<IEnumerable<PenalizacionResponseDTO>> ObtenerTodasHistorialAsync()
+        {
+            var response = await _httpClient.GetAsync("Penalizaciones/Historial/Todas");
+            await ApiHelper.ProcesarErrorApiAsync(response);
             return await response.Content.ReadFromJsonAsync<List<PenalizacionResponseDTO>>() ?? new();
         }
     }

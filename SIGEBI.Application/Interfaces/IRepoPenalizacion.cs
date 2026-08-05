@@ -13,5 +13,8 @@ namespace SIGEBI.Application.Interfaces
 
 
         Task<IEnumerable<Penalizacion>> ObtenerTodasPendientesAsync();
+
+        Task<IEnumerable<Penalizacion>> ObtenerHistorialPorUsuarioAsync(int idUsuario);
+        Task<IEnumerable<Penalizacion>> ObtenerHistorialCompletoAsync();
     }
 }

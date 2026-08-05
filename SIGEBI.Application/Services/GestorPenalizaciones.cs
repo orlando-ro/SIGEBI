@@ -177,47 +177,45 @@ namespace SIGEBI.Application.Services
             return penalizacionesPendientes.Select(p => MapearPenalizacionResponse(p, p.Usuario));
         }
 
+        public async Task<IEnumerable<PenalizacionResponseDTO>> ObtenerHistorialPorUsuariosAsync(string MatriculaONumeroEmpleado)
+        {
+            var usuario = await ResolucionUsuario.ObtenerPorIdentificadorAsync(_usuarios, MatriculaONumeroEmpleado);
+            var penalizacionesHistorial = await _repoPenalizacion.ObtenerHistorialPorUsuarioAsync(usuario.IdUsuario);
+
+            if (penalizacionesHistorial == null || !penalizacionesHistorial.Any())
+                return new List<PenalizacionResponseDTO>();
+
+            return penalizacionesHistorial.Select(p => MapearPenalizacionResponse(p, usuario));
+        }
+
+        public async Task<IEnumerable<PenalizacionResponseDTO>> ObtenerHistorialCompletoAsync()
+        {
+            var penalizacionesHistorial = await _repoPenalizacion.ObtenerHistorialCompletoAsync();
+
+            if (penalizacionesHistorial == null || !penalizacionesHistorial.Any())
+                return new List<PenalizacionResponseDTO>();
+
+            return penalizacionesHistorial.Select(p => MapearPenalizacionResponse(p, p.Usuario));
+        }
+
         private static PenalizacionResponseDTO MapearPenalizacionResponse(Penalizacion penalizacion, Usuario? usuario)
         {
             return new PenalizacionResponseDTO
             {
-                IdPenalizacion =
-            penalizacion.IdPenalizacion,
-
-                IdUsuario =
-            penalizacion.IdUsuario,
-
-                NombreUsuario =
-            usuario?.Nombre ?? string.Empty,
-
-                Matricula =
-            usuario is Estudiante estudiante
-                ? estudiante.Matricula
-                : null,
-
-                NumeroEmpleado =
-            usuario?.NumeroEmpleado ?? string.Empty,
-
-                Monto =
-            penalizacion.Monto,
-
-                Motivo =
-            penalizacion.Motivo,
-
-                FechaEmision =
-            penalizacion.FechaEmision,
-
-                Pagada =
-            penalizacion.Pagada,
-
-                IdPrestamo =
-            penalizacion.IdPrestamo,
-
-                FechaResolucion =
-            penalizacion.FechaResolucion,
-
-                MotivoResolucion =
-            penalizacion.MotivoResolucion
+                IdPenalizacion = penalizacion.IdPenalizacion,
+                IdUsuario = penalizacion.IdUsuario,
+                NombreUsuario = usuario?.Nombre ?? string.Empty,
+                Matricula = usuario is Estudiante estudiante ? estudiante.Matricula : null,
+                NumeroEmpleado = usuario?.NumeroEmpleado ?? string.Empty,
+                Monto = penalizacion.Monto,
+                Motivo = penalizacion.Motivo,
+                FechaEmision = penalizacion.FechaEmision,
+                Pagada = penalizacion.Pagada,
+                IdPrestamo = penalizacion.IdPrestamo,
+                FechaResolucion = penalizacion.FechaResolucion,
+                MotivoResolucion = penalizacion.MotivoResolucion,
+                IdUsuarioResolutor = penalizacion.IdUsuarioResolutor,
+                NombreResolutor = penalizacion.UsuarioResolutor?.Nombre ?? string.Empty
             };
         }
 

@@ -1,16 +1,16 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SIGEBI.AppEscritorio.Forms.Auditoria;
+using SIGEBI.AppEscritorio.Forms.Catalogo;
 using SIGEBI.AppEscritorio.Forms.Devoluciones;
+using SIGEBI.AppEscritorio.Forms.Notificaciones;
 using SIGEBI.AppEscritorio.Forms.Penalizaciones;
 using SIGEBI.AppEscritorio.Forms.Prestamos;
+using SIGEBI.AppEscritorio.Forms.Reportes;
 using SIGEBI.AppEscritorio.Forms.Solicitudes;
-using SIGEBI.AppEscritorio.Forms.Notificaciones;
+using SIGEBI.AppEscritorio.Forms.Usuarios;
 using SIGEBI.AppEscritorio.Utils;
 using System;
 using System.Windows.Forms;
-using SIGEBI.AppEscritorio.Forms.Usuarios;
-using SIGEBI.AppEscritorio.Forms.Catalogo;
-using SIGEBI.AppEscritorio.Forms.Auditoria;
-using SIGEBI.AppEscritorio.Forms.Reportes; 
 
 namespace SIGEBI.AppEscritorio.Forms.Main
 {
@@ -32,17 +32,31 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             }
 
             ConfigurarAccesosPorRol();
-            AbrirFormularioEnPanel(new FormDashboard());
+
+            // Le pasamos el método enrutador al Dashboard
+            AbrirFormularioEnPanel(new FormDashboard(NavegarDesdeDashboard));
+        }
+
+        // 🔥 MÉTODO ENRUTADOR: Recibe el clic de la tarjeta y ejecuta el botón lateral
+        public void NavegarDesdeDashboard(string tituloModulo)
+        {
+            switch (tituloModulo)
+            {
+                case "📝 Solicitudes": btnAprobarPrestamos.PerformClick(); break;
+                case "🔍 Préstamos": btnConsultarActivos.PerformClick(); break;
+                case "💰 Multas": btnPenalizaciones.PerformClick(); break;
+                case "👥 Usuarios": btnGestionUsuarios.PerformClick(); break;
+                case "🛡️ Auditoría": btnAuditoria.PerformClick(); break;
+                case "📊 Reportes": btnCentroReportes.PerformClick(); break;
+            }
         }
 
         private void ConfigurarAccesosPorRol()
         {
             string rol = SessionManager.TipoUsuario;
 
-            // 1. Apagamos todo por seguridad por defecto
             btnAprobarPrestamos.Visible = false;
             btnConsultarActivos.Visible = false;
-            btnProcesarDevolucion.Visible = false;
             btnPenalizaciones.Visible = false;
             btnHistorial.Visible = false;
             btnHistorialDevoluciones.Visible = false;
@@ -53,13 +67,11 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             btnAuditoria.Visible = false;
             btnCentroReportes.Visible = false;
 
-            // 2. Encendemos según el rol
             switch (rol)
             {
                 case "PersonalBibliotecario":
                     btnAprobarPrestamos.Visible = true;
                     btnConsultarActivos.Visible = true;
-                    btnProcesarDevolucion.Visible = true;
                     btnPenalizaciones.Visible = true;
                     btnHistorial.Visible = true;
                     btnHistorialDevoluciones.Visible = true;
@@ -71,16 +83,15 @@ namespace SIGEBI.AppEscritorio.Forms.Main
                 case "Administrador":
                     btnAprobarPrestamos.Visible = true;
                     btnConsultarActivos.Visible = true;
-                    btnProcesarDevolucion.Visible = true; 
                     btnPenalizaciones.Visible = true;
                     btnHistorial.Visible = true;
                     btnHistorialDevoluciones.Visible = true;
                     btnGestionUsuarios.Visible = true;
-                    btnCatalogo.Visible = true; 
-                    btnCategorias.Visible = true; 
+                    btnCatalogo.Visible = true;
+                    btnCategorias.Visible = true;
                     btnNotificaciones.Visible = true;
                     btnAuditoria.Visible = true;
-                    btnCentroReportes.Visible = true; 
+                    btnCentroReportes.Visible = true;
                     break;
 
                 case "Auditor":
@@ -88,7 +99,7 @@ namespace SIGEBI.AppEscritorio.Forms.Main
                     btnHistorialDevoluciones.Visible = true;
                     btnNotificaciones.Visible = true;
                     btnAuditoria.Visible = true;
-                    btnCentroReportes.Visible = true; 
+                    btnCentroReportes.Visible = true;
                     break;
             }
         }
@@ -112,7 +123,9 @@ namespace SIGEBI.AppEscritorio.Forms.Main
         private void btnInicio_Click(object sender, EventArgs e)
         {
             lblTituloSeccion.Text = "Inicio / Dashboard";
-            AbrirFormularioEnPanel(new FormDashboard());
+
+            // Le pasamos el método enrutador al Dashboard
+            AbrirFormularioEnPanel(new FormDashboard(NavegarDesdeDashboard));
         }
 
         private void btnAprobarPrestamos_Click(object? sender, EventArgs e)
@@ -127,13 +140,6 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             lblTituloSeccion.Text = "Préstamos / Préstamos Activos";
             var formActivos = Program.ServiceProvider.GetRequiredService<FormConsultarActivos>();
             AbrirFormularioEnPanel(formActivos);
-        }
-
-        private void btnProcesarDevolucion_Click(object sender, EventArgs e)
-        {
-            lblTituloSeccion.Text = "Devoluciones / Procesar Devolución";
-            var formProcesarDev = Program.ServiceProvider.GetRequiredService<FormProcesarDevolucion>();
-            AbrirFormularioEnPanel(formProcesarDev);
         }
 
         private void btnPenalizaciones_Click(object sender, EventArgs e)
@@ -192,7 +198,6 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             AbrirFormularioEnPanel(formAuditoria);
         }
 
-        // 👇 Evento del nuevo botón de Reportes
         private void btnCentroReportes_Click(object sender, EventArgs e)
         {
             lblTituloSeccion.Text = "Analítica / Centro de Reportes PDF";
@@ -208,6 +213,14 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             {
                 Application.Restart();
             }
+        }
+
+        private void panelContenedor_Paint(object sender, PaintEventArgs e)
+        {
+        }
+
+        private void panelContenedor_Paint_1(object sender, PaintEventArgs e)
+        {
         }
     }
 }

@@ -81,17 +81,20 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Prestamo>> ObtenerActivosPorFechaVencimientoAsync(DateTime fechaObjetivo)
         {
             return await _dbSet
+                .Include(p => p.Usuario)
+                .Include(p => p.EjemplaresAprestar)
+                    .ThenInclude(e => e.Libro)
                 .Where(p => p.Estado != "Devuelto" && p.FechaVencimiento.Date == fechaObjetivo.Date)
                 .ToListAsync();
         }
 
-       
-
+        // 🔥 AQUÍ ESTABA EL ERROR PRINCIPAL: Faltaba el ThenInclude
         public async Task<IEnumerable<Prestamo>> ConsultarTodosAsync()
         {
             return await _context.Prestamos
                 .Include(p => p.Usuario)
                 .Include(p => p.EjemplaresAprestar)
+                    .ThenInclude(e => e.Libro) // <--- ESTA LÍNEA RESUELVE EL BUG
                 .Where(p => p.Estado == "Activo" || p.Estado == "Prestado")
                 .ToListAsync();
         }

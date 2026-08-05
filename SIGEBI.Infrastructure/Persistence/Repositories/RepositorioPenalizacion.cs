@@ -81,6 +81,28 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
                 .OrderByDescending(p => p.FechaEmision)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Penalizacion>> ObtenerHistorialPorUsuarioAsync(int idUsuario)
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .Include(p => p.Usuario)
+                .Include(p => p.UsuarioResolutor) 
+                .Where(p => p.IdUsuario == idUsuario && p.Pagada)
+                .OrderByDescending(p => p.FechaResolucion)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Penalizacion>> ObtenerHistorialCompletoAsync()
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .Include(p => p.Usuario)
+                .Include(p => p.UsuarioResolutor) 
+                .Where(p => p.Pagada)
+                .OrderByDescending(p => p.FechaResolucion)
+                .ToListAsync();
+        }
     }
 }
 

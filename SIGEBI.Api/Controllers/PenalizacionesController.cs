@@ -47,5 +47,21 @@ namespace SIGEBI.Api.Controllers
             var resultado = await _servicioPrenalizacion.ObtenerTodasPendientesAsync();
             return Ok(resultado);
         }
+
+        [HttpGet("Historial/Usuario/{matriculaONumeroEmpleado}")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador,Auditor")]
+        public async Task<IActionResult> ObtenerHistorialPorUsuario(string matriculaONumeroEmpleado)
+        {
+            var resultado = await _servicioPrenalizacion.ObtenerHistorialPorUsuariosAsync(matriculaONumeroEmpleado);
+            return Ok(resultado);
+        }
+
+        [HttpGet("Historial/Todas")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador,Auditor")]
+        public async Task<IActionResult> ObtenerHistorialCompleto()
+        {
+            var resultado = await _servicioPrenalizacion.ObtenerHistorialCompletoAsync();
+            return Ok(resultado);
+        }
     }
 }

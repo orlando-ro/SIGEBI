@@ -36,7 +36,7 @@ namespace SIGEBI.Api.Controllers
         }
 
         [HttpPost("Procesar/devolucion")]
-        [Authorize(Roles = "PersonalBibliotecario")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador")]
         public async Task<IActionResult> ProcesarDevolucion([FromBody] DevolucionRequestDTO peticion)
         {
             var claimId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("id")?.Value;
