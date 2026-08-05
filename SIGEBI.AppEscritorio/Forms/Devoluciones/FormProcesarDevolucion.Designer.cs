@@ -13,125 +13,186 @@
         #region Windows Form Designer generated code
         private void InitializeComponent()
         {
-            lblTitulo = new Label();
-            lblIdPrestamo = new Label();
-            txtIdPrestamo = new TextBox();
-            lblCondicion = new Label();
-            cmbCondicion = new ComboBox();
-            lblObservaciones = new Label();
-            txtObservaciones = new TextBox();
-            btnProcesar = new Button();
+            lblTitulo = new System.Windows.Forms.Label();
+            lblHeaderInfo = new System.Windows.Forms.Label();
+            lblNombreUsuario = new System.Windows.Forms.Label();
+            lblIdentificador = new System.Windows.Forms.Label();
+            lblFechas = new System.Windows.Forms.Label();
+            lblRetraso = new System.Windows.Forms.Label();
+            lblEjemplaresTitulo = new System.Windows.Forms.Label();
+            txtEjemplares = new System.Windows.Forms.TextBox();
+            lblSeparador = new System.Windows.Forms.Label();
+            lblCondicion = new System.Windows.Forms.Label();
+            cmbCondicion = new System.Windows.Forms.ComboBox();
+            lblObservaciones = new System.Windows.Forms.Label();
+            txtObservaciones = new System.Windows.Forms.TextBox();
+            btnProcesar = new System.Windows.Forms.Button();
+            btnCerrar = new System.Windows.Forms.Button();
             SuspendLayout();
             // 
             // lblTitulo
             // 
             lblTitulo.AutoSize = true;
-            lblTitulo.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
-            lblTitulo.ForeColor = Color.White;
-            lblTitulo.Location = new Point(30, 30);
+            lblTitulo.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            lblTitulo.ForeColor = System.Drawing.Color.White;
+            lblTitulo.Location = new System.Drawing.Point(20, 20);
             lblTitulo.Name = "lblTitulo";
-            lblTitulo.Size = new Size(244, 32);
-            lblTitulo.TabIndex = 0;
-            lblTitulo.Text = "Procesar Devolución";
+            lblTitulo.Text = "Detalles y Devolución";
             // 
-            // lblIdPrestamo
+            // lblHeaderInfo
             // 
-            lblIdPrestamo.AutoSize = true;
-            lblIdPrestamo.ForeColor = Color.Gainsboro;
-            lblIdPrestamo.Location = new Point(30, 90);
-            lblIdPrestamo.Name = "lblIdPrestamo";
-            lblIdPrestamo.Size = new Size(111, 20);
-            lblIdPrestamo.TabIndex = 1;
-            lblIdPrestamo.Text = "ID de Préstamo:";
+            lblHeaderInfo.AutoSize = true;
+            lblHeaderInfo.ForeColor = System.Drawing.Color.FromArgb(13, 110, 253);
+            lblHeaderInfo.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            lblHeaderInfo.Location = new System.Drawing.Point(20, 70);
+            lblHeaderInfo.Text = "INFORMACIÓN DEL PRÉSTAMO";
             // 
-            // txtIdPrestamo
+            // lblNombreUsuario
             // 
-            txtIdPrestamo.BackColor = Color.FromArgb(40, 40, 60);
-            txtIdPrestamo.BorderStyle = BorderStyle.FixedSingle;
-            txtIdPrestamo.Font = new Font("Segoe UI", 10.5F);
-            txtIdPrestamo.ForeColor = Color.White;
-            txtIdPrestamo.Location = new Point(30, 115);
-            txtIdPrestamo.Name = "txtIdPrestamo";
-            txtIdPrestamo.Size = new Size(300, 31);
-            txtIdPrestamo.TabIndex = 2;
+            lblNombreUsuario.AutoSize = true;
+            lblNombreUsuario.ForeColor = System.Drawing.Color.White;
+            lblNombreUsuario.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            lblNombreUsuario.Location = new System.Drawing.Point(20, 100);
+            lblNombreUsuario.Text = "[Nombre del Usuario]";
+            // 
+            // lblIdentificador
+            // 
+            lblIdentificador.AutoSize = true;
+            lblIdentificador.ForeColor = System.Drawing.Color.Gainsboro;
+            lblIdentificador.Font = new System.Drawing.Font("Segoe UI", 10F);
+            lblIdentificador.Location = new System.Drawing.Point(20, 125);
+            lblIdentificador.Text = "[Identificador]";
+            // 
+            // lblFechas
+            // 
+            lblFechas.AutoSize = true;
+            lblFechas.ForeColor = System.Drawing.Color.Gainsboro;
+            lblFechas.Font = new System.Drawing.Font("Segoe UI", 10F);
+            lblFechas.Location = new System.Drawing.Point(20, 150);
+            lblFechas.Text = "Vigencia: 00/00/0000 al 00/00/0000";
+            // 
+            // lblRetraso
+            // 
+            lblRetraso.AutoSize = true;
+            lblRetraso.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblRetraso.ForeColor = System.Drawing.Color.FromArgb(220, 53, 69);
+            lblRetraso.Location = new System.Drawing.Point(20, 175);
+            lblRetraso.Text = "⚠️ PRÉSTAMO VENCIDO";
+            lblRetraso.Visible = false;
+            // 
+            // lblEjemplaresTitulo
+            // 
+            lblEjemplaresTitulo.AutoSize = true;
+            lblEjemplaresTitulo.ForeColor = System.Drawing.Color.FromArgb(13, 110, 253);
+            lblEjemplaresTitulo.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            lblEjemplaresTitulo.Location = new System.Drawing.Point(20, 205);
+            lblEjemplaresTitulo.Text = "EJEMPLARES FÍSICOS PRESTADOS";
+            // 
+            // txtEjemplares
+            // 
+            txtEjemplares.BackColor = System.Drawing.Color.FromArgb(40, 40, 60);
+            txtEjemplares.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            txtEjemplares.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            txtEjemplares.ForeColor = System.Drawing.Color.White;
+            txtEjemplares.Location = new System.Drawing.Point(20, 230);
+            txtEjemplares.Multiline = true;
+            txtEjemplares.ReadOnly = true;
+            txtEjemplares.Size = new System.Drawing.Size(410, 80);
+            // 
+            // lblSeparador
+            // 
+            lblSeparador.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            lblSeparador.Location = new System.Drawing.Point(20, 325);
+            lblSeparador.Size = new System.Drawing.Size(410, 2);
             // 
             // lblCondicion
             // 
             lblCondicion.AutoSize = true;
-            lblCondicion.ForeColor = Color.Gainsboro;
-            lblCondicion.Location = new Point(30, 160);
-            lblCondicion.Name = "lblCondicion";
-            lblCondicion.Size = new Size(141, 20);
-            lblCondicion.TabIndex = 3;
-            lblCondicion.Text = "Condición del Libro:";
+            lblCondicion.ForeColor = System.Drawing.Color.Gainsboro;
+            lblCondicion.Location = new System.Drawing.Point(20, 345);
+            lblCondicion.Text = "Condición de entrega física:";
             // 
             // cmbCondicion
             // 
-            cmbCondicion.BackColor = Color.FromArgb(40, 40, 60);
-            cmbCondicion.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbCondicion.FlatStyle = FlatStyle.Flat;
-            cmbCondicion.Font = new Font("Segoe UI", 10.5F);
-            cmbCondicion.ForeColor = Color.White;
-            cmbCondicion.Location = new Point(30, 185);
-            cmbCondicion.Name = "cmbCondicion";
-            cmbCondicion.Size = new Size(300, 31);
-            cmbCondicion.TabIndex = 4;
+            cmbCondicion.BackColor = System.Drawing.Color.FromArgb(40, 40, 60);
+            cmbCondicion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            cmbCondicion.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            cmbCondicion.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            cmbCondicion.ForeColor = System.Drawing.Color.White;
+            cmbCondicion.Location = new System.Drawing.Point(20, 370);
+            cmbCondicion.Size = new System.Drawing.Size(410, 31);
+            cmbCondicion.SelectedIndexChanged += cmbCondicion_SelectedIndexChanged;
             // 
             // lblObservaciones
             // 
             lblObservaciones.AutoSize = true;
-            lblObservaciones.ForeColor = Color.Gainsboro;
-            lblObservaciones.Location = new Point(30, 230);
-            lblObservaciones.Name = "lblObservaciones";
-            lblObservaciones.Size = new Size(108, 20);
-            lblObservaciones.TabIndex = 5;
-            lblObservaciones.Text = "Observaciones:";
+            lblObservaciones.ForeColor = System.Drawing.Color.Gainsboro;
+            lblObservaciones.Location = new System.Drawing.Point(20, 410);
+            lblObservaciones.Text = "Observaciones (Opcional):";
             // 
             // txtObservaciones
             // 
-            txtObservaciones.BackColor = Color.FromArgb(40, 40, 60);
-            txtObservaciones.BorderStyle = BorderStyle.FixedSingle;
-            txtObservaciones.Font = new Font("Segoe UI", 10.5F);
-            txtObservaciones.ForeColor = Color.White;
-            txtObservaciones.Location = new Point(30, 255);
+            txtObservaciones.BackColor = System.Drawing.Color.FromArgb(40, 40, 60);
+            txtObservaciones.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            txtObservaciones.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            txtObservaciones.ForeColor = System.Drawing.Color.White;
+            txtObservaciones.Location = new System.Drawing.Point(20, 435);
             txtObservaciones.Multiline = true;
-            txtObservaciones.Name = "txtObservaciones";
-            txtObservaciones.Size = new Size(300, 80);
-            txtObservaciones.TabIndex = 6;
+            txtObservaciones.Size = new System.Drawing.Size(410, 80);
             // 
             // btnProcesar
             // 
-            btnProcesar.BackColor = Color.FromArgb(13, 110, 253);
-            btnProcesar.Cursor = Cursors.Hand;
+            btnProcesar.BackColor = System.Drawing.Color.FromArgb(25, 135, 84);
+            btnProcesar.Cursor = System.Windows.Forms.Cursors.Hand;
             btnProcesar.FlatAppearance.BorderSize = 0;
-            btnProcesar.FlatStyle = FlatStyle.Flat;
-            btnProcesar.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnProcesar.ForeColor = Color.White;
-            btnProcesar.Location = new Point(30, 360);
-            btnProcesar.Name = "btnProcesar";
-            btnProcesar.Size = new Size(300, 45);
-            btnProcesar.TabIndex = 7;
-            btnProcesar.Text = "✓ Procesar Devolución";
-            btnProcesar.UseVisualStyleBackColor = false;
+            btnProcesar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnProcesar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnProcesar.ForeColor = System.Drawing.Color.White;
+            btnProcesar.Location = new System.Drawing.Point(20, 535);
+            btnProcesar.Size = new System.Drawing.Size(260, 45);
+            btnProcesar.Text = "✓ Registrar Devolución";
             btnProcesar.Click += btnProcesar_Click;
+            // 
+            // btnCerrar
+            // 
+            btnCerrar.BackColor = System.Drawing.Color.FromArgb(70, 75, 90);
+            btnCerrar.Cursor = System.Windows.Forms.Cursors.Hand;
+            btnCerrar.FlatAppearance.BorderSize = 0;
+            btnCerrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnCerrar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnCerrar.ForeColor = System.Drawing.Color.White;
+            btnCerrar.Location = new System.Drawing.Point(290, 535);
+            btnCerrar.Size = new System.Drawing.Size(140, 45);
+            btnCerrar.Text = "Cerrar";
+            btnCerrar.Click += btnCerrar_Click;
             // 
             // FormProcesarDevolucion
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(30, 30, 45);
-            ClientSize = new Size(850, 590);
+            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.FromArgb(30, 30, 45);
+            ClientSize = new System.Drawing.Size(450, 610); // Ligeramente más alto para el nuevo subtítulo
+            Controls.Add(btnCerrar);
             Controls.Add(btnProcesar);
             Controls.Add(txtObservaciones);
             Controls.Add(lblObservaciones);
             Controls.Add(cmbCondicion);
             Controls.Add(lblCondicion);
-            Controls.Add(txtIdPrestamo);
-            Controls.Add(lblIdPrestamo);
+            Controls.Add(lblSeparador);
+            Controls.Add(txtEjemplares);
+            Controls.Add(lblEjemplaresTitulo);
+            Controls.Add(lblRetraso);
+            Controls.Add(lblFechas);
+            Controls.Add(lblIdentificador);
+            Controls.Add(lblNombreUsuario);
+            Controls.Add(lblHeaderInfo);
             Controls.Add(lblTitulo);
-            FormBorderStyle = FormBorderStyle.None;
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             Name = "FormProcesarDevolucion";
-            Text = "FormProcesarDevolucion";
+            Text = "Gestión de Préstamo";
             Load += FormProcesarDevolucion_Load;
             ResumeLayout(false);
             PerformLayout();
@@ -139,12 +200,19 @@
         #endregion
 
         private System.Windows.Forms.Label lblTitulo;
-        private System.Windows.Forms.Label lblIdPrestamo;
-        private System.Windows.Forms.TextBox txtIdPrestamo;
+        private System.Windows.Forms.Label lblHeaderInfo;
+        private System.Windows.Forms.Label lblNombreUsuario;
+        private System.Windows.Forms.Label lblIdentificador;
+        private System.Windows.Forms.Label lblFechas;
+        private System.Windows.Forms.Label lblRetraso;
+        private System.Windows.Forms.Label lblEjemplaresTitulo;
+        private System.Windows.Forms.TextBox txtEjemplares;
+        private System.Windows.Forms.Label lblSeparador;
         private System.Windows.Forms.Label lblCondicion;
         private System.Windows.Forms.ComboBox cmbCondicion;
         private System.Windows.Forms.Label lblObservaciones;
         private System.Windows.Forms.TextBox txtObservaciones;
         private System.Windows.Forms.Button btnProcesar;
+        private System.Windows.Forms.Button btnCerrar;
     }
 }

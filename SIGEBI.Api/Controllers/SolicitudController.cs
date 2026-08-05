@@ -54,7 +54,7 @@ namespace SIGEBI.Api.Controllers
         }
 
         [HttpPatch("rechazar")]
-        [Authorize(Roles = "PersonalBibliotecario")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador")]
         public async Task<IActionResult> RechazarSolicitud([FromBody] RechazoSolicitudRequestDTO peticion)
         {
             var claimId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("id")?.Value;

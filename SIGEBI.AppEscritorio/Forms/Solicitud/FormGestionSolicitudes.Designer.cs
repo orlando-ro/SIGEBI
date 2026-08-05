@@ -26,13 +26,7 @@
             btnBuscar = new System.Windows.Forms.Button();
             btnRecargar = new System.Windows.Forms.Button();
             dgvSolicitudes = new System.Windows.Forms.DataGridView();
-            panelAcciones = new System.Windows.Forms.Panel();
-            lblMotivo = new System.Windows.Forms.Label();
-            txtMotivoRechazo = new System.Windows.Forms.TextBox();
-            btnRechazar = new System.Windows.Forms.Button();
-            btnAprobar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)dgvSolicitudes).BeginInit();
-            panelAcciones.SuspendLayout();
             SuspendLayout();
             // 
             // lblTitulo
@@ -54,7 +48,7 @@
             cmbCriterioBusqueda.Font = new System.Drawing.Font("Segoe UI", 10F);
             cmbCriterioBusqueda.ForeColor = System.Drawing.Color.White;
             cmbCriterioBusqueda.FormattingEnabled = true;
-            cmbCriterioBusqueda.Items.AddRange(new object[] { "Todas Pendientes", "ID de Solicitud", "Matrícula / Empleado" });
+            cmbCriterioBusqueda.Items.AddRange(new object[] { "Todas Pendientes", "Matrícula / Empleado" });
             cmbCriterioBusqueda.Location = new System.Drawing.Point(25, 75);
             cmbCriterioBusqueda.Name = "cmbCriterioBusqueda";
             cmbCriterioBusqueda.Size = new System.Drawing.Size(200, 31);
@@ -148,76 +142,9 @@
             dgvSolicitudes.RowHeadersWidth = 51;
             dgvSolicitudes.RowTemplate.Height = 40;
             dgvSolicitudes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            dgvSolicitudes.Size = new System.Drawing.Size(800, 330);
+            dgvSolicitudes.Size = new System.Drawing.Size(800, 440);
             dgvSolicitudes.TabIndex = 5;
             dgvSolicitudes.CellContentClick += dgvSolicitudes_CellContentClick;
-            // 
-            // panelAcciones
-            // 
-            panelAcciones.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            panelAcciones.BackColor = System.Drawing.Color.FromArgb(20, 24, 38);
-            panelAcciones.Controls.Add(lblMotivo);
-            panelAcciones.Controls.Add(txtMotivoRechazo);
-            panelAcciones.Controls.Add(btnRechazar);
-            panelAcciones.Controls.Add(btnAprobar);
-            panelAcciones.Location = new System.Drawing.Point(25, 470);
-            panelAcciones.Name = "panelAcciones";
-            panelAcciones.Size = new System.Drawing.Size(800, 100);
-            panelAcciones.TabIndex = 6;
-            // 
-            // lblMotivo
-            // 
-            lblMotivo.AutoSize = true;
-            lblMotivo.ForeColor = System.Drawing.Color.Gainsboro;
-            lblMotivo.Location = new System.Drawing.Point(245, 20);
-            lblMotivo.Name = "lblMotivo";
-            lblMotivo.Size = new System.Drawing.Size(201, 20);
-            lblMotivo.TabIndex = 3;
-            lblMotivo.Text = "Motivo (Solo para Rechazar):";
-            // 
-            // txtMotivoRechazo
-            // 
-            txtMotivoRechazo.BackColor = System.Drawing.Color.FromArgb(40, 40, 60);
-            txtMotivoRechazo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            txtMotivoRechazo.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            txtMotivoRechazo.ForeColor = System.Drawing.Color.White;
-            txtMotivoRechazo.Location = new System.Drawing.Point(245, 45);
-            txtMotivoRechazo.Name = "txtMotivoRechazo";
-            txtMotivoRechazo.PlaceholderText = "Escriba la razón aquí...";
-            txtMotivoRechazo.Size = new System.Drawing.Size(350, 31);
-            txtMotivoRechazo.TabIndex = 2;
-            // 
-            // btnRechazar
-            // 
-            btnRechazar.BackColor = System.Drawing.Color.FromArgb(220, 53, 69);
-            btnRechazar.Cursor = System.Windows.Forms.Cursors.Hand;
-            btnRechazar.FlatAppearance.BorderSize = 0;
-            btnRechazar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            btnRechazar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            btnRechazar.ForeColor = System.Drawing.Color.White;
-            btnRechazar.Location = new System.Drawing.Point(610, 40);
-            btnRechazar.Name = "btnRechazar";
-            btnRechazar.Size = new System.Drawing.Size(170, 40);
-            btnRechazar.TabIndex = 1;
-            btnRechazar.Text = "✖ Rechazar";
-            btnRechazar.UseVisualStyleBackColor = false;
-            btnRechazar.Click += btnRechazar_Click;
-            // 
-            // btnAprobar
-            // 
-            btnAprobar.BackColor = System.Drawing.Color.FromArgb(13, 110, 253);
-            btnAprobar.Cursor = System.Windows.Forms.Cursors.Hand;
-            btnAprobar.FlatAppearance.BorderSize = 0;
-            btnAprobar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            btnAprobar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            btnAprobar.ForeColor = System.Drawing.Color.White;
-            btnAprobar.Location = new System.Drawing.Point(20, 40);
-            btnAprobar.Name = "btnAprobar";
-            btnAprobar.Size = new System.Drawing.Size(200, 40);
-            btnAprobar.TabIndex = 0;
-            btnAprobar.Text = "✓ Aprobar Solicitud";
-            btnAprobar.UseVisualStyleBackColor = false;
-            btnAprobar.Click += btnAprobar_Click;
             // 
             // FormGestionSolicitudes
             // 
@@ -225,7 +152,6 @@
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.Color.FromArgb(30, 30, 45);
             ClientSize = new System.Drawing.Size(850, 590);
-            Controls.Add(panelAcciones);
             Controls.Add(dgvSolicitudes);
             Controls.Add(btnRecargar);
             Controls.Add(btnBuscar);
@@ -237,8 +163,6 @@
             Text = "FormGestionSolicitudes";
             Load += FormGestionSolicitudes_Load;
             ((System.ComponentModel.ISupportInitialize)dgvSolicitudes).EndInit();
-            panelAcciones.ResumeLayout(false);
-            panelAcciones.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -251,10 +175,5 @@
         private System.Windows.Forms.Button btnBuscar;
         private System.Windows.Forms.Button btnRecargar;
         private System.Windows.Forms.DataGridView dgvSolicitudes;
-        private System.Windows.Forms.Panel panelAcciones;
-        private System.Windows.Forms.Button btnAprobar;
-        private System.Windows.Forms.Label lblMotivo;
-        private System.Windows.Forms.TextBox txtMotivoRechazo;
-        private System.Windows.Forms.Button btnRechazar;
     }
 }
