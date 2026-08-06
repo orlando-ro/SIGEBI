@@ -18,8 +18,6 @@
             btnAuditoria = new Button();
             btnNotificaciones = new Button();
             btnGestionUsuarios = new Button();
-            btnHistorial = new Button();
-            btnHistorialDevoluciones = new Button();
             btnPenalizaciones = new Button();
             btnConsultarActivos = new Button();
             btnAprobarPrestamos = new Button();
@@ -45,8 +43,6 @@
             panelMenu.Controls.Add(btnAuditoria);
             panelMenu.Controls.Add(btnNotificaciones);
             panelMenu.Controls.Add(btnGestionUsuarios);
-            panelMenu.Controls.Add(btnHistorial);
-            panelMenu.Controls.Add(btnHistorialDevoluciones);
             panelMenu.Controls.Add(btnPenalizaciones);
             panelMenu.Controls.Add(btnConsultarActivos);
             panelMenu.Controls.Add(btnAprobarPrestamos);
@@ -68,7 +64,7 @@
             btnCentroReportes.FlatStyle = FlatStyle.Flat;
             btnCentroReportes.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnCentroReportes.ForeColor = Color.Gainsboro;
-            btnCentroReportes.Location = new Point(0, 760);
+            btnCentroReportes.Location = new Point(0, 640);
             btnCentroReportes.Name = "btnCentroReportes";
             btnCentroReportes.Padding = new Padding(20, 0, 0, 0);
             btnCentroReportes.Size = new Size(250, 60);
@@ -84,7 +80,7 @@
             btnAuditoria.FlatStyle = FlatStyle.Flat;
             btnAuditoria.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnAuditoria.ForeColor = Color.Gainsboro;
-            btnAuditoria.Location = new Point(0, 700);
+            btnAuditoria.Location = new Point(0, 580);
             btnAuditoria.Name = "btnAuditoria";
             btnAuditoria.Padding = new Padding(20, 0, 0, 0);
             btnAuditoria.Size = new Size(250, 60);
@@ -100,7 +96,7 @@
             btnNotificaciones.FlatStyle = FlatStyle.Flat;
             btnNotificaciones.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnNotificaciones.ForeColor = Color.Gainsboro;
-            btnNotificaciones.Location = new Point(0, 640);
+            btnNotificaciones.Location = new Point(0, 520);
             btnNotificaciones.Name = "btnNotificaciones";
             btnNotificaciones.Padding = new Padding(20, 0, 0, 0);
             btnNotificaciones.Size = new Size(250, 60);
@@ -116,7 +112,7 @@
             btnGestionUsuarios.FlatStyle = FlatStyle.Flat;
             btnGestionUsuarios.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnGestionUsuarios.ForeColor = Color.Gainsboro;
-            btnGestionUsuarios.Location = new Point(0, 580);
+            btnGestionUsuarios.Location = new Point(0, 460);
             btnGestionUsuarios.Name = "btnGestionUsuarios";
             btnGestionUsuarios.Padding = new Padding(20, 0, 0, 0);
             btnGestionUsuarios.Size = new Size(250, 60);
@@ -124,38 +120,6 @@
             btnGestionUsuarios.Text = "👥 Gestión de Usuarios";
             btnGestionUsuarios.TextAlign = ContentAlignment.MiddleLeft;
             btnGestionUsuarios.Click += btnGestionUsuarios_Click;
-            // 
-            // btnHistorial
-            // 
-            btnHistorial.Dock = DockStyle.Top;
-            btnHistorial.FlatAppearance.BorderSize = 0;
-            btnHistorial.FlatStyle = FlatStyle.Flat;
-            btnHistorial.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnHistorial.ForeColor = Color.Gainsboro;
-            btnHistorial.Location = new Point(0, 520);
-            btnHistorial.Name = "btnHistorial";
-            btnHistorial.Padding = new Padding(20, 0, 0, 0);
-            btnHistorial.Size = new Size(250, 60);
-            btnHistorial.TabIndex = 4;
-            btnHistorial.Text = "📁 Historial Préstamos";
-            btnHistorial.TextAlign = ContentAlignment.MiddleLeft;
-            btnHistorial.Click += btnHistorial_Click;
-            // 
-            // btnHistorialDevoluciones
-            // 
-            btnHistorialDevoluciones.Dock = DockStyle.Top;
-            btnHistorialDevoluciones.FlatAppearance.BorderSize = 0;
-            btnHistorialDevoluciones.FlatStyle = FlatStyle.Flat;
-            btnHistorialDevoluciones.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnHistorialDevoluciones.ForeColor = Color.Gainsboro;
-            btnHistorialDevoluciones.Location = new Point(0, 460);
-            btnHistorialDevoluciones.Name = "btnHistorialDevoluciones";
-            btnHistorialDevoluciones.Padding = new Padding(20, 0, 0, 0);
-            btnHistorialDevoluciones.Size = new Size(250, 60);
-            btnHistorialDevoluciones.TabIndex = 5;
-            btnHistorialDevoluciones.Text = "📁 Historial Devoluciones";
-            btnHistorialDevoluciones.TextAlign = ContentAlignment.MiddleLeft;
-            btnHistorialDevoluciones.Click += btnHistorialDevoluciones_Click;
             // 
             // btnPenalizaciones
             // 
@@ -185,7 +149,7 @@
             btnConsultarActivos.Padding = new Padding(20, 0, 0, 0);
             btnConsultarActivos.Size = new Size(250, 60);
             btnConsultarActivos.TabIndex = 7;
-            btnConsultarActivos.Text = "🔍 Préstamos Activos";
+            btnConsultarActivos.Text = "📦 Préstamos y Devoluciones";
             btnConsultarActivos.TextAlign = ContentAlignment.MiddleLeft;
             btnConsultarActivos.Click += btnConsultarActivos_Click;
             // 
@@ -362,7 +326,7 @@
         private System.Windows.Forms.Label lblLogo;
         private System.Windows.Forms.Button btnAprobarPrestamos;
         private System.Windows.Forms.Button btnConsultarActivos;
-        private System.Windows.Forms.Button btnHistorial;
+        private System.Windows.Forms.Button btnPenalizaciones;
         private System.Windows.Forms.Button btnGestionUsuarios;
         private System.Windows.Forms.Button btnNotificaciones;
         private System.Windows.Forms.Button btnAuditoria;
@@ -375,7 +339,5 @@
         private System.Windows.Forms.Label lblTituloSeccion;
         private System.Windows.Forms.Label lblUserInfo;
         private System.Windows.Forms.Panel panelContenedor;
-        private System.Windows.Forms.Button btnHistorialDevoluciones;
-        private System.Windows.Forms.Button btnPenalizaciones;
     }
 }

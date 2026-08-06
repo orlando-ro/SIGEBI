@@ -25,25 +25,25 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
             return await response.Content.ReadFromJsonAsync<DevolucionResponseDTO>();
         }
 
-        public async Task<List<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorUsuarioAsync(string identificador)
+        public async Task<List<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorUsuarioAsync(string identificador, string condicion)
         {
-            var response = await _httpClient.GetAsync($"Devoluciones/consultar/devoluciones/usuario/{identificador}");
+            var response = await _httpClient.GetAsync($"Devoluciones/consultar/devoluciones/usuario/{identificador}?condicion={condicion}");
             await ApiHelper.ProcesarErrorApiAsync(response);
 
             return await response.Content.ReadFromJsonAsync<List<DevolucionResponseDTO>>() ?? new();
         }
 
-        public async Task<List<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorRecursoAsync(string isbnLibro)
+        public async Task<List<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorTituloLibroAsync(string tituloLibro, string condicion)
         {
-            var response = await _httpClient.GetAsync($"Devoluciones/consultar/devoluciones/recurso/{isbnLibro}");
+            var response = await _httpClient.GetAsync($"Devoluciones/consultar/devoluciones/recurso/{tituloLibro}?condicion={condicion}");
             await ApiHelper.ProcesarErrorApiAsync(response);
 
             return await response.Content.ReadFromJsonAsync<List<DevolucionResponseDTO>>() ?? new();
         }
 
-        public async Task<List<DevolucionResponseDTO>> ConsultarHistorialCompletoAsync()
+        public async Task<List<DevolucionResponseDTO>> ConsultarHistorialCompletoAsync(string condicion)
         {
-            var response = await _httpClient.GetAsync("Devoluciones/consultar/devoluciones/todas");
+            var response = await _httpClient.GetAsync($"Devoluciones/consultar/devoluciones/todas?condicion={condicion}");
             await ApiHelper.ProcesarErrorApiAsync(response);
 
             return await response.Content.ReadFromJsonAsync<List<DevolucionResponseDTO>>() ?? new();

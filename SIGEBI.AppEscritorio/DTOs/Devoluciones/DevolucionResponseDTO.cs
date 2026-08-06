@@ -23,25 +23,14 @@ namespace SIGEBI.AppEscritorio.DTOs.Devoluciones
         [JsonPropertyName("condicionLibro")]
         public string CondicionLibro { get; set; } = string.Empty;
 
-        [DisplayName("Observaciones")]
+        
+        [Browsable(false)]
         [JsonPropertyName("observaciones")]
         public string Observaciones { get; set; } = string.Empty;
 
         [DisplayName("Días Retraso")]
         [JsonPropertyName("diasRetraso")]
         public int DiasRetraso { get; set; }
-
-        [Browsable(false)]
-        [JsonPropertyName("idPrestamo")]
-        public int IdPrestamo { get; set; }
-
-        [Browsable(false)]
-        [JsonPropertyName("idUsuario")]
-        public int IdUsuario { get; set; }
-
-        [Browsable(false)]
-        [JsonPropertyName("idBibliotecario")]
-        public int IdBibliotecario { get; set; }
 
         [Browsable(false)]
         [JsonPropertyName("generoPenalizacion")]

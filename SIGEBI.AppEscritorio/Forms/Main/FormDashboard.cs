@@ -7,7 +7,6 @@ namespace SIGEBI.AppEscritorio.Forms.Main
 {
     public partial class FormDashboard : Form
     {
-        // Delegado para enviar la orden de navegación al FormPrincipal
         private readonly Action<string>? _onNavegar;
 
         public FormDashboard(Action<string>? onNavegar = null)
@@ -39,20 +38,37 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             flpModulos.Controls.Clear();
             string rol = SessionManager.TipoUsuario ?? "Desconocido";
 
+            // Tarjetas para Administrador y Personal Bibliotecario
             if (rol == "Administrador" || rol == "PersonalBibliotecario")
             {
                 flpModulos.Controls.Add(CrearTarjeta("📝 Solicitudes", "Gestione las peticiones pendientes de los usuarios."));
-                flpModulos.Controls.Add(CrearTarjeta("🔍 Préstamos", "Controle los recursos que están actualmente activos."));
+                flpModulos.Controls.Add(CrearTarjeta("📦 Préstamos", "Controle los recursos prestados y devoluciones."));
                 flpModulos.Controls.Add(CrearTarjeta("💰 Multas", "Procese los pagos y resuelva penalizaciones."));
+                flpModulos.Controls.Add(CrearTarjeta("📚 Catálogo", "Gestione los libros y recursos bibliográficos."));
+                flpModulos.Controls.Add(CrearTarjeta("🏷️ Categorías", "Administre las clasificaciones del sistema."));
             }
 
+            // Tarjeta especial para el Auditor en lugar de "Préstamos"
+            if (rol == "Auditor")
+            {
+                flpModulos.Controls.Add(CrearTarjeta("📁 Historiales", "Consulte el registro de préstamos y devoluciones."));
+            }
+
+            // Tarjeta exclusiva del Administrador
             if (rol == "Administrador")
             {
                 flpModulos.Controls.Add(CrearTarjeta("👥 Usuarios", "Administre las cuentas y accesos al sistema."));
+            }
+
+            // Tarjetas compartidas entre Administrador y Auditor
+            if (rol == "Administrador" || rol == "Auditor")
+            {
+                flpModulos.Controls.Add(CrearTarjeta("🔔 Notificaciones", "Revise las alertas y avisos enviados."));
                 flpModulos.Controls.Add(CrearTarjeta("🛡️ Auditoría", "Supervise las acciones críticas en la plataforma."));
             }
 
-            if (rol == "Auditor" || rol == "Administrador" || rol == "PersonalBibliotecario")
+            // Tarjeta compartida para todos los roles de Staff
+            if (rol == "Administrador" || rol == "PersonalBibliotecario" || rol == "Auditor")
             {
                 flpModulos.Controls.Add(CrearTarjeta("📊 Reportes", "Exporte la analítica del sistema en formato PDF."));
             }
@@ -65,7 +81,7 @@ namespace SIGEBI.AppEscritorio.Forms.Main
                 Size = new Size(230, 100),
                 BackColor = Color.FromArgb(40, 44, 60),
                 Margin = new Padding(0, 0, 15, 15),
-                Cursor = Cursors.Hand // UX: Cursor de mano
+                Cursor = Cursors.Hand
             };
 
             Label lblTitulo = new Label
@@ -88,13 +104,11 @@ namespace SIGEBI.AppEscritorio.Forms.Main
                 Cursor = Cursors.Hand
             };
 
-            // Lógica de Clic (Ejecuta la navegación)
             EventHandler eventoClick = (s, e) => _onNavegar?.Invoke(titulo);
             card.Click += eventoClick;
             lblTitulo.Click += eventoClick;
             lblDesc.Click += eventoClick;
 
-            // UX: Efecto Hover (Ilumina la tarjeta al pasar el mouse)
             EventHandler eventoMouseEnter = (s, e) => card.BackColor = Color.FromArgb(50, 55, 75);
             EventHandler eventoMouseLeave = (s, e) => card.BackColor = Color.FromArgb(40, 44, 60);
 

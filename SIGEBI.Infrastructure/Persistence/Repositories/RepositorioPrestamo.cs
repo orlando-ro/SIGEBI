@@ -22,41 +22,6 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Prestamo>> ObtenerActivosPorRecursoAsync(string isbn)
-        {
-            if (string.IsNullOrWhiteSpace(isbn))
-                return new List<Prestamo>();
-
-            string isbnNormalizado = isbn.Trim();
-
-            return await _dbSet
-                .AsNoTracking()
-                .Include(p => p.Usuario)
-                .Include(p => p.EjemplaresAprestar)
-                    .ThenInclude(e => e.Libro)
-                .Where(p =>
-                    p.Estado == "Activo" &&
-                    p.EjemplaresAprestar.Any(e => e.ISBN == isbnNormalizado))
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Prestamo>> ObtenerHistorialPorRecurso(string isbn)
-        {
-            if (string.IsNullOrWhiteSpace(isbn))
-                return new List<Prestamo>();
-
-            string isbnNormalizado = isbn.Trim();
-
-            return await _dbSet
-                .AsNoTracking()
-                .Include(p => p.Usuario)
-                .Include(p => p.EjemplaresAprestar)
-                    .ThenInclude(e => e.Libro)
-                .Where(p => p.EjemplaresAprestar.Any(e => e.ISBN == isbnNormalizado))
-                .OrderByDescending(p => p.FechaInicio)
-                .ToListAsync();
-        }
-
         public async Task<IEnumerable<Prestamo>> ObtenerHistorialPorUsuarioAsync(int idUsuario)
         {
             return await _dbSet
@@ -88,13 +53,12 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
                 .ToListAsync();
         }
 
-        // 🔥 AQUÍ ESTABA EL ERROR PRINCIPAL: Faltaba el ThenInclude
         public async Task<IEnumerable<Prestamo>> ConsultarTodosAsync()
         {
             return await _context.Prestamos
                 .Include(p => p.Usuario)
                 .Include(p => p.EjemplaresAprestar)
-                    .ThenInclude(e => e.Libro) // <--- ESTA LÍNEA RESUELVE EL BUG
+                    .ThenInclude(e => e.Libro)
                 .Where(p => p.Estado == "Activo" || p.Estado == "Prestado")
                 .ToListAsync();
         }
@@ -108,6 +72,69 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
                     .ThenInclude(e => e.Libro)
                 .OrderByDescending(p => p.FechaInicio)
                 .ToListAsync();
+        }
+
+        // RESUELTO: Omni-Search con casteo seguro para la propiedad Matricula
+        public async Task<IEnumerable<Prestamo>> ConsultarHistorialAvanzadoAsync(string? terminoBusqueda, string? estado)
+        {
+            var query = _dbSet
+                .AsNoTracking()
+                .Include(p => p.Usuario)
+                .Include(p => p.EjemplaresAprestar)
+                    .ThenInclude(e => e.Libro)
+                .AsQueryable();
+
+            
+            if (!string.IsNullOrWhiteSpace(estado) && estado != "Todos")
+            {
+                query = query.Where(p => p.Estado == estado);
+            }
+
+            
+            if (!string.IsNullOrWhiteSpace(terminoBusqueda))
+            {
+                string termino = terminoBusqueda.ToLower().Trim();
+
+                query = query.Where(p =>
+                   
+                    (p.Usuario != null && p.Usuario.Nombre != null && p.Usuario.Nombre.ToLower().Contains(termino)) ||
+                    (p.Usuario != null && p.Usuario.NumeroEmpleado != null && p.Usuario.NumeroEmpleado.ToLower().Contains(termino)) ||
+                    (p.Usuario is Estudiante && ((Estudiante)p.Usuario).Matricula != null && ((Estudiante)p.Usuario).Matricula.ToLower().Contains(termino)) ||
+                    p.EjemplaresAprestar.Any(e => e.Libro != null && e.Libro.Titulo.ToLower().Contains(termino))
+                );
+            }
+
+            return await query.OrderByDescending(p => p.FechaInicio).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Prestamo>> ConsultarActivosPorFiltroAsync(string criterio, string valor)
+        {
+            var query = _dbSet
+                .AsNoTracking()
+                .Include(p => p.Usuario)
+                .Include(p => p.EjemplaresAprestar)
+                    .ThenInclude(e => e.Libro)
+                .Where(p => p.Estado == "Activo")
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(valor))
+            {
+                string termino = valor.ToLower().Trim();
+
+                if (criterio == "Usuario") // Búsqueda por Matrícula o Empleado
+                {
+                    query = query.Where(p =>
+                        (p.Usuario != null && p.Usuario.NumeroEmpleado != null && p.Usuario.NumeroEmpleado.ToLower().Contains(termino)) ||
+                        (p.Usuario is Estudiante && ((Estudiante)p.Usuario).Matricula != null && ((Estudiante)p.Usuario).Matricula.ToLower().Contains(termino))
+                    );
+                }
+                else if (criterio == "Titulo") // Búsqueda por Título del Libro
+                {
+                    query = query.Where(p => p.EjemplaresAprestar.Any(e => e.Libro != null && e.Libro.Titulo.ToLower().Contains(termino)));
+                }
+            }
+
+            return await query.OrderByDescending(p => p.FechaInicio).ToListAsync();
         }
     }
 }

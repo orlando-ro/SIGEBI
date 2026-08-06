@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Application.DTOs;
-using SIGEBI.Domain.Enums;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SIGEBI.Api.Controllers
 {
@@ -19,19 +19,27 @@ namespace SIGEBI.Api.Controllers
             _servicioDevolucion = servicioDevolucion;
         }
 
-        [HttpGet("consultar/devoluciones/recurso/{isbnLibro}")]
+        [HttpGet("consultar/devoluciones/recurso/{tituloLibro}")]
         [Authorize(Roles = "PersonalBibliotecario,Administrador,Auditor")]
-        public async Task<IActionResult> ConsultarHistorialDevolucionesPorRecurso(string isbnLibro)
+        public async Task<IActionResult> ConsultarHistorialDevolucionesPorRecurso(string tituloLibro, [FromQuery] string? condicion = "Todos")
         {
-            var resultado = await _servicioDevolucion.ConsultarHistorialDevolucionesPorRecurso(isbnLibro);
+            var resultado = await _servicioDevolucion.ConsultarHistorialDevolucionesPorTituloLibroAsync(tituloLibro, condicion ?? "Todos");
             return Ok(resultado);
         }
 
         [HttpGet("consultar/devoluciones/usuario/{matriculaONumeroEmpleado}")]
         [Authorize(Roles = "PersonalBibliotecario,Administrador,Auditor")]
-        public async Task<IActionResult> ConsultarHistorialDevolucionesPorUsuario(string matriculaONumeroEmpleado)
+        public async Task<IActionResult> ConsultarHistorialDevolucionesPorUsuario(string matriculaONumeroEmpleado, [FromQuery] string? condicion = "Todos")
         {
-            var resultado = await _servicioDevolucion.ConsultarHistorialDevolucionesPorUsuario(matriculaONumeroEmpleado);
+            var resultado = await _servicioDevolucion.ConsultarHistorialDevolucionesPorUsuarioAsync(matriculaONumeroEmpleado, condicion ?? "Todos");
+            return Ok(resultado);
+        }
+
+        [HttpGet("consultar/devoluciones/todas")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador,Auditor")]
+        public async Task<IActionResult> ConsultarHistorialCompleto([FromQuery] string? condicion = "Todos")
+        {
+            var resultado = await _servicioDevolucion.ConsultarHistorialCompletoAsync(condicion ?? "Todos");
             return Ok(resultado);
         }
 
@@ -44,14 +52,6 @@ namespace SIGEBI.Api.Controllers
 
             var resultado = await _servicioDevolucion.ProcesarDevolucionAsync(peticion, idBibliotecarioResponsable);
 
-            return Ok(resultado);
-        }
-
-        [HttpGet("consultar/devoluciones/todas")]
-        [Authorize(Roles = "PersonalBibliotecario,Administrador,Auditor")]
-        public async Task<IActionResult> ConsultarHistorialCompleto()
-        {
-            var resultado = await _servicioDevolucion.ConsultarHistorialCompletoAsync();
             return Ok(resultado);
         }
     }

@@ -37,7 +37,7 @@ namespace SIGEBI.Application.Services
                 idResponsable: idResponsable,
                 tipoAccion: "Registrar categoría",
                 entidadAfectada: "Categoria",
-                detalles: $"Se ha registrado la categoría {nuevaCategoria.Nombre}."
+                detalles: $"Se ha registrado la categoría {nuevaCategoria.Nombre}, Fecha: {DateTime.Now}."
             );
         }
 
@@ -61,7 +61,7 @@ namespace SIGEBI.Application.Services
                 idResponsable: idResponsable,
                 tipoAccion: "Actualizar categoría",
                 entidadAfectada: "Categoria",
-                detalles: $"Se ha actualizado la categoría con ID {idCategoria}."
+                detalles: $"Se ha actualizado la categoría {categoria.Nombre}, Fecha: {DateTime.Now}."
             );
         }
 
@@ -105,7 +105,7 @@ namespace SIGEBI.Application.Services
                     idResponsable: idResponsable,
                     tipoAccion: "Eliminar categoría",
                     entidadAfectada: "Categoria",
-                    detalles: $"Se ha eliminado la categoría {categoria.Nombre} con ID {idCategoria}."
+                    detalles: $"Se ha eliminado la categoría {categoria.Nombre}, Fecha: {DateTime.Now}."
                 );
             }
             catch (Exception)
