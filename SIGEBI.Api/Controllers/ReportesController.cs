@@ -97,6 +97,14 @@ namespace SIGEBI.Api.Controllers
                 inicioNorm = rango.FechaInicio;
                 finNorm = rango.FechaFin;
             }
+            else if (fechaInicio.HasValue)
+            {
+                inicioNorm = fechaInicio.Value.Date;
+            }
+            else if (fechaFin.HasValue)
+            {
+                finNorm = fechaFin.Value.Date.AddDays(1).AddTicks(-1);
+            }
 
             var archivoPdf = await _servicioAuditoria.ExportarHistorialPDFAsync(inicioNorm, finNorm, accion, entidadAfectada);
             var nombreArchivo = $"ReporteAuditoria_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
@@ -104,6 +112,7 @@ namespace SIGEBI.Api.Controllers
             return File(archivoPdf, "application/pdf", nombreArchivo);
         }
 
+        
         private static (DateTime FechaInicio, DateTime FechaFin) ValidarYNormalizarRango(DateTime fechaInicio, DateTime fechaFin)
         {
             if (fechaInicio.Date > fechaFin.Date)

@@ -59,7 +59,6 @@ namespace SIGEBI.Infrastructure.Services
             return new AuditoriaResponseDTO
             {
                 IdAuditoria = registro.IdAuditoria,
-                IdResponsable = registro.IdResponsable,
                 FechaHora = registro.FechaHora,
                 Accion = registro.Accion,
                 EntidadAfectada = registro.EntidadAfectada,

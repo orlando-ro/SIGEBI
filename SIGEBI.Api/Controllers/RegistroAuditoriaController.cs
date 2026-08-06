@@ -29,5 +29,19 @@ namespace SIGEBI.Api.Controllers
             var registros = await _servicioAuditoria.ConsultarHistorialAsync(fechaInicio, fechaFin, accion, entidadAfectada);
             return Ok(registros);
         }
+
+        
+        [HttpGet("ExportarPDF")]
+        public async Task<IActionResult> ExportarPDF(
+            [FromQuery] DateTime? fechaInicio = null,
+            [FromQuery] DateTime? fechaFin = null,
+            [FromQuery] string? accion = null,
+            [FromQuery] string? entidadAfectada = null)
+        {
+            var pdfBytes = await _servicioAuditoria.ExportarHistorialPDFAsync(fechaInicio, fechaFin, accion, entidadAfectada);
+            var nombreArchivo = $"Auditoria_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+
+            return File(pdfBytes, "application/pdf", nombreArchivo);
+        }
     }
 }
