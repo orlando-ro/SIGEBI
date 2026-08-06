@@ -1,7 +1,7 @@
 ﻿using SIGEBI.AppEscritorio.Services.Interfaces;
+using SIGEBI.AppEscritorio.Utils;
 using System;
 using System.Diagnostics;
-using SIGEBI.AppEscritorio.Utils;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,15 +20,13 @@ namespace SIGEBI.AppEscritorio.Forms.Reportes
 
         private void FormCentroReportes_Load(object sender, EventArgs e)
         {
-            // 1. Limpiamos cualquier opción que esté configurada en el diseñador visual
             cmbTipoReporte.Items.Clear();
 
-            // 2. Cargamos las opciones dinámicamente según el Rol
             if (SessionManager.TipoUsuario == "PersonalBibliotecario")
             {
                 cmbTipoReporte.Items.Add("Inventario Físico");
             }
-            else // Para Administrador y Auditor
+            else
             {
                 cmbTipoReporte.Items.Add("Préstamos");
                 cmbTipoReporte.Items.Add("Penalizaciones");
@@ -37,27 +35,97 @@ namespace SIGEBI.AppEscritorio.Forms.Reportes
                 cmbTipoReporte.Items.Add("Auditoría General");
             }
 
-            // Seleccionamos la primera opción por defecto
             if (cmbTipoReporte.Items.Count > 0)
             {
                 cmbTipoReporte.SelectedIndex = 0;
             }
 
-            // Ponemos fechas lógicas por defecto (últimos 30 días)
             dtpDesde.Value = DateTime.Today.AddDays(-30);
             dtpHasta.Value = DateTime.Today;
         }
-    
-        
 
         private void cmbTipoReporte_SelectedIndexChanged(object sender, EventArgs e)
         {
             string reporteSeleccionado = cmbTipoReporte.SelectedItem?.ToString() ?? "";
 
-            // El reporte de Inventario y Auditoría en la API no usan rango de fechas, así que desactivamos los calendarios.
-            bool usaFechas = reporteSeleccionado != "Inventario Físico" && reporteSeleccionado != "Auditoría General";
+            bool usaFechas = reporteSeleccionado != "Inventario Físico";
             dtpDesde.Enabled = usaFechas;
             dtpHasta.Enabled = usaFechas;
+
+            ActualizarDetalleInformativo(reporteSeleccionado);
+        }
+
+        private void ActualizarDetalleInformativo(string tipoReporte)
+        {
+            switch (tipoReporte)
+            {
+                case "Préstamos":
+                    lblInfoTitulo.Text = "📝 Reporte de Préstamos";
+                    lblInfoBadge.Text = "REQUIERE FECHAS";
+                    lblInfoBadge.BackColor = System.Drawing.Color.FromArgb(13, 110, 253);
+                    lblInfoDescripcion.Text = "Visión analítica del flujo de circulación de libros. Ideal para auditar el volumen y la puntualidad.";
+                    txtInfoMetricas.Text =
+                        "• Total de préstamos procesados.\r\n\r\n" +
+                        "• Desglose de devoluciones a tiempo vs. vencidos.\r\n\r\n" +
+                        "• Índice global de puntualidad (%).\r\n\r\n" +
+                        "• Listado detallado de ejemplares y estados.";
+                    break;
+
+                case "Penalizaciones":
+                    lblInfoTitulo.Text = "💰 Multas y Penalidades";
+                    lblInfoBadge.Text = "REQUIERE FECHAS";
+                    lblInfoBadge.BackColor = System.Drawing.Color.FromArgb(13, 110, 253);
+                    lblInfoDescripcion.Text = "Consolida las sanciones financieras y administrativas emitidas a usuarios por tardanzas o daños.";
+                    txtInfoMetricas.Text =
+                        "• Conteo total de penalizaciones registradas.\r\n\r\n" +
+                        "• Monto financiero acumulado (RD$).\r\n\r\n" +
+                        "• Comparativa de pago (Pagadas vs. Pendientes).\r\n\r\n" +
+                        "• Listado por usuario, motivo y fecha.";
+                    break;
+
+                case "Uso del Catálogo":
+                    lblInfoTitulo.Text = "📚 Demanda del Catálogo";
+                    lblInfoBadge.Text = "REQUIERE FECHAS";
+                    lblInfoBadge.BackColor = System.Drawing.Color.FromArgb(13, 110, 253);
+                    lblInfoDescripcion.Text = "Analiza la popularidad y rotación del acervo. Ayuda en la decisión de nuevas adquisiciones.";
+                    txtInfoMetricas.Text =
+                        "• Top de libros y títulos más solicitados.\r\n\r\n" +
+                        "• Distribución de demanda por categoría.\r\n\r\n" +
+                        "• Total acumulado de solicitudes registradas.";
+                    break;
+
+                case "Inventario Físico":
+                    lblInfoTitulo.Text = "📦 Inventario Físico";
+                    lblInfoBadge.Text = "TIEMPO REAL";
+                    lblInfoBadge.BackColor = System.Drawing.Color.FromArgb(40, 167, 69);
+                    lblInfoDescripcion.Text = "Auditoría instantánea de la totalidad de ejemplares físicos registrados en este momento exacto.";
+                    txtInfoMetricas.Text =
+                        "• Volumen total de recursos físicos inventariados.\r\n\r\n" +
+                        "• Cantidad de ejemplares Disponibles.\r\n\r\n" +
+                        "• Cantidad de ejemplares Prestados o Dañados.\r\n\r\n" +
+                        "• Listado maestro de códigos y categorías.";
+                    break;
+
+                case "Auditoría General":
+                    lblInfoTitulo.Text = "🛡️ Auditoría del Sistema";
+                    lblInfoBadge.Text = "FILTRO OPTATIVO";
+                    lblInfoBadge.BackColor = System.Drawing.Color.FromArgb(220, 53, 69);
+                    lblInfoDescripcion.Text = "Registro inmutable de seguridad de las operaciones ejecutadas por los usuarios en la plataforma.";
+                    txtInfoMetricas.Text =
+                        "• Conteo total de registros de seguridad.\r\n\r\n" +
+                        "• Diversidad de usuarios y actores involucrados.\r\n\r\n" +
+                        "• Módulos y entidades del sistema impactados.\r\n\r\n" +
+                        "• Detalle cronológico preciso de cada acción.";
+                    break;
+
+                default:
+                    lblInfoTitulo.Text = "Seleccione un Reporte";
+                    lblInfoBadge.Text = "N/A";
+                    lblInfoBadge.BackColor = System.Drawing.Color.Gray;
+                    lblInfoDescripcion.Text = "Seleccione un tipo de reporte para visualizar sus detalles.";
+                    txtInfoMetricas.Text = "";
+                    break;
+            }
         }
 
         private async void btnGenerar_Click(object sender, EventArgs e)
@@ -79,7 +147,6 @@ namespace SIGEBI.AppEscritorio.Forms.Reportes
                 byte[] archivoPdf = Array.Empty<byte>();
                 string nombrePropuesto = "";
 
-                // Llamamos a la API según la selección
                 switch (reporteSeleccionado)
                 {
                     case "Préstamos":
@@ -99,7 +166,7 @@ namespace SIGEBI.AppEscritorio.Forms.Reportes
                         nombrePropuesto = $"Reporte_Inventario_{DateTime.Now:yyyyMMdd}.pdf";
                         break;
                     case "Auditoría General":
-                        archivoPdf = await _servicioReportes.DescargarReporteAuditoriaPdfAsync(); // Sin filtros para este formulario base
+                        archivoPdf = await _servicioReportes.DescargarReporteAuditoriaPdfAsync(dtpDesde.Value, dtpHasta.Value);
                         nombrePropuesto = $"Reporte_Auditoria_{DateTime.Now:yyyyMMdd}.pdf";
                         break;
                 }
@@ -131,15 +198,12 @@ namespace SIGEBI.AppEscritorio.Forms.Reportes
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    // Guardamos el archivo físico en la PC
                     File.WriteAllBytes(sfd.FileName, pdfBytes);
 
-                    // Preguntamos si desea abrirlo de una vez
-                    var abrir = MessageBox.Show("El reporte se ha guardado correctamente.\n\n¿Desea abrirlo ahora?", "Descarga Completa", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    var abrir = MessageBox.Show("El reporte se ha generado y guardado correctamente.\n\n¿Desea abrirlo ahora?", "Descarga Completa", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                     if (abrir == DialogResult.Yes)
                     {
-                        // Abrimos el PDF con el lector predeterminado del sistema operativo (Ej: Chrome, Edge, Adobe)
                         Process.Start(new ProcessStartInfo
                         {
                             FileName = sfd.FileName,

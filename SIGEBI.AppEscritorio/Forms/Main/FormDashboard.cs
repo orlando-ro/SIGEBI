@@ -1,6 +1,7 @@
 ﻿using SIGEBI.AppEscritorio.Utils;
 using System;
 using System.Drawing;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace SIGEBI.AppEscritorio.Forms.Main
@@ -30,7 +31,9 @@ namespace SIGEBI.AppEscritorio.Forms.Main
         private void ActualizarReloj()
         {
             lblHora.Text = DateTime.Now.ToString("hh:mm:ss tt");
-            lblFecha.Text = DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy").ToUpper();
+
+            // 🔥 Solución al Spanglish: Forzamos la cultura a Español
+            lblFecha.Text = DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy", new CultureInfo("es-ES")).ToUpper();
         }
 
         private void CargarTarjetasDinamicas()
@@ -121,6 +124,11 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             card.Controls.Add(lblDesc);
 
             return card;
+        }
+
+        private void flpModulos_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
