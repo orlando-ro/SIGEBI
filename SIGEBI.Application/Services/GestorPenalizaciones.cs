@@ -24,7 +24,7 @@ namespace SIGEBI.Application.Services
             _usuarios = usuarios;
         }
 
-        // Método automático llamado por GestorDevoluciones (CU-DEV-02)
+        
         public async Task GenerarMultaPorRetrasoAsync(
           int idUsuario,
           int idPrestamo,
@@ -51,16 +51,19 @@ namespace SIGEBI.Application.Services
 
             await _repoPenalizacion.AgregarAsync(nuevaPenalizacion);
 
+            var usuario = await _usuarios.ObtenerUsuarioConDetallesAsync(idUsuario);
+            string nombre = usuario?.Nombre ?? "Desconocido";
+
             await _servicioAuditoria.RegistrarAccionAsync(
                 idResponsable: idUsuario,
-                tipoAccion: "Generar penalización por retraso",
-                entidadAfectada: "Penalizacion",
-                detalles: $"El usuario con ID {idUsuario} recibió una penalización por retraso de {diasRetraso} días en el préstamo #{idPrestamo}."
+                tipoAccion: "Generar penalización",
+                entidadAfectada: "Multas y Penalidades",
+                detalles: $"El usuario {nombre} recibió una penalización automática por retraso de {diasRetraso} días."
             );
 
             await _servicioNotificacion.EnviarNotificacionAsync(
                 idUsuario,
-                $"Se generó una penalización por retraso en el préstamo #{idPrestamo}. " +
+                $"Se generó una penalización por retraso del prestamo realizado en la fecha {nuevaPenalizacion.FechaEmision }." +
                 $"Días de retraso: {diasRetraso}. " +
                 $"Monto: RD$ {montoTotal:N2}.",
                 TipoNotificacion.AvisoPenalizacion
@@ -98,15 +101,18 @@ namespace SIGEBI.Application.Services
 
             await _repoPenalizacion.AgregarAsync(penalizacion);
 
+            var usuarioPen = await _usuarios.ObtenerUsuarioConDetallesAsync(idUsuario);
+            string nombrePen = usuarioPen?.Nombre ?? "Desconocido";
+
             await _servicioAuditoria.RegistrarAccionAsync(
                 idResponsable: idUsuario,
-                tipoAccion: "Generar penalización por condición",
-                entidadAfectada: "Penalizacion",
-                detalles: $"El usuario con ID {idUsuario} recibió una penalización por condición del recurso. Motivo: {motivo}. Préstamo #{idPrestamo}."
+                tipoAccion: "Generar penalización",
+                entidadAfectada: "Multas y Penalidades",
+                detalles: $"El usuario {nombrePen} recibió una penalización por entregar el recurso {condicion}. Motivo: {motivo}."
             );
             await _servicioNotificacion.EnviarNotificacionAsync(
                idUsuario,
-               $"Se generó una penalización asociada al préstamo #{idPrestamo}. " +
+               $"Se generó una penalización asociada al préstamo realizado en la fecha {penalizacion.FechaEmision}. " +
                $"Motivo: {motivo}. " +
                $"Monto: RD$ {monto:N2}.",
                TipoNotificacion.AvisoPenalizacion                   
@@ -151,16 +157,19 @@ namespace SIGEBI.Application.Services
             // Persistencia
             await _repoPenalizacion.ActualizarAsync(penalizacion);
 
-            // Auditoría
+            var resolutor = await _usuarios.ObtenerUsuarioConDetallesAsync(idUsuarioResolutor);
+            string nombrePenalizado = penalizacion.Usuario?.Nombre ?? peticion.MatriculaONumeroEmpleado;
+
             await _servicioAuditoria.RegistrarAccionAsync(
                 idUsuarioResolutor,
                 "Resolver Penalización",
-                "Penalizacion",
-                $"La penalizacion del usuario con identificacion {peticion.MatriculaONumeroEmpleado} ha sido marcada como pagada. Motivo: {peticion.MotivoResolucion}"
+                "Multas y Penalidades",
+                $"El administrador/bibliotecario {resolutor?.Nombre} registró el pago y resolvió la penalización de {nombrePenalizado}. Motivo: {peticion.MotivoResolucion}."
             );
+
             await _servicioNotificacion.EnviarNotificacionAsync(
                  penalizacion.IdUsuario,
-                 $"Tu penalización #{penalizacion.IdPenalizacion} fue resuelta. " +
+                 $"Tu penalización que fue realizada en la fecha {penalizacion.FechaEmision} ha sido resuelta " +
                  $"Motivo de resolución: {peticion.MotivoResolucion}.",
                  TipoNotificacion.penalizacionResuelta
 );

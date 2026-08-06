@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace SIGEBI.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")] 
+    [Route("api/[controller]")]
     public class PrestamosController : ControllerBase
     {
         private readonly IservicioPrestamo _iservicioPrestamo;
@@ -25,7 +25,6 @@ namespace SIGEBI.Api.Controllers
             int idBibliotecarioResponsable = int.Parse(claimId!);
 
             var resultado = await _iservicioPrestamo.AprobarYRegistrarPrestamoAsync(peticion, idBibliotecarioResponsable);
-
             return Ok(resultado);
         }
 
@@ -37,14 +36,6 @@ namespace SIGEBI.Api.Controllers
             return Ok(resultado);
         }
 
-        [HttpGet("activos/recurso/{IsbnLibro}")]
-        [Authorize(Roles = "PersonalBibliotecario,Administrador,Estudiante,Docente")]
-        public async Task<IActionResult> ConsultarPrestamosActivosPorRecurso(string IsbnLibro)
-        {
-            var resultado = await _iservicioPrestamo.ConsultarPrestamosActivosPorRecursoAsync(IsbnLibro);
-            return Ok(resultado);
-        }
-
         [HttpGet("historial/usuario/{identificador}")]
         [Authorize(Roles = "PersonalBibliotecario,Administrador,Auditor")]
         public async Task<IActionResult> ConsultarHistorialPrestamosPorUsuario(string identificador)
@@ -53,23 +44,12 @@ namespace SIGEBI.Api.Controllers
             return Ok(resultado);
         }
 
-        [HttpGet("historial/recurso/{IsbnLibro}")]
-        [Authorize(Roles = "PersonalBibliotecario,Administrador,Auditor")]
-        public async Task<IActionResult> ConsultarHistorialPrestamosPorRecurso(string IsbnLibro)
-        {
-            var resultado = await _iservicioPrestamo.ConsultarHistorialPorRecursoAsync(IsbnLibro);
-            return Ok(resultado);
-        }
-
         [HttpGet("activos")]
         [Authorize(Roles = "PersonalBibliotecario,Administrador")]
-
         public async Task<IActionResult> ConsultarPrestamosActivos()
         {
-
             var resultado = await _iservicioPrestamo.ConsultarTodosAsync();
             return Ok(resultado);
-
         }
 
         [HttpGet("historial/todos")]
@@ -77,6 +57,23 @@ namespace SIGEBI.Api.Controllers
         public async Task<IActionResult> ConsultarHistorialCompleto()
         {
             var resultado = await _iservicioPrestamo.ConsultarHistorialCompletoAsync();
+            return Ok(resultado);
+        }
+
+        
+        [HttpGet("busqueda-avanzada")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador,Auditor")]
+        public async Task<IActionResult> ConsultarHistorialAvanzado([FromQuery] string? termino, [FromQuery] string? estado)
+        {
+            var resultado = await _iservicioPrestamo.ConsultarHistorialAvanzadoAsync(termino, estado);
+            return Ok(resultado);
+        }
+
+        [HttpGet("activos/busqueda")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador,Estudiante,Docente")]
+        public async Task<IActionResult> ConsultarActivosPorFiltro([FromQuery] string criterio, [FromQuery] string valor)
+        {
+            var resultado = await _iservicioPrestamo.ConsultarActivosPorFiltroAsync(criterio, valor ?? "");
             return Ok(resultado);
         }
     }

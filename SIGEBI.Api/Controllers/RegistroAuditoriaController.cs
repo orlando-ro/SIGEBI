@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using SIGEBI.Application.Interfaces;
+using System;
 using System.Threading.Tasks;
 
 namespace SIGEBI.Api.Controllers
@@ -19,9 +20,13 @@ namespace SIGEBI.Api.Controllers
         }
 
         [HttpGet("ConsultarRegistrosAuditoria")]
-        public async Task<IActionResult> ConsultarHistorialAuditoria([FromQuery] int? idResponsable = null, [FromQuery] string? entidadAfectada = null)
+        public async Task<IActionResult> ConsultarHistorialAuditoria(
+            [FromQuery] DateTime? fechaInicio = null,
+            [FromQuery] DateTime? fechaFin = null,
+            [FromQuery] string? accion = null,
+            [FromQuery] string? entidadAfectada = null)
         {
-            var registros = await _servicioAuditoria.ConsultarHistorialAsync(idResponsable, entidadAfectada);
+            var registros = await _servicioAuditoria.ConsultarHistorialAsync(fechaInicio, fechaFin, accion, entidadAfectada);
             return Ok(registros);
         }
     }

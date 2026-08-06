@@ -119,6 +119,7 @@ namespace SIGEBI.AppEscritorio.Extensions
             services.AddTransient<FormAuditoria>();
             services.AddTransient<FormCentroReportes>();
             services.AddTransient<FormGestionEjemplares>();
+            services.AddTransient<FormContenedorPrestamosDevoluciones>();
 
             return services;
         }

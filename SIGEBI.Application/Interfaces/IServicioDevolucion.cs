@@ -8,10 +8,8 @@ namespace SIGEBI.Application.Interfaces
     {
         Task<DevolucionResponseDTO> ProcesarDevolucionAsync(DevolucionRequestDTO devolucion, int idBibliotecarioResponsable);
 
-        Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorUsuario(string matriculaONumeroEmpleado);
-
-        Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorRecurso(string isbnLibro);
-
-        Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialCompletoAsync();
+        Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorUsuarioAsync(string matriculaONumeroEmpleado, string condicionStr);
+        Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorTituloLibroAsync(string tituloLibro, string condicionStr);
+        Task<IEnumerable<DevolucionResponseDTO>> ConsultarHistorialCompletoAsync(string condicionStr);
     }
 }

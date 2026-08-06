@@ -1,7 +1,7 @@
 ﻿using SIGEBI.Domain.Entities;
-using System;
+using SIGEBI.Domain.Enums;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace SIGEBI.Application.Interfaces
 {
@@ -9,11 +9,9 @@ namespace SIGEBI.Application.Interfaces
     {
         Task<Devolucion?> ObtenerPorPrestamoAsync(int IdPrestamo);
 
-
-        Task<IEnumerable<Devolucion>> ConsultarHistorialPorUsuario(int IdUsuario);
-
-        Task<IEnumerable<Devolucion>> ConsultarHistorialPorRecurso(string isbnLibro);
-
-        Task<IEnumerable<Devolucion>> ConsultarHistorialCompletoAsync();
+        // Métodos separados por responsabilidad, con filtro opcional de condición
+        Task<IEnumerable<Devolucion>> ConsultarHistorialPorUsuarioAsync(int IdUsuario, CondicionDevolucion? condicion);
+        Task<IEnumerable<Devolucion>> ConsultarHistorialPorTituloLibroAsync(string tituloLibro, CondicionDevolucion? condicion);
+        Task<IEnumerable<Devolucion>> ConsultarHistorialCompletoAsync(CondicionDevolucion? condicion);
     }
 }

@@ -9,11 +9,10 @@ namespace SIGEBI.AppEscritorio.Services.Interfaces
         Task<PrestamoResponseDTO?> AprobarYCrearPrestamoAsync(PrestamoRequestDTO peticion);
         Task<List<PrestamoResponseDTO>> ConsultarPrestamosActivosPorUsuarioAsync(string identificador);
         Task<List<PrestamoResponseDTO>> ConsultarPrestamosActivosPorRecursoAsync(string isbnLibro);
-        Task<List<PrestamoResponseDTO>> ConsultarHistorialPrestamosPorUsuarioAsync(string identificador);
-        Task<List<PrestamoResponseDTO>> ConsultarHistorialPrestamosPorRecursoAsync(string isbnLibro);
-
         Task<IEnumerable<PrestamoResponseDTO>> ConsultarTodosAsync();
-
         Task<List<PrestamoResponseDTO>> ConsultarHistorialCompletoAsync();
+        Task<List<PrestamoResponseDTO>> ConsultarHistorialAvanzadoAsync(string? termino, string? estado);
+
+        Task<List<PrestamoResponseDTO>> ConsultarActivosPorFiltroAsync(string criterio, string valor);
     }
 }

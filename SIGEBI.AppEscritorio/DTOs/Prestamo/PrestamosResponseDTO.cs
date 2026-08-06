@@ -7,6 +7,7 @@ namespace SIGEBI.AppEscritorio.DTOs.Prestamos
 {
     public class PrestamoResponseDTO
     {
+        // 👇 AÑADIDO: Viaja en la red, se guarda en memoria, pero se oculta en la UI
         [Browsable(false)]
         [JsonPropertyName("idPrestamo")]
         public int IdPrestamo { get; set; }
@@ -35,7 +36,6 @@ namespace SIGEBI.AppEscritorio.DTOs.Prestamos
         [JsonPropertyName("diasRetraso")]
         public int DiasRetraso { get; set; }
 
-       
         [Browsable(false)]
         [JsonPropertyName("estaVencido")]
         public bool EstaVencido { get; set; }
@@ -48,11 +48,12 @@ namespace SIGEBI.AppEscritorio.DTOs.Prestamos
         [JsonPropertyName("numeroEmpleado")]
         public string? NumeroEmpleado { get; set; }
 
+        
         [Browsable(false)]
         [JsonPropertyName("idUsuario")]
-        public int IdUsuario { get; set; }
+        public int IdUsuario { get; set; } 
+        
 
-        // 👇 Se transporta en memoria para el modal, pero no se pinta en la tabla
         [Browsable(false)]
         [JsonPropertyName("titulosLibros")]
         public List<string> TitulosLibros { get; set; } = new();

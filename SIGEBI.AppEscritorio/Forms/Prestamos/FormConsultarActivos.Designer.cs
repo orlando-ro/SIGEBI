@@ -15,201 +15,206 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            lblTitulo = new System.Windows.Forms.Label();
-            lblIdentificador = new System.Windows.Forms.Label();
-            txtIdentificador = new System.Windows.Forms.TextBox();
-            btnBuscarPorUsuario = new System.Windows.Forms.Button();
-            lblIsbn = new System.Windows.Forms.Label();
-            txtIsbn = new System.Windows.Forms.TextBox();
-            btnBuscarPorRecurso = new System.Windows.Forms.Button();
-            dgvPrestamos = new System.Windows.Forms.DataGridView();
-            btnMostrarTodos = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)dgvPrestamos).BeginInit();
-            SuspendLayout();
+            this.lblTitulo = new System.Windows.Forms.Label();
+            this.lblCriterio = new System.Windows.Forms.Label();
+            this.cboCriterio = new System.Windows.Forms.ComboBox();
+            this.txtBusqueda = new System.Windows.Forms.TextBox();
+            this.btnBuscar = new System.Windows.Forms.Button();
+            this.btnMostrarTodos = new System.Windows.Forms.Button();
+            this.btnExportarExcel = new System.Windows.Forms.Button();
+            this.dgvPrestamos = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPrestamos)).BeginInit();
+            this.SuspendLayout();
+
             // 
             // lblTitulo
             // 
-            lblTitulo.AutoSize = true;
-            lblTitulo.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-            lblTitulo.ForeColor = System.Drawing.Color.White;
-            lblTitulo.Location = new System.Drawing.Point(25, 20);
-            lblTitulo.Name = "lblTitulo";
-            lblTitulo.Size = new System.Drawing.Size(650, 32);
-            lblTitulo.TabIndex = 0;
-            lblTitulo.Text = "Consulta de Préstamos Activos (Doble Clic para Gestionar)";
+            this.lblTitulo.AutoSize = true;
+            this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.lblTitulo.ForeColor = System.Drawing.Color.White;
+            this.lblTitulo.Location = new System.Drawing.Point(25, 20);
+            this.lblTitulo.Name = "lblTitulo";
+            this.lblTitulo.Size = new System.Drawing.Size(650, 32);
+            this.lblTitulo.TabIndex = 0;
+            this.lblTitulo.Text = "Consulta de Préstamos Activos (Doble Clic para Gestionar)";
+
             // 
-            // lblIdentificador
+            // lblCriterio
             // 
-            lblIdentificador.AutoSize = true;
-            lblIdentificador.ForeColor = System.Drawing.Color.Gainsboro;
-            lblIdentificador.Location = new System.Drawing.Point(25, 75);
-            lblIdentificador.Name = "lblIdentificador";
-            lblIdentificador.Size = new System.Drawing.Size(177, 20);
-            lblIdentificador.TabIndex = 1;
-            lblIdentificador.Text = "Matrícula / N° Empleado:";
+            this.lblCriterio.AutoSize = true;
+            this.lblCriterio.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblCriterio.ForeColor = System.Drawing.Color.Gainsboro;
+            this.lblCriterio.Location = new System.Drawing.Point(25, 84);
+            this.lblCriterio.Name = "lblCriterio";
+            this.lblCriterio.Size = new System.Drawing.Size(102, 23);
+            this.lblCriterio.TabIndex = 1;
+            this.lblCriterio.Text = "Buscar por:";
+
             // 
-            // txtIdentificador
+            // cboCriterio
             // 
-            txtIdentificador.BackColor = System.Drawing.Color.FromArgb(40, 40, 60);
-            txtIdentificador.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            txtIdentificador.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            txtIdentificador.ForeColor = System.Drawing.Color.White;
-            txtIdentificador.Location = new System.Drawing.Point(25, 100);
-            txtIdentificador.Name = "txtIdentificador";
-            txtIdentificador.Size = new System.Drawing.Size(200, 31);
-            txtIdentificador.TabIndex = 2;
+            this.cboCriterio.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(60)))));
+            this.cboCriterio.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboCriterio.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboCriterio.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            this.cboCriterio.ForeColor = System.Drawing.Color.White;
+            this.cboCriterio.FormattingEnabled = true;
+            this.cboCriterio.Items.AddRange(new object[] {
+            "Matrícula / Empleado",
+            "Título del Libro"});
+            this.cboCriterio.Location = new System.Drawing.Point(135, 80);
+            this.cboCriterio.Name = "cboCriterio";
+            this.cboCriterio.Size = new System.Drawing.Size(190, 31);
+            this.cboCriterio.TabIndex = 2;
+
             // 
-            // btnBuscarPorUsuario
+            // txtBusqueda
             // 
-            btnBuscarPorUsuario.BackColor = System.Drawing.Color.FromArgb(13, 110, 253);
-            btnBuscarPorUsuario.Cursor = System.Windows.Forms.Cursors.Hand;
-            btnBuscarPorUsuario.FlatAppearance.BorderSize = 0;
-            btnBuscarPorUsuario.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            btnBuscarPorUsuario.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            btnBuscarPorUsuario.ForeColor = System.Drawing.Color.White;
-            btnBuscarPorUsuario.Location = new System.Drawing.Point(235, 99);
-            btnBuscarPorUsuario.Name = "btnBuscarPorUsuario";
-            btnBuscarPorUsuario.Size = new System.Drawing.Size(120, 31);
-            btnBuscarPorUsuario.TabIndex = 3;
-            btnBuscarPorUsuario.Text = "🔍 Buscar";
-            btnBuscarPorUsuario.UseVisualStyleBackColor = false;
-            btnBuscarPorUsuario.Click += btnBuscarPorUsuario_Click;
+            this.txtBusqueda.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(60)))));
+            this.txtBusqueda.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtBusqueda.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            this.txtBusqueda.ForeColor = System.Drawing.Color.White;
+            this.txtBusqueda.Location = new System.Drawing.Point(340, 80);
+            this.txtBusqueda.Name = "txtBusqueda";
+            this.txtBusqueda.Size = new System.Drawing.Size(250, 31);
+            this.txtBusqueda.TabIndex = 3;
+            this.txtBusqueda.PlaceholderText = "Escriba aquí...";
+
             // 
-            // lblIsbn
+            // btnBuscar
             // 
-            lblIsbn.AutoSize = true;
-            lblIsbn.ForeColor = System.Drawing.Color.Gainsboro;
-            lblIsbn.Location = new System.Drawing.Point(385, 75);
-            lblIsbn.Name = "lblIsbn";
-            lblIsbn.Size = new System.Drawing.Size(82, 20);
-            lblIsbn.TabIndex = 4;
-            lblIsbn.Text = "ISBN Libro:";
+            this.btnBuscar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(13)))), ((int)(((byte)(110)))), ((int)(((byte)(253)))));
+            this.btnBuscar.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnBuscar.FlatAppearance.BorderSize = 0;
+            this.btnBuscar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBuscar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnBuscar.ForeColor = System.Drawing.Color.White;
+            this.btnBuscar.Location = new System.Drawing.Point(605, 79);
+            this.btnBuscar.Name = "btnBuscar";
+            this.btnBuscar.Size = new System.Drawing.Size(100, 33);
+            this.btnBuscar.TabIndex = 4;
+            this.btnBuscar.Text = "🔍 Buscar";
+            this.btnBuscar.UseVisualStyleBackColor = false;
+            this.btnBuscar.Click += new System.EventHandler(this.btnBuscar_Click);
+
             // 
-            // txtIsbn
+            // btnExportarExcel
             // 
-            txtIsbn.BackColor = System.Drawing.Color.FromArgb(40, 40, 60);
-            txtIsbn.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            txtIsbn.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            txtIsbn.ForeColor = System.Drawing.Color.White;
-            txtIsbn.Location = new System.Drawing.Point(385, 100);
-            txtIsbn.Name = "txtIsbn";
-            txtIsbn.Size = new System.Drawing.Size(200, 31);
-            txtIsbn.TabIndex = 5;
-            // 
-            // btnBuscarPorRecurso
-            // 
-            btnBuscarPorRecurso.BackColor = System.Drawing.Color.FromArgb(13, 110, 253);
-            btnBuscarPorRecurso.Cursor = System.Windows.Forms.Cursors.Hand;
-            btnBuscarPorRecurso.FlatAppearance.BorderSize = 0;
-            btnBuscarPorRecurso.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            btnBuscarPorRecurso.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            btnBuscarPorRecurso.ForeColor = System.Drawing.Color.White;
-            btnBuscarPorRecurso.Location = new System.Drawing.Point(595, 99);
-            btnBuscarPorRecurso.Name = "btnBuscarPorRecurso";
-            btnBuscarPorRecurso.Size = new System.Drawing.Size(120, 31);
-            btnBuscarPorRecurso.TabIndex = 6;
-            btnBuscarPorRecurso.Text = "🔍 Buscar ISBN";
-            btnBuscarPorRecurso.UseVisualStyleBackColor = false;
-            btnBuscarPorRecurso.Click += btnBuscarPorRecurso_Click;
+            this.btnExportarExcel.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
+            this.btnExportarExcel.BackColor = System.Drawing.Color.SeaGreen;
+            this.btnExportarExcel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnExportarExcel.FlatAppearance.BorderSize = 0;
+            this.btnExportarExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExportarExcel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnExportarExcel.ForeColor = System.Drawing.Color.White;
+            this.btnExportarExcel.Location = new System.Drawing.Point(745, 20);
+            this.btnExportarExcel.Name = "btnExportarExcel";
+            this.btnExportarExcel.Size = new System.Drawing.Size(80, 31);
+            this.btnExportarExcel.TabIndex = 6;
+            this.btnExportarExcel.Text = "📗 Excel";
+            this.btnExportarExcel.UseVisualStyleBackColor = false;
+            this.btnExportarExcel.Click += new System.EventHandler(this.btnExportarExcel_Click);
+
             // 
             // btnMostrarTodos
             // 
-            btnMostrarTodos.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            btnMostrarTodos.BackColor = System.Drawing.Color.FromArgb(40, 44, 60);
-            btnMostrarTodos.Cursor = System.Windows.Forms.Cursors.Hand;
-            btnMostrarTodos.FlatAppearance.BorderSize = 0;
-            btnMostrarTodos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            btnMostrarTodos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            btnMostrarTodos.ForeColor = System.Drawing.Color.White;
-            btnMostrarTodos.Location = new System.Drawing.Point(695, 20);
-            btnMostrarTodos.Name = "btnMostrarTodos";
-            btnMostrarTodos.Size = new System.Drawing.Size(130, 31);
-            btnMostrarTodos.TabIndex = 8;
-            btnMostrarTodos.Text = "🔄 Recargar";
-            btnMostrarTodos.UseVisualStyleBackColor = false;
-            btnMostrarTodos.Click += btnMostrarTodos_Click;
+            this.btnMostrarTodos.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
+            this.btnMostrarTodos.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(44)))), ((int)(((byte)(60)))));
+            this.btnMostrarTodos.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnMostrarTodos.FlatAppearance.BorderSize = 0;
+            this.btnMostrarTodos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMostrarTodos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnMostrarTodos.ForeColor = System.Drawing.Color.White;
+            this.btnMostrarTodos.Location = new System.Drawing.Point(725, 79);
+            this.btnMostrarTodos.Name = "btnMostrarTodos";
+            this.btnMostrarTodos.Size = new System.Drawing.Size(100, 36);
+            this.btnMostrarTodos.TabIndex = 5;
+            this.btnMostrarTodos.Text = "🔄 Refrescar";
+            this.btnMostrarTodos.UseVisualStyleBackColor = false;
+            this.btnMostrarTodos.Click += new System.EventHandler(this.btnMostrarTodos_Click);
+
             // 
-            // dgvPrestamos (CONFIGURADO DESDE EL DESIGNER)
+            // dgvPrestamos
             // 
-            dgvPrestamos.AllowUserToAddRows = false;
-            dgvPrestamos.AllowUserToDeleteRows = false;
-            dgvPrestamos.AllowUserToResizeRows = false;
-            dgvPrestamos.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            dgvPrestamos.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            dgvPrestamos.BackgroundColor = System.Drawing.Color.FromArgb(20, 24, 38);
-            dgvPrestamos.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dgvPrestamos.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
-            dgvPrestamos.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.dgvPrestamos.AllowUserToAddRows = false;
+            this.dgvPrestamos.AllowUserToDeleteRows = false;
+            this.dgvPrestamos.AllowUserToResizeRows = false;
+            this.dgvPrestamos.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvPrestamos.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvPrestamos.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(24)))), ((int)(((byte)(38)))));
+            this.dgvPrestamos.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvPrestamos.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            this.dgvPrestamos.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
 
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(15, 18, 28);
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(18)))), ((int)(((byte)(28)))));
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
-            // Esta línea previene que el texto se pierda si se hace clic en la cabecera
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(15, 18, 28);
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(18)))), ((int)(((byte)(28)))));
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            dgvPrestamos.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            dgvPrestamos.ColumnHeadersHeight = 45;
-            dgvPrestamos.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.dgvPrestamos.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.dgvPrestamos.ColumnHeadersHeight = 45;
+            this.dgvPrestamos.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
 
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(30, 34, 48);
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(34)))), ((int)(((byte)(48)))));
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(13, 110, 253);
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(13)))), ((int)(((byte)(110)))), ((int)(((byte)(253)))));
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            dgvPrestamos.DefaultCellStyle = dataGridViewCellStyle2;
+            this.dgvPrestamos.DefaultCellStyle = dataGridViewCellStyle2;
 
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(38, 43, 60);
-            dgvPrestamos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(43)))), ((int)(((byte)(60)))));
+            this.dgvPrestamos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
 
-            dgvPrestamos.EnableHeadersVisualStyles = false;
-            dgvPrestamos.GridColor = System.Drawing.Color.FromArgb(70, 75, 90);
-            dgvPrestamos.Location = new System.Drawing.Point(25, 155);
-            dgvPrestamos.MultiSelect = false;
-            dgvPrestamos.Name = "dgvPrestamos";
-            dgvPrestamos.ReadOnly = true;
-            dgvPrestamos.RowHeadersVisible = false;
-            dgvPrestamos.RowTemplate.Height = 40;
-            dgvPrestamos.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            dgvPrestamos.Size = new System.Drawing.Size(800, 400);
-            dgvPrestamos.TabIndex = 7;
-            dgvPrestamos.CellDoubleClick += dgvPrestamos_CellDoubleClick;
+            this.dgvPrestamos.EnableHeadersVisualStyles = false;
+            this.dgvPrestamos.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(75)))), ((int)(((byte)(90)))));
+            this.dgvPrestamos.Location = new System.Drawing.Point(25, 135);
+            this.dgvPrestamos.MultiSelect = false;
+            this.dgvPrestamos.Name = "dgvPrestamos";
+            this.dgvPrestamos.ReadOnly = true;
+            this.dgvPrestamos.RowHeadersVisible = false;
+            this.dgvPrestamos.RowTemplate.Height = 40;
+            this.dgvPrestamos.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvPrestamos.Size = new System.Drawing.Size(800, 420);
+            this.dgvPrestamos.TabIndex = 7;
+            this.dgvPrestamos.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPrestamos_CellDoubleClick);
+
             // 
             // FormConsultarActivos
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            BackColor = System.Drawing.Color.FromArgb(30, 30, 45);
-            ClientSize = new System.Drawing.Size(850, 590);
-            Controls.Add(btnMostrarTodos);
-            Controls.Add(dgvPrestamos);
-            Controls.Add(btnBuscarPorRecurso);
-            Controls.Add(txtIsbn);
-            Controls.Add(lblIsbn);
-            Controls.Add(btnBuscarPorUsuario);
-            Controls.Add(txtIdentificador);
-            Controls.Add(lblIdentificador);
-            Controls.Add(lblTitulo);
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            Name = "FormConsultarActivos";
-            Text = "FormConsultarActivos";
-            Load += FormConsultarActivos_Load;
-            ((System.ComponentModel.ISupportInitialize)dgvPrestamos).EndInit();
-            ResumeLayout(false);
-            PerformLayout();
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(45)))));
+            this.ClientSize = new System.Drawing.Size(850, 590);
+            this.Controls.Add(this.btnExportarExcel);
+            this.Controls.Add(this.btnMostrarTodos);
+            this.Controls.Add(this.dgvPrestamos);
+            this.Controls.Add(this.btnBuscar);
+            this.Controls.Add(this.txtBusqueda);
+            this.Controls.Add(this.cboCriterio);
+            this.Controls.Add(this.lblCriterio);
+            this.Controls.Add(this.lblTitulo);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Name = "FormConsultarActivos";
+            this.Text = "FormConsultarActivos";
+            this.Load += new System.EventHandler(this.FormConsultarActivos_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPrestamos)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
         }
 
         private System.Windows.Forms.Label lblTitulo;
-        private System.Windows.Forms.Label lblIdentificador;
-        private System.Windows.Forms.TextBox txtIdentificador;
-        private System.Windows.Forms.Button btnBuscarPorUsuario;
-        private System.Windows.Forms.Label lblIsbn;
-        private System.Windows.Forms.TextBox txtIsbn;
-        private System.Windows.Forms.Button btnBuscarPorRecurso;
+        private System.Windows.Forms.Label lblCriterio;
+        private System.Windows.Forms.ComboBox cboCriterio;
+        private System.Windows.Forms.TextBox txtBusqueda;
+        private System.Windows.Forms.Button btnBuscar;
+        private System.Windows.Forms.Button btnExportarExcel;
         private System.Windows.Forms.DataGridView dgvPrestamos;
         private System.Windows.Forms.Button btnMostrarTodos;
     }

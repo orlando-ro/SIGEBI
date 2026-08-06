@@ -37,6 +37,9 @@ namespace SIGEBI.AppEscritorio.Forms.Penalizaciones
                 lblEstado.ForeColor = Color.FromArgb(220, 53, 69); // Rojo
                 lblMonto.ForeColor = Color.FromArgb(220, 53, 69);
 
+                // 🔥 Se actualiza el título si no está pagada
+                lblMontoTitulo.Text = "Monto a Pagar:";
+
                 txtResolucion.Visible = true;
 
                 // UX: Hacemos visualmente explícito que este campo es requerido
@@ -50,6 +53,9 @@ namespace SIGEBI.AppEscritorio.Forms.Penalizaciones
                 lblEstado.Text = "ESTADO: RESUELTA / PAGADA";
                 lblEstado.ForeColor = Color.FromArgb(25, 135, 84); // Verde
                 lblMonto.ForeColor = Color.FromArgb(25, 135, 84);
+
+                // 🔥 Se actualiza el título si ya está pagada
+                lblMontoTitulo.Text = "Monto Pagado:";
 
                 txtResolucion.ReadOnly = true;
                 txtResolucion.Text = _penalizacion.MotivoResolucion;
@@ -78,7 +84,6 @@ namespace SIGEBI.AppEscritorio.Forms.Penalizaciones
 
             if (confirmacion == DialogResult.Yes)
             {
-                // 🔥 Aquí se corrige la advertencia CS8601 garantizando que nunca sea null
                 var peticion = new PenalizacionRequestDTO
                 {
                     MatriculaONumeroEmpleado = (!string.IsNullOrEmpty(_penalizacion.Matricula) ? _penalizacion.Matricula : _penalizacion.NumeroEmpleado) ?? string.Empty,
