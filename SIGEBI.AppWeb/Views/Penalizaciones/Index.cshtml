@@ -17,31 +17,39 @@
 
     @if (Model != null && Model.Any())
     {
-        <!-- TABLA DE MULTAS ACTIVAS -->
         <div class="card shadow-sm border-0 border-top border-danger border-4 mb-4">
             <div class="card-body p-4">
-                <p class="text-muted mb-4 opacity-75">Estas son las multas activas registradas en tu cuenta por daños o devoluciones tardías. Recuerda pasar por la biblioteca para regularizar tu estado.</p>
+                <p class="text-muted mb-4 opacity-75">Registro de penalizaciones aplicadas a tu cuenta. Si tienes dudas, consulta en la biblioteca.</p>
 
                 <div class="table-responsive">
                     <table class="table table-hover table-custom table-striped mb-0 align-middle text-center">
                         <thead class="py-3 bg-danger text-white">
                             <tr>
-                                <th class="py-3 px-3">ID Multa</th>
-                                <th class="py-3">Préstamo</th>
+                                <th class="py-3 text-start px-3">Motivo</th>
                                 <th class="py-3">Monto</th>
-                                <th class="py-3 text-start">Motivo</th>
-                                <th class="py-3">Fecha Emisión</th>
+                                <th class="py-3">Fecha</th>
+                                <th class="py-3">Estado</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td class="fw-bold px-3">#@item.IdPenalizacion</td>
-                                    <td><span class="badge bg-secondary">Préstamo #@item.IdPrestamo</span></td>
+                                    <td class="text-start px-3">
+                                        <div class="fw-bold">@item.Motivo</div>
+                                    </td>
                                     <td class="fw-bold text-danger">RD$ @item.Monto.ToString("N2")</td>
-                                    <td class="text-start small">@item.Motivo</td>
                                     <td>@item.FechaEmision.ToString("dd/MMM/yyyy")</td>
+                                    <td>
+                                        @if (item.Pagada)
+                                        {
+                                            <span class="badge bg-success rounded-pill px-3"><i class="bi bi-check-lg"></i> Pagada</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark rounded-pill px-3"><i class="bi bi-clock"></i> Pendiente</span>
+                                        }
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -52,16 +60,15 @@
     }
     else
     {
-        <!-- MENSAJE DE FELICITACIONES (SIN MULTAS) -->
+        <!-- MENSAJE SIN MULTAS -->
         <div class="row justify-content-center mt-5">
             <div class="col-md-8">
                 <div class="card shadow-lg border-0 border-top border-success border-5 rounded-4 text-center p-5" style="background-color: var(--bg-card, #ffffff);">
                     <div class="display-1 text-success mb-4">
                         <i class="bi bi-award-fill"></i>
                     </div>
-                    <h2 class="fw-bold mb-3">¡Felicidades! 🎉</h2>
-                    <p class="lead text-muted mb-4">Tienes un récord impecable.</p>
-                    <p class="mb-0 opacity-75">No cuentas con penalizaciones ni multas activas. ¡Sigue así, cuidando los recursos de nuestra biblioteca! 🌟</p>
+                    <h2 class="fw-bold mb-3">¡Récord impecable! 🎉</h2>
+                    <p class="lead text-muted mb-4">No tienes penalizaciones pendientes.</p>
                 </div>
             </div>
         </div>

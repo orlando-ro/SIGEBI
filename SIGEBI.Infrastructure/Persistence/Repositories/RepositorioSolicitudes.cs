@@ -64,5 +64,17 @@ namespace SIGEBI.Infrastructure.Persistence.Repositories
         }
 
 
+        public async Task<IEnumerable<Solicitud>> ObtenerPendientesPorUsuarioAsync(int idUsuario)
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .Include(s => s.Usuario)
+                .Include(s => s.EjemplaresSolicitados)
+                    .ThenInclude(e => e.Libro)
+                // El filtrado vive aquí, en la capa de datos
+                .Where(s => s.IdUsuario == idUsuario && s.Estado == "Pendiente")
+                .OrderByDescending(s => s.FechaSolicitud)
+                .ToListAsync();
+        }
     }
 }

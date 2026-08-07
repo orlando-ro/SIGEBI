@@ -28,5 +28,17 @@ namespace SIGEBI.AppWeb.Services
             await ApiHelper.ProcesarErrorApiAsync(respuesta);
             return new List<PenalizacionesResponse>();
         }
+
+        public async Task<List<PenalizacionesResponse>> ObtenerTodasPenalizacionesPendientes()
+        {
+            var respuesta = await _httpClient.GetAsync("Penalizaciones/mis-pendientes");
+            if (respuesta.IsSuccessStatusCode)
+            {
+                var penalizaciones = await respuesta.Content.ReadFromJsonAsync<List<PenalizacionesResponse>>();
+                return penalizaciones ?? new List<PenalizacionesResponse>();
+            }
+            await ApiHelper.ProcesarErrorApiAsync(respuesta);
+            return new List<PenalizacionesResponse>();
+        }
     }
 }

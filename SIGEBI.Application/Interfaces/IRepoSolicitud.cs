@@ -18,5 +18,6 @@ namespace SIGEBI.Application.Interfaces
         Task GuardarResolucionAsync(Resolucion resolucion);
 
         Task<bool> ExisteSolicitudPendienteAsync(int IdUsuario, string isbn);
+        Task<IEnumerable<Solicitud>> ObtenerPendientesPorUsuarioAsync(int idUsuario);
     }
 }

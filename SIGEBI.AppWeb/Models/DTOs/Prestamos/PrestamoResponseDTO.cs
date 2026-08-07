@@ -1,4 +1,7 @@
-﻿namespace SIGEBI.AppWeb.Models.DTOs.Prestamos
+﻿using System;
+using System.Collections.Generic;
+
+namespace SIGEBI.AppWeb.Models.DTOs.Prestamos
 {
     public class PrestamoResponseDTO
     {
@@ -8,5 +11,6 @@
         public string Estado { get; set; } = string.Empty;
         public bool EstaVencido { get; set; }
         public int DiasRetraso { get; set; }
+        public List<string> TitulosLibros { get; set; } = new List<string>();
     }
 }

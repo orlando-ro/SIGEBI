@@ -1,15 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIGEBI.AppWeb.Models.DTOs.Solicitudes;
-using SIGEBI.AppWeb.Models.Solicitudes; 
-using SIGEBI.AppWeb.Services;
-using System.Security.Claims;
+using SIGEBI.AppWeb.Models.Solicitudes;
 using SIGEBI.AppWeb.Services.Interfaces;
-
+using System.Security.Claims;
 
 namespace SIGEBI.AppWeb.Controllers
 {
-    [Authorize(Roles = "Estudiante,Docente")]  
+    [Authorize(Roles = "Estudiante,Docente")]
     public class SolicitudesController : Controller
     {
         private readonly IServicioSolicitudApi _servicioSolicitud;
@@ -20,11 +18,12 @@ namespace SIGEBI.AppWeb.Controllers
             _servicioSolicitud = servicioSolicitud;
             _logger = logger;
         }
-
         [HttpGet]
-        public IActionResult Index() 
+        public async Task<IActionResult> Index()
         {
-           return RedirectToAction(nameof(Crear));
+            // Llamada limpia: El backend se encarga de todo.
+            var pendientes = await _servicioSolicitud.ConsultarMisSolicitudesPendientesAsync();
+            return View(pendientes);
         }
 
         [HttpGet]
@@ -41,20 +40,23 @@ namespace SIGEBI.AppWeb.Controllers
             {
                 if (!ModelState.IsValid) return View(modelo);
 
-                // Procesamos los ISBNs ingresados separándolos por comas o saltos de línea
                 var isbnsList = modelo.IsbnsIngresados
-                    .Split(new[] { ',', '\n' }, StringSplitOptions.RemoveEmptyEntries) // sirve para separar los ISBNs por comas o saltos de línea
+                    .Split(new[] { ',', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(i => i.Trim())
                     .ToList();
 
-                // Armamos el Request DTO local de la web
                 var peticionDto = new SolicitudRequestDTO { IsbnsLibros = isbnsList };
-
-                // Enviamos la petición POST a través del servicio HTTP
                 var resultado = await _servicioSolicitud.CrearSolicitudAsync(peticionDto);
 
-                TempData["SuccessMessage"] = $"Tu solicitud #{resultado.IdSolicitud} ha sido enviada correctamente y se encuentra en revisión.";
-                return RedirectToAction("Index");
+              
+                // Extraemos los títulos del DTO y los unimos en una sola cadena legible.
+                var nombresLibros = resultado.TitulosLibros != null && resultado.TitulosLibros.Any()
+                    ? string.Join(", ", resultado.TitulosLibros)
+                    : "los recursos seleccionados";
+
+                TempData["SuccessMessage"] = $"Tu solicitud de los ejemplares: '{nombresLibros}', ha sido enviada correctamente y se encuentra en revisión.";
+
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
@@ -63,6 +65,5 @@ namespace SIGEBI.AppWeb.Controllers
                 return View(modelo);
             }
         }
-
     }
 }

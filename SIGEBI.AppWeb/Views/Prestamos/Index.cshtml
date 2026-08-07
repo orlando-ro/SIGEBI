@@ -33,7 +33,8 @@
                     <table class="table table-hover table-custom table-striped mb-0 align-middle text-center">
                         <thead class="py-3 bg-success text-white">
                             <tr>
-                                <th class="py-3 px-3">ID Préstamo</th>
+                                <!-- Cabecera de ID eliminada. Se agrega el Recurso. -->
+                                <th class="py-3 px-3 text-start">Recurso Prestado</th>
                                 <th class="py-3">Fecha Inicio</th>
                                 <th class="py-3">Fecha Vencimiento</th>
                                 <th class="py-3">Estado</th>
@@ -43,7 +44,10 @@
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td class="fw-bold px-3 text-primary">#@item.IdPrestamo</td>
+                                    <!-- Celda de ID eliminada. Se muestra el nombre del libro. -->
+                                    <td class="text-start fw-bold px-3">
+                                        <i class="bi bi-book-half text-success me-2"></i>@item.TituloLibro
+                                    </td>
                                     <td>@item.FechaInicio.ToString("dd/MMM/yyyy")</td>
                                     <td class="fw-semibold">@item.FechaVencimiento.ToString("dd/MMM/yyyy")</td>
                                     <td>

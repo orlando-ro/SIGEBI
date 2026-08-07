@@ -145,6 +145,13 @@ namespace SIGEBI.Application.Services
              );
         }
 
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorIdUsuarioAsync(int idUsuario)
+        {
+            return await ConsultarYMapearAsync(
+                () => _repoPrestamo.ObtenerActivoPorUsuarioAsync(idUsuario),
+                "No tienes préstamos activos en este momento.");
+        }
+
         public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarActivosPorFiltroAsync(string criterio, string valor)
         {
             return await ConsultarYMapearAsync(
