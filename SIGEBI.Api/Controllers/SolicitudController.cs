@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
-using System.Security.Claims;
 
 namespace SIGEBI.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class SolicitudesController : ControllerBase
+    // 1. HEREDAMOS DE TU BASE CONTROLLER
+    public class SolicitudesController : BaseController
     {
         private readonly IServicioSolicitud _iservicioSolicitud;
 
@@ -22,8 +22,8 @@ namespace SIGEBI.Api.Controllers
         [Authorize(Roles = "Estudiante,Docente")]
         public async Task<IActionResult> CrearSolicitud([FromBody] SolicitudRequestDTO peticion)
         {
-            var claimId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("id")?.Value;
-            int idUsuarioSolicitante = int.Parse(claimId!);
+            // 2. USAMOS TU MÉTODO HEREDADO
+            int idUsuarioSolicitante = ObtenerIdResponsable();
 
             var resultado = await _iservicioSolicitud.CrearSolicitudAsync(peticion, idUsuarioSolicitante);
             return Ok(resultado);
@@ -46,7 +46,7 @@ namespace SIGEBI.Api.Controllers
         }
 
         [HttpGet("usuario/{identificador}")]
-        [Authorize(Roles = "PersonalBibliotecario,Administrador")]
+        [Authorize(Roles = "PersonalBibliotecario,Administrador,Estudiante")]
         public async Task<IActionResult> ConsultarSolicitudesPorUsuario(string identificador)
         {
             var resultado = await _iservicioSolicitud.ConsultarPorUsuarioAsync(identificador);
@@ -57,15 +57,23 @@ namespace SIGEBI.Api.Controllers
         [Authorize(Roles = "PersonalBibliotecario,Administrador")]
         public async Task<IActionResult> RechazarSolicitud([FromBody] RechazoSolicitudRequestDTO peticion)
         {
-            var claimId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("id")?.Value;
-            int idBibliotecarioResponsable = int.Parse(claimId!);
+            // 2. USAMOS TU MÉTODO HEREDADO
+            int idBibliotecarioResponsable = ObtenerIdResponsable();
 
             await _iservicioSolicitud.RechasarSolicitudAsync(peticion, idBibliotecarioResponsable);
 
-            return Ok(new
-            {
-                mensaje = "La solicitud fue rechazada correctamente."
-            });
+            return Ok(new { mensaje = "La solicitud fue rechazada correctamente." });
+        }
+
+        [HttpGet("mis-pendientes")]
+        [Authorize(Roles = "Estudiante,Docente")]
+        public async Task<IActionResult> ConsultarMisSolicitudesPendientes()
+        {
+            // 2. USAMOS TU MÉTODO HEREDADO
+            int idUsuario = ObtenerIdResponsable();
+
+            var resultado = await _iservicioSolicitud.ConsultarMisSolicitudesPendientesAsync(idUsuario);
+            return Ok(resultado);
         }
     }
 }

@@ -10,5 +10,7 @@ namespace SIGEBI.AppWeb.Models.Prestamos
         public string Estado { get; set; } = string.Empty;
         public int DiasRetraso { get; set; }
         public bool EstaVencido { get; set; }
+
+        public string TituloLibro { get; set; } = string.Empty;
     }
 }

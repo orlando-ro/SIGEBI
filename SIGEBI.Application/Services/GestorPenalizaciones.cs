@@ -186,6 +186,19 @@ namespace SIGEBI.Application.Services
             return penalizacionesPendientes.Select(p => MapearPenalizacionResponse(p, p.Usuario));
         }
 
+        public async Task<IEnumerable<PenalizacionResponseDTO>> ObtenerPendientesPorIdUsuarioAsync(int idUsuario)
+        {
+            var penalizacionesPendientes = await _repoPenalizacion.ObtenerPendientesPorUsuarioAsync(idUsuario);
+
+            if (penalizacionesPendientes == null || !penalizacionesPendientes.Any())
+                return new List<PenalizacionResponseDTO>();
+
+            
+            var usuario = await _usuarios.ObtenerUsuarioConDetallesAsync(idUsuario);
+
+            return penalizacionesPendientes.Select(p => MapearPenalizacionResponse(p, usuario));
+        }
+
         public async Task<IEnumerable<PenalizacionResponseDTO>> ObtenerHistorialPorUsuariosAsync(string MatriculaONumeroEmpleado)
         {
             var usuario = await ResolucionUsuario.ObtenerPorIdentificadorAsync(_usuarios, MatriculaONumeroEmpleado);

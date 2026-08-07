@@ -1,0 +1,74 @@
+﻿@model List<SIGEBI.AppWeb.Models.DTOs.Solicitudes.SolicitudResponseDTO>
+@{
+    ViewData["Title"] = "Mis Solicitudes Pendientes";
+}
+
+<div class="container mt-4 mb-5 text-white">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="bi bi-clock-history me-2 text-primary"></i> Mis Solicitudes Pendientes</h2>
+        <a asp-action="Crear" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
+            <i class="bi bi-plus-lg me-1"></i> Nueva Solicitud
+        </a>
+    </div>
+
+    <!-- ALERTA VERDE DE ÉXITO -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert shadow-sm border-1 rounded-3 mb-4 d-flex align-items-center" style="background-color: #032e22; border-color: #05513d; color: #a3e6cd;">
+            <i class="bi bi-check-circle-fill fs-4 me-3 text-success"></i>
+            <span class="fw-medium">@TempData["SuccessMessage"]</span>
+            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card bg-transparent border-0 shadow-lg rounded-4 overflow-hidden" style="background-color: rgba(13, 27, 42, 0.6) !important;">
+        <div class="card-body p-0">
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox display-4 text-muted opacity-50 mb-3"></i>
+                    <h5 class="fw-bold">No tienes solicitudes pendientes</h5>
+                    <p class="text-muted small">Tus solicitudes aprobadas o devueltas no aparecen aquí.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-borderless table-hover text-white mb-0 align-middle">
+                        <thead style="background-color: #1e3a8a; color: white;">
+                            <tr>
+                                <!-- Columna de ID eliminada por buenas prácticas de UX -->
+                                <th class="py-3 px-4">FECHA SOLICITUD</th>
+                                <th class="py-3 px-4">RECURSOS SOLICITADOS</th>
+                                <th class="py-3 px-4 text-center">ESTADO</th>
+                            </tr>
+                        </thead>
+                        <tbody style="background-color: #14213d;">
+                            @foreach (var solicitud in Model)
+                            {
+                                <tr class="border-bottom border-secondary border-opacity-25">
+                                    <!-- Celda de ID eliminada -->
+                                    <td class="px-4">@solicitud.FechaSolicitud.ToString("dd/MMM/yyyy")</td>
+                                    <td class="px-4">
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach (var titulo in solicitud.TitulosLibros)
+                                            {
+                                                <li><i class="bi bi-book-half text-primary me-2"></i>@titulo</li>
+                                            }
+                                        </ul>
+                                    </td>
+                                    <td class="px-4 text-center">
+                                        <span class="badge rounded-pill bg-warning text-dark px-3 py-2 fw-bold">
+                                            <i class="bi bi-hourglass-split me-1"></i> @solicitud.Estado
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

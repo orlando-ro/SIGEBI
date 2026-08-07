@@ -5,12 +5,13 @@ using SIGEBI.Application.Interfaces;
 using SIGEBI.Application.DTOs;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System;
 
 namespace SIGEBI.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DevolucionesController : ControllerBase
+    public class DevolucionesController : BaseController
     {
         private readonly IServicioDevolucion _servicioDevolucion;
 
@@ -47,12 +48,11 @@ namespace SIGEBI.Api.Controllers
         [Authorize(Roles = "PersonalBibliotecario,Administrador")]
         public async Task<IActionResult> ProcesarDevolucion([FromBody] DevolucionRequestDTO peticion)
         {
-            var claimId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("id")?.Value;
-            int idBibliotecarioResponsable = int.Parse(claimId!);
-
+            int idBibliotecarioResponsable = ObtenerIdResponsable();
             var resultado = await _servicioDevolucion.ProcesarDevolucionAsync(peticion, idBibliotecarioResponsable);
-
             return Ok(resultado);
         }
+
+        
     }
 }

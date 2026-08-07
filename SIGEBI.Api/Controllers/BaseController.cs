@@ -6,7 +6,7 @@ namespace SIGEBI.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public abstract class BaseController : ControllerBase
+    public abstract class BaseController : ControllerBase // el controllerbase sirve para obtener el contexto del usuario y sus claims
     {
         protected int ObtenerIdResponsable()
         {

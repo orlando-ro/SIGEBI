@@ -26,6 +26,8 @@ namespace SIGEBI.Application.Interfaces
 
         Task<IEnumerable<PenalizacionResponseDTO>> ObtenerHistorialPorUsuariosAsync(string MatriculaONumeroEmpleado);
         Task<IEnumerable<PenalizacionResponseDTO>> ObtenerHistorialCompletoAsync();
+
+        Task<IEnumerable<PenalizacionResponseDTO>> ObtenerPendientesPorIdUsuarioAsync(int idUsuario);
     }
 }
 

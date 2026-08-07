@@ -15,5 +15,7 @@ namespace SIGEBI.Application.Interfaces
         Task<IEnumerable<SolicitudResponseDTO>> ConsultarPendientesAsync();
 
         Task<IEnumerable<SolicitudResponseDTO>> ConsultarPorUsuarioAsync(string MatriculaONUmeroEmpleado);
+
+        Task<IEnumerable<SolicitudResponseDTO>> ConsultarMisSolicitudesPendientesAsync(int idUsuario);
     }
 }

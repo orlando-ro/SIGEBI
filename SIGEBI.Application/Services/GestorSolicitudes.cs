@@ -137,6 +137,14 @@ namespace SIGEBI.Application.Services
             );
         }
 
+        public async Task<IEnumerable<SolicitudResponseDTO>> ConsultarMisSolicitudesPendientesAsync(int idUsuario)
+        {
+            var usuario = await _usuarios.ObtenerUsuarioConDetallesAsync(idUsuario);
+            var solicitudes = await _repoSolicitud.ObtenerPendientesPorUsuarioAsync(idUsuario);
+
+            return solicitudes.Select(s => MapearSolicitudResponse(s, usuario));
+        }
+
         public async Task<SolicitudResponseDTO?> ObtenerPorIdAsync(int IdSolicitud)
         {
             if (IdSolicitud <= 0)

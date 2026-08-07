@@ -1,14 +1,14 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
-using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SIGEBI.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PrestamosController : ControllerBase
+    public class PrestamosController : BaseController
     {
         private readonly IservicioPrestamo _iservicioPrestamo;
 
@@ -21,9 +21,7 @@ namespace SIGEBI.Api.Controllers
         [Authorize(Roles = "PersonalBibliotecario")]
         public async Task<IActionResult> AprobarYCrearPrestamo([FromBody] PrestamoRequestDTO peticion)
         {
-            var claimId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("id")?.Value;
-            int idBibliotecarioResponsable = int.Parse(claimId!);
-
+            int idBibliotecarioResponsable = ObtenerIdResponsable();
             var resultado = await _iservicioPrestamo.AprobarYRegistrarPrestamoAsync(peticion, idBibliotecarioResponsable);
             return Ok(resultado);
         }
@@ -60,7 +58,6 @@ namespace SIGEBI.Api.Controllers
             return Ok(resultado);
         }
 
-        
         [HttpGet("busqueda-avanzada")]
         [Authorize(Roles = "PersonalBibliotecario,Administrador,Auditor")]
         public async Task<IActionResult> ConsultarHistorialAvanzado([FromQuery] string? termino, [FromQuery] string? estado)
@@ -74,6 +71,15 @@ namespace SIGEBI.Api.Controllers
         public async Task<IActionResult> ConsultarActivosPorFiltro([FromQuery] string criterio, [FromQuery] string valor)
         {
             var resultado = await _iservicioPrestamo.ConsultarActivosPorFiltroAsync(criterio, valor ?? "");
+            return Ok(resultado);
+        }
+
+        [HttpGet("mis-activos")]
+        [Authorize(Roles = "Estudiante,Docente")]
+        public async Task<IActionResult> ConsultarMisPrestamosActivos()
+        {
+            int idUsuario = ObtenerIdResponsable();
+            var resultado = await _iservicioPrestamo.ConsultarPrestamosActivosPorIdUsuarioAsync(idUsuario);
             return Ok(resultado);
         }
     }
