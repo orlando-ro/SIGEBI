@@ -1,16 +1,18 @@
-﻿using System;
+﻿using SIGEBI.AppEscritorio.DTOs.Perfil;
+using SIGEBI.AppEscritorio.DTOs.Usuarios;
+using SIGEBI.AppEscritorio.Services.Helper;
+using SIGEBI.AppEscritorio.Services.Interfaces;
+using SIGEBI.AppEscritorio.Utils;
+using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using SIGEBI.AppEscritorio.DTOs.Usuarios;
-using SIGEBI.AppEscritorio.Services.Interfaces;
-using SIGEBI.AppEscritorio.Utils;
-using SIGEBI.AppEscritorio.Services.Helper;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace SIGEBI.AppEscritorio.Services.Implementations
 {
@@ -88,6 +90,19 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
 
             await response.ProcesarErrorApiAsync();
             return true;
+        }
+
+        public async Task CambiarPropiaPasswordAsync(string numeroEmpleado, PasswordUpdateDTO dto)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Utils.SessionManager.Token);
+
+            var response = await _httpClient.PutAsJsonAsync($"Usuario/identificador/{numeroEmpleado}/password", dto);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string errorReal = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error {(int)response.StatusCode}: {errorReal}");
+            }
         }
     }
 }

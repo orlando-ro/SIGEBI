@@ -17,6 +17,11 @@ namespace SIGEBI.AppWeb.Handlers
             // 1. Buscamos el token en la sesión del usuario actual
             var token = _httpContextAccessor.HttpContext?.Session.GetString("TokenJwt");
 
+            if (string.IsNullOrEmpty(token))
+            {
+                token = _httpContextAccessor.HttpContext?.User.FindFirst("TokenOriginal")?.Value;
+            }
+
             // 2. Si existe, lo inyectamos automáticamente en la cabecera de la petición saliente
             if (!string.IsNullOrEmpty(token))
             {

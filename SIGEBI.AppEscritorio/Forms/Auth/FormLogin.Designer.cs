@@ -46,9 +46,9 @@
             lblIdentificador.Location = new Point(65, 182);
             lblIdentificador.Margin = new Padding(6, 0, 6, 0);
             lblIdentificador.Name = "lblIdentificador";
-            lblIdentificador.Size = new Size(303, 37);
+            lblIdentificador.Size = new Size(112, 37);
             lblIdentificador.TabIndex = 1;
-            lblIdentificador.Text = "Número de Empleado:";
+            lblIdentificador.Text = "Correo:";
             // 
             // txtIdentificador
             // 

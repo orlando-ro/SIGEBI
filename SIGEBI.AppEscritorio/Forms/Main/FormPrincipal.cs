@@ -10,7 +10,8 @@ using System.Windows.Forms;
 using SIGEBI.AppEscritorio.Forms.Usuarios;
 using SIGEBI.AppEscritorio.Forms.Catalogo;
 using SIGEBI.AppEscritorio.Forms.Auditoria;
-using SIGEBI.AppEscritorio.Forms.Reportes; 
+using SIGEBI.AppEscritorio.Forms.Reportes;
+using SIGEBI.AppEscritorio.Forms.Perfil;
 
 namespace SIGEBI.AppEscritorio.Forms.Main
 {
@@ -29,6 +30,12 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             if (lblUserInfo != null)
             {
                 lblUserInfo.Text = $"Usuario: {SessionManager.Nombre} | Rol: {SessionManager.TipoUsuario}";
+
+                lblUserInfo.Cursor = Cursors.Hand;
+                lblUserInfo.MouseEnter += (s, ev) => lblUserInfo.ForeColor = System.Drawing.Color.FromArgb(100, 150, 255);
+                lblUserInfo.MouseLeave += (s, ev) => lblUserInfo.ForeColor = System.Drawing.Color.White;
+
+                lblUserInfo.Click += lblUserInfo_Click;
             }
 
             ConfigurarAccesosPorRol();
@@ -71,16 +78,16 @@ namespace SIGEBI.AppEscritorio.Forms.Main
                 case "Administrador":
                     btnAprobarPrestamos.Visible = true;
                     btnConsultarActivos.Visible = true;
-                    btnProcesarDevolucion.Visible = true; 
+                    btnProcesarDevolucion.Visible = true;
                     btnPenalizaciones.Visible = true;
                     btnHistorial.Visible = true;
                     btnHistorialDevoluciones.Visible = true;
                     btnGestionUsuarios.Visible = true;
-                    btnCatalogo.Visible = true; 
-                    btnCategorias.Visible = true; 
+                    btnCatalogo.Visible = true;
+                    btnCategorias.Visible = true;
                     btnNotificaciones.Visible = true;
                     btnAuditoria.Visible = true;
-                    btnCentroReportes.Visible = true; 
+                    btnCentroReportes.Visible = true;
                     break;
 
                 case "Auditor":
@@ -88,7 +95,7 @@ namespace SIGEBI.AppEscritorio.Forms.Main
                     btnHistorialDevoluciones.Visible = true;
                     btnNotificaciones.Visible = true;
                     btnAuditoria.Visible = true;
-                    btnCentroReportes.Visible = true; 
+                    btnCentroReportes.Visible = true;
                     break;
             }
         }
@@ -107,6 +114,13 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             this.panelContenedor.Controls.Add(formularioHijo);
             this.panelContenedor.Tag = formularioHijo;
             formularioHijo.Show();
+        }
+
+        // 👇 Evento de clic en el nombre de usuario (Esquina superior derecha)
+        private void lblUserInfo_Click(object? sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Configuración / Mi Perfil";
+            AbrirFormularioEnPanel(new FormPerfil());
         }
 
         private void btnInicio_Click(object sender, EventArgs e)
@@ -192,7 +206,6 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             AbrirFormularioEnPanel(formAuditoria);
         }
 
-        // 👇 Evento del nuevo botón de Reportes
         private void btnCentroReportes_Click(object sender, EventArgs e)
         {
             lblTituloSeccion.Text = "Analítica / Centro de Reportes PDF";

@@ -44,7 +44,7 @@ namespace SIGEBI.AppWeb.Controllers
             {
                 var requestDto = new LoginRequestDTO
                 {
-                    Identificador = modelo.Identificador,
+                    Email = modelo.Email,
                     Password = modelo.Password
                 };
 
@@ -59,6 +59,9 @@ namespace SIGEBI.AppWeb.Controllers
                 var jwtToken = handler.ReadJwtToken(token);
 
                 var identidad = new ClaimsIdentity(jwtToken.Claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                identidad.AddClaim(new Claim("TokenOriginal", token));
+
                 var principal = new ClaimsPrincipal(identidad);
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
