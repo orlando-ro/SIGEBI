@@ -8,6 +8,6 @@ namespace SIGEBI.Application.Interfaces
 {
     public interface IServicioJwt
     {
-        string GenerarToken(int idUsuario, string email, string rol, string nombre);
+        string GenerarToken(int idUsuario, string email, string rol, string nombre, string? matricula, string? numeroEmpleado);
     }
 }

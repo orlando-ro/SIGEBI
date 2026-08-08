@@ -1,11 +1,9 @@
-using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
 using SIGEBI.Infrastructure.DependencyInjection;
-using SIGEBI.Application.DependencyInyeccion;
-using Microsoft.AspNetCore.Http.HttpResults;
+using System.Runtime.InteropServices;
 
 namespace SIGEBI.Api.Controllers
 {
@@ -105,6 +103,16 @@ namespace SIGEBI.Api.Controllers
             return Ok(new { mensaje = "Usuario suspendido"});
         }
 
-            
+        // PUT: api/usuario/identificador/{identificador}/password
+        [HttpPut("identificador/{identificador}/password")]
+        [Authorize]
+        public async Task<IActionResult> CambiarPropiaPassword(string identificador, [FromBody] PasswordUpdateDTO request)
+        {
+            int idResponsable = ObtenerIdResponsable();
+
+            await _GestorUsuarios.CambiarPropiaPasswordAsync(identificador, request, idResponsable);
+
+            return Ok(new { mensaje = "Contraseña actualizada exitosamente" });
+        }
     }
 }

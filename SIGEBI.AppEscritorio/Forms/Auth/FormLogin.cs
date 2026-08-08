@@ -37,7 +37,7 @@ namespace SIGEBI.AppEscritorio.Forms.Auth
 
             var request = new LoginRequestDTO
             {
-                Identificador = email,
+                Email = email,
                 Password = password
             };
 

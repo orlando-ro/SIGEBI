@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using SIGEBI.Application.DTOs;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using SIGEBI.Application.DTOs;
 
 namespace SIGEBI.Application.Interfaces
 {
@@ -12,6 +12,7 @@ namespace SIGEBI.Application.Interfaces
         Task SuspenderUsuarioAsync(int idUsuario, int idResponsable);
         Task ActualizarUsuarioAsync(int idUsuario, UsuarioUpdateRequestDTO dto, int idResponsable);
         Task ActualizarPorIdentificadorAsync(string identificador, UsuarioUpdateRequestDTO dto, int idResponsable);
+        Task CambiarPropiaPasswordAsync(string identificador, PasswordUpdateDTO dto, int idResponsable);
 
         // solo lectura
         Task<UsuarioResponseDTO?> ObtenerPorMatriculaONumeroEmpleadoAsync(string identificador);

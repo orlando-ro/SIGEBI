@@ -1,0 +1,111 @@
+﻿@model SIGEBI.AppWeb.Models.ViewModels.Perfil.PerfilViewModel
+@{
+    ViewData["Title"] = "Mi Perfil";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+
+            <div class="d-flex align-items-center mb-4">
+                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle fs-3 me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+                <div>
+                    <h2 class="fw-bold mb-0">Mi Perfil</h2>
+                    <p class="text-muted mb-0">Gestiona tu información personal y credenciales de acceso.</p>
+                </div>
+            </div>
+
+            @if (TempData["MensajeExito"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["MensajeExito"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @if (TempData["MensajeError"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["MensajeError"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0 rounded-4 h-100" style="background-color: var(--bg-card, #ffffff);">
+                        <div class="card-body p-4 p-md-5">
+                            <h5 class="fw-bold text-primary mb-4">
+                                <i class="bi bi-info-circle-fill me-2"></i> Datos Personales
+                            </h5>
+
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold mb-1">Nombre Completo</label>
+                                <input type="text" class="form-control bg-light" value="@Model.Nombre" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold mb-1">Correo Electrónico</label>
+                                <input type="email" class="form-control bg-light" value="@Model.Email" readonly>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label text-muted small fw-bold mb-1">Rol en Sistema</label>
+                                    <input type="text" class="form-control bg-light" value="@Model.Rol" readonly>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label text-muted small fw-bold mb-1">@Model.EtiquetaIdentificador</label>
+                                    <input type="text" class="form-control bg-light" value="@Model.ValorIdentificador" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0 rounded-4 h-100" style="background-color: var(--bg-card, #ffffff);">
+                        <div class="card-body p-4 p-md-5">
+                            <h5 class="fw-bold text-danger mb-4">
+                                <i class="bi bi-shield-lock-fill me-2"></i> Seguridad y Acceso
+                            </h5>
+
+                            <form asp-action="CambiarPassword" method="post">
+                                <div class="mb-3">
+                                    <label asp-for="PasswordActual" class="form-label text-muted small fw-bold mb-1">Contraseña Actual *</label>
+                                    <input asp-for="PasswordActual" type="password" class="form-control" placeholder="Ingresa tu clave actual">
+                                    <span asp-validation-for="PasswordActual" class="text-danger small fw-bold"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="NuevaPassword" class="form-label text-muted small fw-bold mb-1">Nueva Contraseña *</label>
+                                    <input asp-for="NuevaPassword" type="password" class="form-control" placeholder="Mínimo 4 caracteres">
+                                    <span asp-validation-for="NuevaPassword" class="text-danger small fw-bold"></span>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label asp-for="ConfirmarPassword" class="form-label text-muted small fw-bold mb-1">Confirmar Nueva Contraseña *</label>
+                                    <input asp-for="ConfirmarPassword" type="password" class="form-control" placeholder="Repite la nueva clave">
+                                    <span asp-validation-for="ConfirmarPassword" class="text-danger small fw-bold"></span>
+                                </div>
+
+                                <div class="d-grid mt-2">
+                                    <button type="submit" class="btn btn-primary rounded-pill fw-bold py-2 shadow-sm">
+                                        <i class="bi bi-save me-2"></i> Actualizar Contraseña
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

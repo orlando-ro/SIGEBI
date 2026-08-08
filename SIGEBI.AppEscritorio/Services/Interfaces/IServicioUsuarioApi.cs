@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SIGEBI.AppEscritorio.DTOs.Perfil;
 using SIGEBI.AppEscritorio.DTOs.Usuarios;
 
 namespace SIGEBI.AppEscritorio.Services.Interfaces
@@ -15,5 +16,7 @@ namespace SIGEBI.AppEscritorio.Services.Interfaces
         Task<bool> RegistrarUsuarioAsync(UsuarioRequestDTO request);
         Task<bool> ActualizarUsuarioAsync(int id, UsuarioUpdateRequestDTO request);
         Task<bool> SuspenderUsuarioAsync(int id);
+
+        Task CambiarPropiaPasswordAsync(string email, PasswordUpdateDTO dto);
     }
 }

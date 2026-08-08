@@ -10,6 +10,11 @@ using SIGEBI.AppEscritorio.Forms.Usuarios;
 using SIGEBI.AppEscritorio.Utils;
 using System;
 using System.Windows.Forms;
+using SIGEBI.AppEscritorio.Forms.Usuarios;
+using SIGEBI.AppEscritorio.Forms.Catalogo;
+using SIGEBI.AppEscritorio.Forms.Auditoria;
+using SIGEBI.AppEscritorio.Forms.Reportes;
+using SIGEBI.AppEscritorio.Forms.Perfil;
 
 namespace SIGEBI.AppEscritorio.Forms.Main
 {
@@ -28,6 +33,12 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             if (lblUserInfo != null)
             {
                 lblUserInfo.Text = $"Usuario: {SessionManager.Nombre} | Rol: {SessionManager.TipoUsuario}";
+
+                lblUserInfo.Cursor = Cursors.Hand;
+                lblUserInfo.MouseEnter += (s, ev) => lblUserInfo.ForeColor = System.Drawing.Color.FromArgb(100, 150, 255);
+                lblUserInfo.MouseLeave += (s, ev) => lblUserInfo.ForeColor = System.Drawing.Color.White;
+
+                lblUserInfo.Click += lblUserInfo_Click;
             }
 
             ConfigurarAccesosPorRol();
@@ -97,6 +108,7 @@ namespace SIGEBI.AppEscritorio.Forms.Main
                 case "Administrador":
                     btnAprobarPrestamos.Visible = true;
                     btnConsultarActivos.Visible = true;
+                    btnProcesarDevolucion.Visible = true;
                     btnPenalizaciones.Visible = true;
                     btnGestionUsuarios.Visible = true;
                     btnCatalogo.Visible = true;
@@ -129,6 +141,13 @@ namespace SIGEBI.AppEscritorio.Forms.Main
             this.panelContenedor.Controls.Add(formularioHijo);
             this.panelContenedor.Tag = formularioHijo;
             formularioHijo.Show();
+        }
+
+        // 👇 Evento de clic en el nombre de usuario (Esquina superior derecha)
+        private void lblUserInfo_Click(object? sender, EventArgs e)
+        {
+            lblTituloSeccion.Text = "Configuración / Mi Perfil";
+            AbrirFormularioEnPanel(new FormPerfil());
         }
 
         private void btnInicio_Click(object sender, EventArgs e)

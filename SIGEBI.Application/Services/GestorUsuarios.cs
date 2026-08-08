@@ -272,6 +272,32 @@ namespace SIGEBI.Application.Services
             return tipoUsuario.Trim().ToLowerInvariant().Replace(" ", "");
         }
 
+        public async Task CambiarPropiaPasswordAsync(string identificador, PasswordUpdateDTO dto, int idResponsable)
+        {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.PasswordActual) || string.IsNullOrWhiteSpace(dto.NuevaPassword))
+                throw new NegocioExeption("Los datos de la contraseña son obligatorios.");
+
+            var usuario = await _repositorioUsuario.ObtenerPorMatriculaONumeroEmpleadoAsync(identificador);
+
+            if (usuario == null)
+                throw new NegocioExeption("No se encontró ningún usuario con ese identificador.");
+
+            bool passwordValido = BCrypt.Net.BCrypt.Verify(dto.PasswordActual, usuario.Password);
+
+            if (!passwordValido)
+                throw new NegocioExeption("La contraseña actual es incorrecta.");
+
+            usuario.Password = BCrypt.Net.BCrypt.HashPassword(dto.NuevaPassword.Trim());
+
+            await _repositorioUsuario.ActualizarAsync(usuario);
+
+            await _servicioAuditoria.RegistrarAccionAsync(
+                idResponsable: idResponsable,
+                tipoAccion: "Cambio de contraseña propia",
+                entidadAfectada: "Usuario",
+                detalles: $"El usuario con ID {usuario.IdUsuario} actualizó su propia contraseña."
+            );
+        }
         private static UsuarioResponseDTO MapearUsuarioResponse(Usuario usuario)
         {
             return new UsuarioResponseDTO

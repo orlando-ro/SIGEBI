@@ -7,6 +7,7 @@ using SIGEBI.AppEscritorio.Forms.Devoluciones;
 using SIGEBI.AppEscritorio.Forms.Main;
 using SIGEBI.AppEscritorio.Forms.Notificaciones;
 using SIGEBI.AppEscritorio.Forms.Penalizaciones;
+using SIGEBI.AppEscritorio.Forms.Perfil;
 using SIGEBI.AppEscritorio.Forms.Prestamos;
 using SIGEBI.AppEscritorio.Forms.Reportes;
 using SIGEBI.AppEscritorio.Forms.Solicitudes;
@@ -119,6 +120,7 @@ namespace SIGEBI.AppEscritorio.Extensions
             services.AddTransient<FormAuditoria>();
             services.AddTransient<FormCentroReportes>();
             services.AddTransient<FormGestionEjemplares>();
+            services.AddTransient<FormPerfil>();
             services.AddTransient<FormContenedorPrestamosDevoluciones>();
 
             return services;
