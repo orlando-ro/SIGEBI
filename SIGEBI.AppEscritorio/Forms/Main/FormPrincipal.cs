@@ -10,10 +10,6 @@ using SIGEBI.AppEscritorio.Forms.Usuarios;
 using SIGEBI.AppEscritorio.Utils;
 using System;
 using System.Windows.Forms;
-using SIGEBI.AppEscritorio.Forms.Usuarios;
-using SIGEBI.AppEscritorio.Forms.Catalogo;
-using SIGEBI.AppEscritorio.Forms.Auditoria;
-using SIGEBI.AppEscritorio.Forms.Reportes;
 using SIGEBI.AppEscritorio.Forms.Perfil;
 
 namespace SIGEBI.AppEscritorio.Forms.Main
@@ -108,7 +104,6 @@ namespace SIGEBI.AppEscritorio.Forms.Main
                 case "Administrador":
                     btnAprobarPrestamos.Visible = true;
                     btnConsultarActivos.Visible = true;
-                    btnProcesarDevolucion.Visible = true;
                     btnPenalizaciones.Visible = true;
                     btnGestionUsuarios.Visible = true;
                     btnCatalogo.Visible = true;
