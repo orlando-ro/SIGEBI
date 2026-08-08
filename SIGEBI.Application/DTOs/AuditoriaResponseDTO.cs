@@ -8,8 +8,7 @@ namespace SIGEBI.Application.DTOs
     {
         public int IdAuditoria { get; set; }
 
-        public int? IdResponsable { get; set; }
-
+        public string? NombreUsuario { get; set; }
         public DateTime FechaHora { get; set; }
 
         public string Accion { get; set; } = string.Empty;

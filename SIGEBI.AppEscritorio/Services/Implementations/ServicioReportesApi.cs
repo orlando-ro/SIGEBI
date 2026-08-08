@@ -1,6 +1,7 @@
 ﻿using SIGEBI.AppEscritorio.Services.Helper;
 using SIGEBI.AppEscritorio.Services.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -38,9 +39,11 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
             return await ObtenerArchivoPdfAsync(url);
         }
 
-        public async Task<byte[]> DescargarReporteAuditoriaPdfAsync(int? idResponsable = null, string? entidadAfectada = null)
+        public async Task<byte[]> DescargarReporteAuditoriaPdfAsync(DateTime? fechaInicio = null, DateTime? fechaFin = null, int? idResponsable = null, string? entidadAfectada = null)
         {
-            var queryParams = new System.Collections.Generic.List<string>();
+            var queryParams = new List<string>();
+            if (fechaInicio.HasValue) queryParams.Add($"fechaInicio={fechaInicio.Value:yyyy-MM-dd}");
+            if (fechaFin.HasValue) queryParams.Add($"fechaFin={fechaFin.Value:yyyy-MM-dd}");
             if (idResponsable.HasValue) queryParams.Add($"idResponsable={idResponsable}");
             if (!string.IsNullOrWhiteSpace(entidadAfectada)) queryParams.Add($"entidadAfectada={Uri.EscapeDataString(entidadAfectada)}");
 
@@ -51,11 +54,7 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
         private async Task<byte[]> ObtenerArchivoPdfAsync(string url)
         {
             var response = await _httpClient.GetAsync(url);
-
-            // Evaluamos error. Si falla, el helper lanza la excepción y corta el flujo.
             await ApiHelper.ProcesarErrorApiAsync(response);
-
-            // Si pasa el Helper limpio, devolvemos los bytes del PDF
             return await response.Content.ReadAsByteArrayAsync();
         }
     }

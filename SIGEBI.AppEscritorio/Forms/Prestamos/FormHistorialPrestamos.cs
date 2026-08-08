@@ -1,5 +1,8 @@
-﻿using SIGEBI.AppEscritorio.Services.Interfaces;
+﻿using SIGEBI.AppEscritorio.DTOs.Prestamos;
+using SIGEBI.AppEscritorio.Services.Interfaces;
 using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -15,24 +18,26 @@ namespace SIGEBI.AppEscritorio.Forms.Prestamos
             _servicioPrestamo = servicioPrestamo;
         }
 
-        // 1. Cargamos el historial automáticamente al abrir el formulario
         private async void FormHistorialPrestamos_Load(object sender, EventArgs e)
         {
-            await RecargarHistorialAsync();
+            cboEstado.SelectedIndex = 0; // "Todos" por defecto
+            await EjecutarBusquedaAsync();
         }
 
-        // 2. Método centralizado
-        private async Task RecargarHistorialAsync()
+        private async Task EjecutarBusquedaAsync()
         {
             try
             {
                 this.Cursor = Cursors.WaitCursor;
-                var historialCompleto = await _servicioPrestamo.ConsultarHistorialCompletoAsync();
-                dgvHistorial.DataSource = historialCompleto;
+                string termino = txtBusqueda.Text.Trim();
+                string estado = cboEstado.SelectedItem?.ToString() ?? "Todos";
+
+                var historial = await _servicioPrestamo.ConsultarHistorialAvanzadoAsync(termino, estado);
+                dgvHistorial.DataSource = historial;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error al cargar el historial", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error al buscar", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 dgvHistorial.DataSource = null;
             }
             finally
@@ -41,43 +46,80 @@ namespace SIGEBI.AppEscritorio.Forms.Prestamos
             }
         }
 
-        // 3. El botón ahora funciona como "Refrescar"
+        private async void btnBuscar_Click(object sender, EventArgs e)
+        {
+            await EjecutarBusquedaAsync();
+        }
+
         private async void btnMostrarTodo_Click(object sender, EventArgs e)
         {
-            txtIdentificador.Clear();
-            txtIsbn.Clear();
-            await RecargarHistorialAsync();
+            txtBusqueda.Clear();
+            cboEstado.SelectedIndex = 0;
+            await EjecutarBusquedaAsync();
         }
 
-        private async void btnHistorialUsuario_Click(object sender, EventArgs e)
+        // Evento de Doble Clic para abrir el Modal Limpio
+        private void dgvHistorial_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            try
+            if (e.RowIndex >= 0 && dgvHistorial.Rows[e.RowIndex].DataBoundItem is PrestamoResponseDTO dtoSeleccionado)
             {
-                string identificador = txtIdentificador.Text.Trim();
-                if (string.IsNullOrEmpty(identificador)) return;
-
-                var historial = await _servicioPrestamo.ConsultarHistorialPrestamosPorUsuarioAsync(identificador);
-                dgvHistorial.DataSource = historial;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error de Auditoría", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                using (var modal = new FormDetallePrestamo(dtoSeleccionado))
+                {
+                    modal.ShowDialog();
+                }
             }
         }
 
-        private async void btnHistorialRecurso_Click(object sender, EventArgs e)
+        // Exportación Profesional a Excel (CSV con UTF-8 BOM)
+        private void btnExportarExcel_Click(object sender, EventArgs e)
         {
-            try
+            if (dgvHistorial.Rows.Count == 0)
             {
-                string isbn = txtIsbn.Text.Trim();
-                if (string.IsNullOrEmpty(isbn)) return;
-
-                var historial = await _servicioPrestamo.ConsultarHistorialPrestamosPorRecursoAsync(isbn);
-                dgvHistorial.DataSource = historial;
+                MessageBox.Show("No hay datos en la tabla para exportar.", "Exportación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            catch (Exception ex)
+
+            using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "Archivo Excel/CSV|*.csv", FileName = "Historial_Prestamos.csv" })
             {
-                MessageBox.Show(ex.Message, "Error de Auditoría", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        StringBuilder csvData = new StringBuilder();
+
+                        // Escribir los encabezados (saltando las columnas invisibles)
+                        for (int i = 0; i < dgvHistorial.Columns.Count; i++)
+                        {
+                            if (dgvHistorial.Columns[i].Visible)
+                            {
+                                csvData.Append(dgvHistorial.Columns[i].HeaderText + ",");
+                            }
+                        }
+                        csvData.AppendLine();
+
+                        // Escribir las filas
+                        foreach (DataGridViewRow row in dgvHistorial.Rows)
+                        {
+                            foreach (DataGridViewCell cell in row.Cells)
+                            {
+                                if (cell.OwningColumn.Visible)
+                                {
+                                    string valor = cell.Value?.ToString()?.Replace(",", " ") ?? "";
+                                    csvData.Append(valor + ",");
+                                }
+                            }
+                            csvData.AppendLine();
+                        }
+
+                        // Guardar respetando acentos (UTF8 BOM)
+                        File.WriteAllText(sfd.FileName, csvData.ToString(), new UTF8Encoding(true));
+                        MessageBox.Show("Datos exportados exitosamente a Excel.", "Exportación Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Ocurrió un error al exportar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             }
         }
     }

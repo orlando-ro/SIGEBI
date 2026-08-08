@@ -97,26 +97,22 @@ namespace SIGEBI.Application.Services
             await _repoSolicitud.ActualizarAsync(solicitud);
             await _repoPrestamo.AgregarAsync(nuevoPrestamo);
 
-            var aprobacion = new Aprobacion(
-                bibliotecario.IdUsuario,
-                solicitud.IdSolicitud,
-                nuevoPrestamo.IdUsuario
-            );
-
+            var aprobacion = new Aprobacion(bibliotecario.IdUsuario, solicitud.IdSolicitud, nuevoPrestamo.IdUsuario);
             await _repoSolicitud.GuardarResolucionAsync(aprobacion);
+
+            
+            var titulosPrestados = string.Join(", ", MapeoExtensiones.ObtenerTitulosLibros(nuevoPrestamo.EjemplaresAprestar));
 
             await _servicioAuditoria.RegistrarAccionAsync(
                 idResponsable: idBibliotecarioResponsable,
                 tipoAccion: "Aprobar préstamo",
-                entidadAfectada: "Prestamo",
-                detalles: $"El bibliotecario {bibliotecario.Nombre} aprobó la solicitud #{solicitud.IdSolicitud} y registró el préstamo #{nuevoPrestamo.IdPrestamo}."
+                entidadAfectada: "Préstamos y Devoluciones",
+                detalles: $"El bibliotecario {bibliotecario.Nombre} aprobó el préstamo de los libros ({titulosPrestados}) para el usuario {usuarioSolicitante.Nombre}."
             );
-
-            var titulosPrestados = string.Join(", ", MapeoExtensiones.ObtenerTitulosLibros(nuevoPrestamo.EjemplaresAprestar));
 
             await _servicioNotificacion.EnviarNotificacionAsync(
                 usuarioSolicitante.IdUsuario,
-                $"Tu préstamo #{nuevoPrestamo.IdPrestamo} fue confirmado. " +
+                $"Tu préstamo fue confirmado por el bibliotecario {bibliotecario.Nombre} el {DateTime.Now:dd/MM/yyyy}. " +
                 $"Fecha límite de devolución: {nuevoPrestamo.FechaVencimiento:dd/MM/yyyy}. " +
                 $"Recursos: {titulosPrestados}.",
                 TipoNotificacion.PrestamoFormalizado
@@ -128,37 +124,40 @@ namespace SIGEBI.Application.Services
         public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorIdentificadorAsync(string identificador)
         {
             var usuario = await ResolucionUsuario.ObtenerPorIdentificadorAsync(_usuario, identificador);
-
             return await ConsultarYMapearAsync(
                 () => _repoPrestamo.ObtenerActivoPorUsuarioAsync(usuario.IdUsuario),
                 "Este usuario no tiene préstamos activos.");
         }
 
-        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorRecursoAsync(string isbnLibro)
-        {
-            ValidarIsbn(isbnLibro);
-
-            return await ConsultarYMapearAsync(
-                () => _repoPrestamo.ObtenerActivosPorRecursoAsync(isbnLibro),
-                "No se encontro el prestamo, revise el isbn ingrado");
-        }
-
-        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorRecursoAsync(string isbnLibro)
-        {
-            ValidarIsbn(isbnLibro);
-
-            return await ConsultarYMapearAsync(
-                () => _repoPrestamo.ObtenerHistorialPorRecurso(isbnLibro),
-                "Este libro no pertenece a ningun prestamo");
-        }
-
         public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialPorUsuarioAsync(string identificador)
         {
             var usuario = await ResolucionUsuario.ObtenerPorIdentificadorAsync(_usuario, identificador);
-
             return await ConsultarYMapearAsync(
                 () => _repoPrestamo.ObtenerHistorialPorUsuarioAsync(usuario.IdUsuario),
-                "Este usuario no tiene ningun historial de prestamos ");
+                "Este usuario no tiene ningún historial de préstamos.");
+        }
+
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarTodosAsync()
+        {
+            return await ConsultarYMapearAsync(
+                 () => _repoPrestamo.ConsultarTodosAsync(),
+                 "No hay préstamos activos registrados en el sistema actualmente."
+             );
+        }
+
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarPrestamosActivosPorIdUsuarioAsync(int idUsuario)
+        {
+            return await ConsultarYMapearAsync(
+                () => _repoPrestamo.ObtenerActivoPorUsuarioAsync(idUsuario),
+                "No tienes préstamos activos en este momento.");
+        }
+
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarActivosPorFiltroAsync(string criterio, string valor)
+        {
+            return await ConsultarYMapearAsync(
+                () => _repoPrestamo.ConsultarActivosPorFiltroAsync(criterio, valor),
+                "No se encontraron préstamos activos con los criterios ingresados."
+            );
         }
 
         public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialCompletoAsync()
@@ -169,6 +168,15 @@ namespace SIGEBI.Application.Services
              );
         }
 
+        // NUEVO: Método Avanzado de Búsqueda
+        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarHistorialAvanzadoAsync(string? terminoBusqueda, string? estado)
+        {
+            return await ConsultarYMapearAsync(
+                () => _repoPrestamo.ConsultarHistorialAvanzadoAsync(terminoBusqueda, estado),
+                "No se encontraron préstamos que coincidan con los criterios de búsqueda."
+            );
+        }
+
         private async Task<IEnumerable<PrestamoResponseDTO>> ConsultarYMapearAsync(
             Func<Task<IEnumerable<Prestamo>>> obtenerPrestamos,
             string mensajeSiVacio)
@@ -176,41 +184,28 @@ namespace SIGEBI.Application.Services
             var prestamos = await obtenerPrestamos();
 
             if (prestamos == null || !prestamos.Any())
-               return Enumerable.Empty<PrestamoResponseDTO>();
+                return Enumerable.Empty<PrestamoResponseDTO>();
 
             return prestamos.Select(p => MapearPrestamoResponse(p, p.Usuario));
         }
 
-        private static void ValidarIsbn(string isbnLibro)
-        {
-            if (string.IsNullOrWhiteSpace(isbnLibro))
-                throw new NegocioExeption("Debe ingresar el identificador (isbn) de algun libro");
-        }
 
         private static PrestamoResponseDTO MapearPrestamoResponse(Prestamo prestamo, Usuario? usuario)
         {
             return new PrestamoResponseDTO
             {
-                IdPrestamo = prestamo.IdPrestamo,
+                IdPrestamo = prestamo.IdPrestamo, 
                 FechaInicio = prestamo.FechaInicio,
                 FechaVencimiento = prestamo.FechaVencimiento,
                 Estado = prestamo.Estado ?? string.Empty,
                 DiasRetraso = prestamo.CalcularDiasRetraso(),
-                IdUsuario = prestamo.IdUsuario,
                 NombreUsuario = prestamo.Usuario != null ? prestamo.Usuario.Nombre : string.Empty,
                 TitulosLibros = MapeoExtensiones.ObtenerTitulosLibros(prestamo.EjemplaresAprestar),
                 Matricula = MapeoExtensiones.ObtenerMatricula(usuario),
-                NumeroEmpleado = usuario?.NumeroEmpleado,
-                ISBNs = MapeoExtensiones.ObtenerIsbns(prestamo.EjemplaresAprestar)
+                NumeroEmpleado = usuario?.NumeroEmpleado
             };
         }
 
-        public async Task<IEnumerable<PrestamoResponseDTO>> ConsultarTodosAsync()
-        {
-            return await ConsultarYMapearAsync(
-                 () => _repoPrestamo.ConsultarTodosAsync(),
-                 "No hay préstamos activos registrados en el sistema actualmente."
-             );
-        }
+
     }
 }

@@ -17,70 +17,67 @@
 
         private void InitializeComponent()
         {
-            lblTitulo = new Label();
-            cmbCriterioBusqueda = new ComboBox();
-            txtBusqueda = new TextBox();
-            btnBuscar = new Button();
-            btnRecargar = new Button();
-            dgvSolicitudes = new DataGridView();
-            panelAcciones = new Panel();
-            lblMotivo = new Label();
-            txtMotivoRechazo = new TextBox();
-            btnRechazar = new Button();
-            btnAprobar = new Button();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            lblTitulo = new System.Windows.Forms.Label();
+            cmbCriterioBusqueda = new System.Windows.Forms.ComboBox();
+            txtBusqueda = new System.Windows.Forms.TextBox();
+            btnBuscar = new System.Windows.Forms.Button();
+            btnRecargar = new System.Windows.Forms.Button();
+            dgvSolicitudes = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)dgvSolicitudes).BeginInit();
-            panelAcciones.SuspendLayout();
             SuspendLayout();
             // 
             // lblTitulo
             // 
             lblTitulo.AutoSize = true;
-            lblTitulo.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
-            lblTitulo.ForeColor = Color.White;
-            lblTitulo.Location = new Point(25, 20);
+            lblTitulo.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            lblTitulo.ForeColor = System.Drawing.Color.White;
+            lblTitulo.Location = new System.Drawing.Point(25, 20);
             lblTitulo.Name = "lblTitulo";
-            lblTitulo.Size = new Size(265, 32);
+            lblTitulo.Size = new System.Drawing.Size(267, 32);
             lblTitulo.TabIndex = 0;
             lblTitulo.Text = "Gestión de Solicitudes";
             // 
             // cmbCriterioBusqueda
             // 
-            cmbCriterioBusqueda.BackColor = Color.FromArgb(40, 40, 60);
-            cmbCriterioBusqueda.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbCriterioBusqueda.FlatStyle = FlatStyle.Flat;
-            cmbCriterioBusqueda.Font = new Font("Segoe UI", 10F);
-            cmbCriterioBusqueda.ForeColor = Color.White;
+            cmbCriterioBusqueda.BackColor = System.Drawing.Color.FromArgb(40, 40, 60);
+            cmbCriterioBusqueda.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            cmbCriterioBusqueda.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            cmbCriterioBusqueda.Font = new System.Drawing.Font("Segoe UI", 10F);
+            cmbCriterioBusqueda.ForeColor = System.Drawing.Color.White;
             cmbCriterioBusqueda.FormattingEnabled = true;
-            cmbCriterioBusqueda.Items.AddRange(new object[] { "Todas Pendientes", "ID de Solicitud", "Matrícula / Empleado" });
-            cmbCriterioBusqueda.Location = new Point(25, 75);
+            cmbCriterioBusqueda.Items.AddRange(new object[] { "Todas Pendientes", "Matrícula / Empleado" });
+            cmbCriterioBusqueda.Location = new System.Drawing.Point(25, 75);
             cmbCriterioBusqueda.Name = "cmbCriterioBusqueda";
-            cmbCriterioBusqueda.Size = new Size(200, 31);
+            cmbCriterioBusqueda.Size = new System.Drawing.Size(200, 31);
             cmbCriterioBusqueda.TabIndex = 1;
             cmbCriterioBusqueda.SelectedIndexChanged += cmbCriterioBusqueda_SelectedIndexChanged;
             // 
             // txtBusqueda
             // 
-            txtBusqueda.BackColor = Color.FromArgb(40, 40, 60);
-            txtBusqueda.BorderStyle = BorderStyle.FixedSingle;
-            txtBusqueda.Font = new Font("Segoe UI", 10.5F);
-            txtBusqueda.ForeColor = Color.White;
-            txtBusqueda.Location = new Point(240, 75);
+            txtBusqueda.BackColor = System.Drawing.Color.FromArgb(40, 40, 60);
+            txtBusqueda.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            txtBusqueda.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            txtBusqueda.ForeColor = System.Drawing.Color.White;
+            txtBusqueda.Location = new System.Drawing.Point(240, 75);
             txtBusqueda.Name = "txtBusqueda";
             txtBusqueda.PlaceholderText = "Seleccione un criterio...";
-            txtBusqueda.Size = new Size(250, 31);
+            txtBusqueda.Size = new System.Drawing.Size(250, 31);
             txtBusqueda.TabIndex = 2;
             // 
             // btnBuscar
             // 
-            btnBuscar.BackColor = Color.FromArgb(13, 110, 253);
-            btnBuscar.Cursor = Cursors.Hand;
+            btnBuscar.BackColor = System.Drawing.Color.FromArgb(13, 110, 253);
+            btnBuscar.Cursor = System.Windows.Forms.Cursors.Hand;
             btnBuscar.FlatAppearance.BorderSize = 0;
-            btnBuscar.FlatStyle = FlatStyle.Flat;
-            btnBuscar.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            btnBuscar.ForeColor = Color.White;
-            btnBuscar.Location = new Point(505, 75);
+            btnBuscar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnBuscar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            btnBuscar.ForeColor = System.Drawing.Color.White;
+            btnBuscar.Location = new System.Drawing.Point(505, 75);
             btnBuscar.Name = "btnBuscar";
-            btnBuscar.Size = new Size(110, 31);
+            btnBuscar.Size = new System.Drawing.Size(110, 31);
             btnBuscar.TabIndex = 3;
             btnBuscar.Text = "🔍 Buscar";
             btnBuscar.UseVisualStyleBackColor = false;
@@ -88,16 +85,16 @@
             // 
             // btnRecargar
             // 
-            btnRecargar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnRecargar.BackColor = Color.FromArgb(40, 44, 60);
-            btnRecargar.Cursor = Cursors.Hand;
+            btnRecargar.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            btnRecargar.BackColor = System.Drawing.Color.FromArgb(40, 44, 60);
+            btnRecargar.Cursor = System.Windows.Forms.Cursors.Hand;
             btnRecargar.FlatAppearance.BorderSize = 0;
-            btnRecargar.FlatStyle = FlatStyle.Flat;
-            btnRecargar.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            btnRecargar.ForeColor = Color.White;
-            btnRecargar.Location = new Point(700, 75);
+            btnRecargar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnRecargar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            btnRecargar.ForeColor = System.Drawing.Color.White;
+            btnRecargar.Location = new System.Drawing.Point(700, 75);
             btnRecargar.Name = "btnRecargar";
-            btnRecargar.Size = new Size(125, 31);
+            btnRecargar.Size = new System.Drawing.Size(125, 31);
             btnRecargar.TabIndex = 4;
             btnRecargar.Text = "🔄 Mostrar Todo";
             btnRecargar.UseVisualStyleBackColor = false;
@@ -105,106 +102,67 @@
             // 
             // dgvSolicitudes
             // 
-            dgvSolicitudes.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            dgvSolicitudes.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvSolicitudes.BackgroundColor = Color.FromArgb(25, 25, 35);
-            dgvSolicitudes.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvSolicitudes.Location = new Point(25, 125);
+            dgvSolicitudes.AllowUserToAddRows = false;
+            dgvSolicitudes.AllowUserToDeleteRows = false;
+            dgvSolicitudes.AllowUserToResizeRows = false;
+            dgvSolicitudes.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            dgvSolicitudes.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            dgvSolicitudes.BackgroundColor = System.Drawing.Color.FromArgb(20, 24, 38);
+            dgvSolicitudes.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dgvSolicitudes.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvSolicitudes.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(15, 18, 28);
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(15, 18, 28);
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            dgvSolicitudes.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dgvSolicitudes.ColumnHeadersHeight = 45;
+            dgvSolicitudes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(30, 34, 48);
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(13, 110, 253);
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            dgvSolicitudes.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(38, 43, 60);
+            dgvSolicitudes.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+            dgvSolicitudes.EnableHeadersVisualStyles = false;
+            dgvSolicitudes.GridColor = System.Drawing.Color.FromArgb(70, 75, 90);
+            dgvSolicitudes.Location = new System.Drawing.Point(25, 125);
             dgvSolicitudes.MultiSelect = false;
             dgvSolicitudes.Name = "dgvSolicitudes";
             dgvSolicitudes.ReadOnly = true;
+            dgvSolicitudes.RowHeadersVisible = false;
             dgvSolicitudes.RowHeadersWidth = 51;
-            dgvSolicitudes.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvSolicitudes.Size = new Size(800, 330);
+            dgvSolicitudes.RowTemplate.Height = 40;
+            dgvSolicitudes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            dgvSolicitudes.Size = new System.Drawing.Size(800, 440);
             dgvSolicitudes.TabIndex = 5;
-            // 
-            // panelAcciones
-            // 
-            panelAcciones.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            panelAcciones.BackColor = Color.FromArgb(20, 24, 38);
-            panelAcciones.Controls.Add(lblMotivo);
-            panelAcciones.Controls.Add(txtMotivoRechazo);
-            panelAcciones.Controls.Add(btnRechazar);
-            panelAcciones.Controls.Add(btnAprobar);
-            panelAcciones.Location = new Point(25, 470);
-            panelAcciones.Name = "panelAcciones";
-            panelAcciones.Size = new Size(800, 100);
-            panelAcciones.TabIndex = 6;
-            // 
-            // lblMotivo
-            // 
-            lblMotivo.AutoSize = true;
-            lblMotivo.ForeColor = Color.Gainsboro;
-            lblMotivo.Location = new Point(245, 20);
-            lblMotivo.Name = "lblMotivo";
-            lblMotivo.Size = new Size(207, 20);
-            lblMotivo.TabIndex = 3;
-            lblMotivo.Text = "Motivo (Solo para Rechazar):";
-            // 
-            // txtMotivoRechazo
-            // 
-            txtMotivoRechazo.BackColor = Color.FromArgb(40, 40, 60);
-            txtMotivoRechazo.BorderStyle = BorderStyle.FixedSingle;
-            txtMotivoRechazo.Font = new Font("Segoe UI", 10.5F);
-            txtMotivoRechazo.ForeColor = Color.White;
-            txtMotivoRechazo.Location = new Point(245, 45);
-            txtMotivoRechazo.Name = "txtMotivoRechazo";
-            txtMotivoRechazo.PlaceholderText = "Escriba la razón aquí...";
-            txtMotivoRechazo.Size = new Size(350, 31);
-            txtMotivoRechazo.TabIndex = 2;
-            // 
-            // btnRechazar
-            // 
-            btnRechazar.BackColor = Color.FromArgb(220, 53, 69);
-            btnRechazar.Cursor = Cursors.Hand;
-            btnRechazar.FlatAppearance.BorderSize = 0;
-            btnRechazar.FlatStyle = FlatStyle.Flat;
-            btnRechazar.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnRechazar.ForeColor = Color.White;
-            btnRechazar.Location = new Point(610, 40);
-            btnRechazar.Name = "btnRechazar";
-            btnRechazar.Size = new Size(170, 40);
-            btnRechazar.TabIndex = 1;
-            btnRechazar.Text = "✖ Rechazar";
-            btnRechazar.UseVisualStyleBackColor = false;
-            btnRechazar.Click += btnRechazar_Click;
-            // 
-            // btnAprobar
-            // 
-            btnAprobar.BackColor = Color.FromArgb(13, 110, 253);
-            btnAprobar.Cursor = Cursors.Hand;
-            btnAprobar.FlatAppearance.BorderSize = 0;
-            btnAprobar.FlatStyle = FlatStyle.Flat;
-            btnAprobar.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnAprobar.ForeColor = Color.White;
-            btnAprobar.Location = new Point(20, 40);
-            btnAprobar.Name = "btnAprobar";
-            btnAprobar.Size = new Size(200, 40);
-            btnAprobar.TabIndex = 0;
-            btnAprobar.Text = "✓ Aprobar Solicitud";
-            btnAprobar.UseVisualStyleBackColor = false;
-            btnAprobar.Click += btnAprobar_Click;
+            dgvSolicitudes.CellContentClick += dgvSolicitudes_CellContentClick;
             // 
             // FormGestionSolicitudes
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(30, 30, 45);
-            ClientSize = new Size(850, 590);
-            Controls.Add(panelAcciones);
+            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.FromArgb(30, 30, 45);
+            ClientSize = new System.Drawing.Size(850, 590);
             Controls.Add(dgvSolicitudes);
             Controls.Add(btnRecargar);
             Controls.Add(btnBuscar);
             Controls.Add(txtBusqueda);
             Controls.Add(cmbCriterioBusqueda);
             Controls.Add(lblTitulo);
-            FormBorderStyle = FormBorderStyle.None;
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             Name = "FormGestionSolicitudes";
             Text = "FormGestionSolicitudes";
             Load += FormGestionSolicitudes_Load;
             ((System.ComponentModel.ISupportInitialize)dgvSolicitudes).EndInit();
-            panelAcciones.ResumeLayout(false);
-            panelAcciones.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -217,10 +175,5 @@
         private System.Windows.Forms.Button btnBuscar;
         private System.Windows.Forms.Button btnRecargar;
         private System.Windows.Forms.DataGridView dgvSolicitudes;
-        private System.Windows.Forms.Panel panelAcciones;
-        private System.Windows.Forms.Button btnAprobar;
-        private System.Windows.Forms.Label lblMotivo;
-        private System.Windows.Forms.TextBox txtMotivoRechazo;
-        private System.Windows.Forms.Button btnRechazar;
     }
 }

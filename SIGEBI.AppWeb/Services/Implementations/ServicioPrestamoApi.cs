@@ -26,5 +26,20 @@ namespace SIGEBI.AppWeb.Services
             await ApiHelper.ProcesarErrorApiAsync(response);
             return new List<PrestamoResponseDTO>();
         }
+
+        public async Task<List<PrestamoResponseDTO>> ObtenerMisPrestamosActivosAsync()
+        {
+            
+            var response = await _httpClient.GetAsync("Prestamos/mis-activos");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var prestamos = await response.Content.ReadFromJsonAsync<List<PrestamoResponseDTO>>();
+                return prestamos ?? new List<PrestamoResponseDTO>();
+            }
+
+            await ApiHelper.ProcesarErrorApiAsync(response);
+            return new List<PrestamoResponseDTO>();
+        }
     }
 }

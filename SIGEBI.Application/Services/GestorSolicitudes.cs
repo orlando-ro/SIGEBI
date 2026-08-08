@@ -82,11 +82,12 @@ namespace SIGEBI.Application.Services
 
             await _repoSolicitud.AgregarAsync(nuevaSolicitud);
 
+            var titulosLibros = string.Join(", ", MapeoExtensiones.ObtenerTitulosLibros(ejemplaresSolicitados));
             await _servicioAuditoria.RegistrarAccionAsync(
                 idResponsable: usuario.IdUsuario,
                 tipoAccion: "Solicitud de préstamo",
-                entidadAfectada: "Solicitud",
-                detalles: $"El usuario {usuario.Nombre} realizó la solicitud con id #{nuevaSolicitud.IdSolicitud}."
+                entidadAfectada: "Solicitudes",
+                detalles: $"El usuario {usuario.Nombre} solicitó el préstamo de los libros: {titulosLibros}."
             );
 
             return MapearSolicitudResponse(nuevaSolicitud, usuario);
@@ -127,12 +128,21 @@ namespace SIGEBI.Application.Services
             await _repoSolicitud.ActualizarAsync(solicitudARechazar);
             await _repoSolicitud.GuardarResolucionAsync(rechazo);
 
+            string nombreSolicitante = solicitudARechazar.Usuario?.Nombre ?? "un usuario";
             await _servicioAuditoria.RegistrarAccionAsync(
                 idResponsable: bibliotecario.IdUsuario,
                 tipoAccion: "Rechazar solicitud",
-                entidadAfectada: "Solicitud",
-                detalles: $"El bibliotecario {bibliotecario.Nombre} rechazó la solicitud #{solicitudARechazar.IdSolicitud}. Motivo: {peticion.MotivoRechazo}."
+                entidadAfectada: "Solicitudes",
+                detalles: $"El bibliotecario {bibliotecario.Nombre} rechazó la solicitud de libros de {nombreSolicitante}. Motivo: {peticion.MotivoRechazo}."
             );
+        }
+
+        public async Task<IEnumerable<SolicitudResponseDTO>> ConsultarMisSolicitudesPendientesAsync(int idUsuario)
+        {
+            var usuario = await _usuarios.ObtenerUsuarioConDetallesAsync(idUsuario);
+            var solicitudes = await _repoSolicitud.ObtenerPendientesPorUsuarioAsync(idUsuario);
+
+            return solicitudes.Select(s => MapearSolicitudResponse(s, usuario));
         }
 
         public async Task<SolicitudResponseDTO?> ObtenerPorIdAsync(int IdSolicitud)

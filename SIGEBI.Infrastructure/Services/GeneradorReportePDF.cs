@@ -4,6 +4,7 @@ using QuestPDF.Infrastructure;
 using SIGEBI.Application.DTOs;
 using SIGEBI.Application.Interfaces;
 using System.Globalization;
+using System.Linq;
 
 using QDocument = QuestPDF.Fluent.Document;
 using QPdfContainer = QuestPDF.Infrastructure.IContainer;
@@ -26,78 +27,52 @@ namespace SIGEBI.Application.Services
                 ? 0
                 : (double)reporte.PrestamosDevueltosATiempo * 100 / reporte.TotalPrestamos;
 
+            var prestamosDevueltos = reporte.prestamos.Where(p => p.Estado.ToLower() == "devuelto").ToList();
+            var prestamosPendientes = reporte.prestamos.Where(p => p.Estado.ToLower() != "devuelto").ToList();
+
             return QDocument.Create(document =>
             {
                 document.Page(page =>
                 {
                     ConfigurarPagina(page);
-
-                    page.Header().Element(container =>
-                        CrearEncabezado(container, "REPORTE DE PRÉSTAMOS", "Resumen general de préstamos registrados en el sistema"));
+                    page.Header().Element(container => CrearEncabezado(container, "REPORTE DE PRÉSTAMOS", "Resumen general de préstamos divididos por estado"));
 
                     page.Content().PaddingVertical(15).Column(column =>
                     {
                         column.Spacing(15);
-
                         column.Item().Element(container => CrearFechaGeneracion(container));
 
                         column.Item().Row(row =>
                         {
                             row.Spacing(10);
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Total préstamos", reporte.TotalPrestamos.ToString()));
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Devueltos a tiempo", reporte.PrestamosDevueltosATiempo.ToString()));
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Préstamos vencidos", reporte.PrestamosVencidos.ToString()));
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Puntualidad", $"{porcentajePuntualidad:N2}%"));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Total préstamos", reporte.TotalPrestamos.ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Devueltos a tiempo", reporte.PrestamosDevueltosATiempo.ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Préstamos vencidos", reporte.PrestamosVencidos.ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Puntualidad", $"{porcentajePuntualidad:N2}%"));
                         });
 
-                        column.Item().Element(container =>
-                            CrearTituloSeccion(container, "Detalle de préstamos"));
-
-                        if (reporte.prestamos == null || !reporte.prestamos.Any())
+                        // SECCIÓN 1: DEVUELTOS
+                        column.Item().Element(container => CrearTituloSeccion(container, "✅ Préstamos Devueltos"));
+                        if (!prestamosDevueltos.Any())
                         {
-                            column.Item().Element(container => CrearMensajeSinDatos(container));
+                            column.Item().Element(CrearMensajeSinDatos);
                         }
                         else
                         {
-                            column.Item().Table(table =>
-                            {
-                                table.ColumnsDefinition(columns =>
-                                {
-                                    columns.ConstantColumn(70);
-                                    columns.RelativeColumn();
-                                    columns.ConstantColumn(90);
-                                    columns.ConstantColumn(90);
-                                    columns.ConstantColumn(80);
-                                });
+                            GenerarTablaPrestamos(column, prestamosDevueltos);
+                        }
 
-                                table.Header(header =>
-                                {
-                                    CrearCeldaEncabezado(header, "ID");
-                                    CrearCeldaEncabezado(header, "Recurso");
-                                    CrearCeldaEncabezado(header, "Préstamo");
-                                    CrearCeldaEncabezado(header, "Devolución");
-                                    CrearCeldaEncabezado(header, "Estado");
-                                });
+                        column.Item().PageBreak();
 
-                                foreach (var prestamo in reporte.prestamos)
-                                {
-                                    CrearCeldaTexto(table, prestamo.IdPrestamo.ToString());
-                                    CrearCeldaTexto(table, prestamo.IdRecurso);
-                                    CrearCeldaTexto(table, FormatearFecha(prestamo.FechaPrestamo));
-                                    CrearCeldaTexto(table, prestamo.FechaDevolucion.HasValue
-                                        ? FormatearFecha(prestamo.FechaDevolucion.Value)
-                                        : "Pendiente");
-                                    CrearCeldaTexto(table, prestamo.Estado);
-                                }
-                            });
+                        // SECCIÓN 2: PENDIENTES / ACTIVOS
+                        column.Item().Element(container => CrearTituloSeccion(container, "⏳ Préstamos Pendientes / Activos"));
+                        if (!prestamosPendientes.Any())
+                        {
+                            column.Item().Element(CrearMensajeSinDatos);
+                        }
+                        else
+                        {
+                            GenerarTablaPrestamos(column, prestamosPendientes);
                         }
                     });
 
@@ -106,75 +81,169 @@ namespace SIGEBI.Application.Services
             }).GeneratePdf();
         }
 
-        public byte[] GenerarReporteInventarioPDF(ReporteInventarioResponseDTO reporte)
+        private void GenerarTablaPrestamos(ColumnDescriptor column, System.Collections.Generic.List<SIGEBI.Application.DTOs.ReportesDTO.DetallesPrestamoDTO> lista)
         {
+            column.Item().Table(table =>
+            {
+                table.ColumnsDefinition(columns =>
+                {
+                    columns.RelativeColumn(2); // Usuario
+                    columns.RelativeColumn(3); // Libros
+                    columns.RelativeColumn(1.5f); // Préstamo
+                    columns.RelativeColumn(1.5f); // Devolución
+                });
+
+                table.Header(header =>
+                {
+                    CrearCeldaEncabezado(header, "Usuario");
+                    CrearCeldaEncabezado(header, "Libro(s) Solicitado(s)");
+                    CrearCeldaEncabezado(header, "Préstamo");
+                    CrearCeldaEncabezado(header, "Devolución");
+                });
+
+                foreach (var p in lista)
+                {
+                    CrearCeldaTexto(table, p.NombreUsuario);
+                    CrearCeldaTexto(table, string.Join("\n• ", p.Libros.Select(l => l).Prepend("• " + p.Libros.FirstOrDefault())));
+                    CrearCeldaTexto(table, FormatearFecha(p.FechaPrestamo));
+                    CrearCeldaTexto(table, p.FechaDevolucion.HasValue ? FormatearFecha(p.FechaDevolucion.Value) : "Pendiente");
+                }
+            });
+        }
+
+        public byte[] GenerarReportePenalizacionesPDF(ReportePenalizacionesDTO reporte)
+        {
+            var pagadas = reporte.DetallesPenalizaciones.Where(p => p.Pagada).ToList();
+            var pendientes = reporte.DetallesPenalizaciones.Where(p => !p.Pagada).ToList();
+
             return QDocument.Create(document =>
             {
                 document.Page(page =>
                 {
                     ConfigurarPagina(page);
-
-                    page.Header().Element(container =>
-                        CrearEncabezado(container, "REPORTE DE INVENTARIO", "Estado general de los recursos físicos registrados"));
+                    page.Header().Element(container => CrearEncabezado(container, "REPORTE DE PENALIZACIONES", "Resumen de multas categorizadas por estado de pago"));
 
                     page.Content().PaddingVertical(15).Column(column =>
                     {
                         column.Spacing(15);
-
                         column.Item().Element(container => CrearFechaGeneracion(container));
 
                         column.Item().Row(row =>
                         {
                             row.Spacing(10);
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Total recursos", reporte.TotalRecursos.ToString()));
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Disponibles", reporte.RecursoDisponibles.ToString()));
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Prestados", reporte.RecursosPrestados.ToString()));
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Fuera de servicio", reporte.RecursosDaniados.ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Total penalizaciones", reporte.TotalPenalizaciones.ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Monto total", FormatearMonto(reporte.MontoTotal)));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Pagadas", pagadas.Count.ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Pendientes", pendientes.Count.ToString()));
                         });
 
-                        column.Item().Element(container =>
-                            CrearTituloSeccion(container, "Detalle de inventario"));
+                        // SECCIÓN 1: PENDIENTES
+                        column.Item().Element(container => CrearTituloSeccion(container, "⚠️ Penalizaciones Pendientes de Pago"));
+                        if (!pendientes.Any()) column.Item().Element(CrearMensajeSinDatos);
+                        else GenerarTablaPenalizaciones(column, pendientes);
 
-                        if (reporte.Recursos == null || !reporte.Recursos.Any())
+                        column.Item().PageBreak();
+
+                        // SECCIÓN 2: PAGADAS
+                        column.Item().Element(container => CrearTituloSeccion(container, "✅ Penalizaciones Pagadas"));
+                        if (!pagadas.Any()) column.Item().Element(CrearMensajeSinDatos);
+                        else GenerarTablaPenalizaciones(column, pagadas);
+                    });
+
+                    page.Footer().Element(CrearPiePagina);
+                });
+            }).GeneratePdf();
+        }
+
+        private void GenerarTablaPenalizaciones(ColumnDescriptor column, System.Collections.Generic.List<SIGEBI.Application.DTOs.ReportesDTO.DetallePenalizacionDTO> lista)
+        {
+            column.Item().Table(table =>
+            {
+                table.ColumnsDefinition(columns =>
+                {
+                    columns.RelativeColumn(2);
+                    columns.RelativeColumn(3);
+                    columns.RelativeColumn(1.5f);
+                    columns.RelativeColumn(1.5f);
+                });
+
+                table.Header(header =>
+                {
+                    CrearCeldaEncabezado(header, "Usuario");
+                    CrearCeldaEncabezado(header, "Motivo");
+                    CrearCeldaEncabezado(header, "Monto");
+                    CrearCeldaEncabezado(header, "Fecha");
+                });
+
+                foreach (var pen in lista)
+                {
+                    CrearCeldaTexto(table, pen.NombreUsuario);
+                    CrearCeldaTexto(table, pen.Motivo);
+                    CrearCeldaTexto(table, FormatearMonto(pen.Monto));
+                    CrearCeldaTexto(table, FormatearFecha(pen.Fecha));
+                }
+            });
+        }
+
+        public byte[] GenerarReporteInventarioPDF(ReporteInventarioResponseDTO reporte)
+        {
+            var inventarioPorCategoria = reporte.Recursos
+                .GroupBy(r => r.Categoria)
+                .OrderBy(g => g.Key)
+                .ToList();
+
+            return QDocument.Create(document =>
+            {
+                document.Page(page =>
+                {
+                    ConfigurarPagina(page);
+                    page.Header().Element(container => CrearEncabezado(container, "REPORTE DE INVENTARIO", "Estado de recursos físicos divididos por categorías"));
+
+                    page.Content().PaddingVertical(15).Column(column =>
+                    {
+                        column.Spacing(15);
+                        column.Item().Element(container => CrearFechaGeneracion(container));
+
+                        column.Item().Row(row =>
                         {
-                            column.Item().Element(container => CrearMensajeSinDatos(container));
+                            row.Spacing(10);
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Total recursos", reporte.TotalRecursos.ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Disponibles", reporte.RecursoDisponibles.ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Prestados", reporte.RecursosPrestados.ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Fuera de servicio", reporte.RecursosDaniados.ToString()));
+                        });
+
+                        if (!inventarioPorCategoria.Any())
+                        {
+                            column.Item().Element(CrearMensajeSinDatos);
                         }
                         else
                         {
-                            column.Item().Table(table =>
+                            foreach (var categoria in inventarioPorCategoria)
                             {
-                                table.ColumnsDefinition(columns =>
-                                {
-                                    columns.ConstantColumn(90);
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.ConstantColumn(100);
-                                });
+                                column.Item().PaddingTop(10).Element(container => CrearTituloSeccion(container, $"📂 Categoría: {categoria.Key}"));
 
-                                table.Header(header =>
+                                column.Item().Table(table =>
                                 {
-                                    CrearCeldaEncabezado(header, "Código");
-                                    CrearCeldaEncabezado(header, "Título");
-                                    CrearCeldaEncabezado(header, "Categoría");
-                                    CrearCeldaEncabezado(header, "Estado");
-                                });
+                                    table.ColumnsDefinition(columns =>
+                                    {
+                                        columns.RelativeColumn(3);
+                                        columns.RelativeColumn(1);
+                                    });
 
-                                foreach (var recurso in reporte.Recursos)
-                                {
-                                    CrearCeldaTexto(table, recurso.Codigo);
-                                    CrearCeldaTexto(table, recurso.Titulo);
-                                    CrearCeldaTexto(table, recurso.Categoria);
-                                    CrearCeldaTexto(table, recurso.Estado);
-                                }
-                            });
+                                    table.Header(header =>
+                                    {
+                                        CrearCeldaEncabezado(header, "Título del Recurso");
+                                        CrearCeldaEncabezado(header, "Estado Físico");
+                                    });
+
+                                    foreach (var recurso in categoria.OrderBy(r => r.Estado))
+                                    {
+                                        CrearCeldaTexto(table, recurso.Titulo);
+                                        CrearCeldaTexto(table, recurso.Estado);
+                                    }
+                                });
+                            }
                         }
                     });
 
@@ -190,14 +259,11 @@ namespace SIGEBI.Application.Services
                 document.Page(page =>
                 {
                     ConfigurarPagina(page);
-
-                    page.Header().Element(container =>
-                        CrearEncabezado(container, "REPORTE DE USO DEL CATÁLOGO", "Recursos más solicitados y demanda por categoría"));
+                    page.Header().Element(container => CrearEncabezado(container, "USO DEL CATÁLOGO", "Recursos más solicitados y demanda por categoría"));
 
                     page.Content().PaddingVertical(15).Column(column =>
                     {
                         column.Spacing(15);
-
                         column.Item().Element(container => CrearFechaGeneracion(container));
 
                         var totalSolicitudes = reporte.RecursosMasSolicitados?.Sum(r => r.CantidadSolicitudes) ?? 0;
@@ -206,23 +272,16 @@ namespace SIGEBI.Application.Services
                         column.Item().Row(row =>
                         {
                             row.Spacing(10);
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Total solicitudes", totalSolicitudes.ToString()));
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Recursos solicitados", (reporte.RecursosMasSolicitados?.Count ?? 0).ToString()));
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Categorías con demanda", totalCategorias.ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Total solicitudes", totalSolicitudes.ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Recursos solicitados", (reporte.RecursosMasSolicitados?.Count ?? 0).ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Categorías con demanda", totalCategorias.ToString()));
                         });
 
-                        column.Item().Element(container =>
-                            CrearTituloSeccion(container, "Recursos más solicitados"));
+                        column.Item().Element(container => CrearTituloSeccion(container, "Top Recursos Más Solicitados"));
 
                         if (reporte.RecursosMasSolicitados == null || !reporte.RecursosMasSolicitados.Any())
                         {
-                            column.Item().Element(container => CrearMensajeSinDatos(container));
+                            column.Item().Element(CrearMensajeSinDatos);
                         }
                         else
                         {
@@ -230,48 +289,40 @@ namespace SIGEBI.Application.Services
                             {
                                 table.ColumnsDefinition(columns =>
                                 {
-                                    columns.ConstantColumn(90);
-                                    columns.RelativeColumn();
-                                    columns.ConstantColumn(100);
+                                    columns.RelativeColumn(4);
+                                    columns.RelativeColumn(1);
                                 });
 
                                 table.Header(header =>
                                 {
-                                    CrearCeldaEncabezado(header, "Recurso ID");
-                                    CrearCeldaEncabezado(header, "Título");
-                                    CrearCeldaEncabezado(header, "Solicitudes");
+                                    CrearCeldaEncabezado(header, "Título del Libro");
+                                    CrearCeldaEncabezado(header, "Veces Solicitado");
                                 });
 
                                 foreach (var recurso in reporte.RecursosMasSolicitados)
                                 {
-                                    CrearCeldaTexto(table, recurso.RecursoId);
-                                    CrearCeldaTexto(table, recurso.titulo);
+                                    CrearCeldaTexto(table, recurso.Titulo);
                                     CrearCeldaTexto(table, recurso.CantidadSolicitudes.ToString());
                                 }
                             });
                         }
 
-                        column.Item().PaddingTop(10).Element(container =>
-                            CrearTituloSeccion(container, "Demanda por categoría"));
+                        column.Item().PaddingTop(15).Element(container => CrearTituloSeccion(container, "Demanda Agrupada por Categoría"));
 
-                        if (reporte.DemandaCategorias == null || !reporte.DemandaCategorias.Any())
-                        {
-                            column.Item().Element(container => CrearMensajeSinDatos(container));
-                        }
-                        else
+                        if (reporte.DemandaCategorias != null && reporte.DemandaCategorias.Any())
                         {
                             column.Item().Table(table =>
                             {
                                 table.ColumnsDefinition(columns =>
                                 {
-                                    columns.RelativeColumn();
-                                    columns.ConstantColumn(120);
+                                    columns.RelativeColumn(4);
+                                    columns.RelativeColumn(1);
                                 });
 
                                 table.Header(header =>
                                 {
-                                    CrearCeldaEncabezado(header, "Categoría");
-                                    CrearCeldaEncabezado(header, "Cantidad solicitada");
+                                    CrearCeldaEncabezado(header, "Categoría Temática");
+                                    CrearCeldaEncabezado(header, "Total Solicitudes");
                                 });
 
                                 foreach (var categoria in reporte.DemandaCategorias)
@@ -288,190 +339,77 @@ namespace SIGEBI.Application.Services
             }).GeneratePdf();
         }
 
-        public byte[] GenerarReportePenalizacionesPDF(ReportePenalizacionesDTO reporte)
-        {
-            return QDocument.Create(document =>
-            {
-                document.Page(page =>
-                {
-                    ConfigurarPagina(page);
-
-                    page.Header().Element(container =>
-                        CrearEncabezado(container, "REPORTE DE PENALIZACIONES", "Resumen de penalizaciones emitidas en el sistema"));
-
-                    page.Content().PaddingVertical(15).Column(column =>
-                    {
-                        column.Spacing(15);
-
-                        column.Item().Element(container => CrearFechaGeneracion(container));
-
-                        var penalizacionesPagadas = reporte.DetallesPenalizaciones?.Count(p => p.Pagada) ?? 0;
-                        var penalizacionesPendientes = reporte.DetallesPenalizaciones?.Count(p => !p.Pagada) ?? 0;
-
-                        column.Item().Row(row =>
-                        {
-                            row.Spacing(10);
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Total penalizaciones", reporte.TotalPenalizaciones.ToString()));
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Monto total", FormatearMonto(reporte.MontoTotal)));
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Pagadas", penalizacionesPagadas.ToString()));
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Pendientes", penalizacionesPendientes.ToString()));
-                        });
-
-                        column.Item().Element(container =>
-                            CrearTituloSeccion(container, "Detalle de penalizaciones"));
-
-                        if (reporte.DetallesPenalizaciones == null || !reporte.DetallesPenalizaciones.Any())
-                        {
-                            column.Item().Element(container => CrearMensajeSinDatos(container));
-                        }
-                        else
-                        {
-                            column.Item().Table(table =>
-                            {
-                                table.ColumnsDefinition(columns =>
-                                {
-                                    columns.ConstantColumn(70);
-                                    columns.RelativeColumn();
-                                    columns.ConstantColumn(90);
-                                    columns.ConstantColumn(90);
-                                    columns.ConstantColumn(80);
-                                });
-
-                                table.Header(header =>
-                                {
-                                    CrearCeldaEncabezado(header, "Usuario");
-                                    CrearCeldaEncabezado(header, "Motivo");
-                                    CrearCeldaEncabezado(header, "Monto");
-                                    CrearCeldaEncabezado(header, "Fecha");
-                                    CrearCeldaEncabezado(header, "Pagada");
-                                });
-
-                                foreach (var penalizacion in reporte.DetallesPenalizaciones)
-                                {
-                                    CrearCeldaTexto(table, penalizacion.IdUsuario.ToString());
-                                    CrearCeldaTexto(table, penalizacion.Motivo);
-                                    CrearCeldaTexto(table, FormatearMonto(penalizacion.Monto));
-                                    CrearCeldaTexto(table, FormatearFecha(penalizacion.Fecha));
-                                    CrearCeldaTexto(table, penalizacion.Pagada ? "Sí" : "No");
-                                }
-                            });
-                        }
-                    });
-
-                    page.Footer().Element(CrearPiePagina);
-                });
-            }).GeneratePdf();
-        }
-
         public byte[] GenerarReporteAuditoriaPDF(IEnumerable<AuditoriaResponseDTO> auditorias)
         {
-            var registros = auditorias?
-                .OrderByDescending(a => a.FechaHora)
-                .ToList() ?? new List<AuditoriaResponseDTO>();
+            var registros = auditorias?.OrderByDescending(a => a.FechaHora).ToList() ?? new List<AuditoriaResponseDTO>();
 
-            var totalRegistros = registros.Count;
-
-            var totalUsuarios = registros
-                .Select(a => a.IdResponsable)
-                .Distinct()
-                .Count();
-
-            var totalEntidades = registros
-                .Where(a => !string.IsNullOrWhiteSpace(a.EntidadAfectada))
-                .Select(a => a.EntidadAfectada.Trim().ToLowerInvariant())
-                .Distinct()
-                .Count();
-
-            var totalAcciones = registros
-                .Where(a => !string.IsNullOrWhiteSpace(a.Accion))
-                .Select(a => a.Accion.Trim().ToLowerInvariant())
-                .Distinct()
-                .Count();
+            var agrupacion = registros
+                .GroupBy(r => r.EntidadAfectada)
+                .OrderBy(g => g.Key)
+                .ToList();
 
             return QDocument.Create(document =>
             {
                 document.Page(page =>
                 {
                     ConfigurarPaginaHorizontal(page);
-
-                    page.Header().Element(container =>
-                        CrearEncabezado(
-                            container,
-                            "LOG DE AUDITORÍA",
-                            "Registro de acciones realizadas por los usuarios dentro del sistema"));
+                    page.Header().Element(container => CrearEncabezado(container, "LOG DE AUDITORÍA", "Registro clasificado por entidad y tipo de acción"));
 
                     page.Content().PaddingVertical(15).Column(column =>
                     {
                         column.Spacing(15);
-
                         column.Item().Element(container => CrearFechaGeneracion(container));
 
                         column.Item().Row(row =>
                         {
                             row.Spacing(10);
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Total registros", totalRegistros.ToString()));
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Usuarios actores", totalUsuarios.ToString()));
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Entidades afectadas", totalEntidades.ToString()));
-
-                            row.RelativeItem().Element(container =>
-                                CrearTarjetaResumen(container, "Tipos de acciones", totalAcciones.ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Total registros", registros.Count.ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Usuarios actores", registros.Select(a => a.NombreUsuario).Distinct().Count().ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Entidades afectadas", agrupacion.Count.ToString()));
+                            row.RelativeItem().Element(container => CrearTarjetaResumen(container, "Tipos de acciones", registros.Select(a => a.Accion).Distinct().Count().ToString()));
                         });
-
-                        column.Item().Element(container =>
-                            CrearTituloSeccion(container, "Detalle del historial de auditoría"));
 
                         if (!registros.Any())
                         {
-                            column.Item().Element(container => CrearMensajeSinDatos(container));
+                            column.Item().Element(CrearMensajeSinDatos);
                         }
                         else
                         {
-                            column.Item().Table(table =>
+                            foreach (var entidad in agrupacion)
                             {
-                                table.ColumnsDefinition(columns =>
-                                {
-                                    columns.ConstantColumn(60);
-                                    columns.ConstantColumn(75);
-                                    columns.ConstantColumn(115);
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn(2);
-                                });
+                                column.Item().PaddingTop(15).Element(c => CrearTituloSeccion(c, $"📦 Módulo / Entidad: {entidad.Key}"));
 
-                                table.Header(header =>
-                                {
-                                    CrearCeldaEncabezado(header, "ID");
-                                    CrearCeldaEncabezado(header, "Usuario");
-                                    CrearCeldaEncabezado(header, "Fecha y hora");
-                                    CrearCeldaEncabezado(header, "Acción");
-                                    CrearCeldaEncabezado(header, "Entidad");
-                                    CrearCeldaEncabezado(header, "Detalles");
-                                });
+                                var acciones = entidad.GroupBy(a => a.Accion).OrderBy(a => a.Key);
 
-                                foreach (var registro in registros)
+                                foreach (var accion in acciones)
                                 {
-                                    CrearCeldaTexto(table, registro.IdAuditoria.ToString());
-                                    CrearCeldaTexto(table, registro.IdResponsable.ToString());
-                                    CrearCeldaTexto(table, FormatearFechaHora(registro.FechaHora));
-                                    CrearCeldaTexto(table, registro.Accion);
-                                    CrearCeldaTexto(table, registro.EntidadAfectada);
-                                    CrearCeldaTexto(table, RecortarTexto(registro.Detalles, 160));
+                                    column.Item().PaddingTop(5).PaddingBottom(2).Text($"   ⚡ Acción: {accion.Key}").FontSize(11).Bold().FontColor(ColorSecundario);
+
+                                    column.Item().PaddingLeft(15).Table(table =>
+                                    {
+                                        table.ColumnsDefinition(columns =>
+                                        {
+                                            columns.RelativeColumn(1.5f);
+                                            columns.RelativeColumn(2);
+                                            columns.RelativeColumn(5);
+                                        });
+
+                                        table.Header(header =>
+                                        {
+                                            CrearCeldaEncabezado(header, "Fecha y hora");
+                                            CrearCeldaEncabezado(header, "Usuario Responsable");
+                                            CrearCeldaEncabezado(header, "Detalles de la Operación");
+                                        });
+
+                                        foreach (var reg in accion)
+                                        {
+                                            CrearCeldaTexto(table, FormatearFechaHora(reg.FechaHora));
+                                            CrearCeldaTexto(table, reg.NombreUsuario);
+                                            CrearCeldaTexto(table, reg.Detalles);
+                                        }
+                                    });
                                 }
-                            });
+                            }
                         }
                     });
 
@@ -488,157 +426,6 @@ namespace SIGEBI.Application.Services
             page.DefaultTextStyle(text => text.FontSize(10).FontColor(ColorTexto));
         }
 
-        private static void CrearEncabezado(QPdfContainer container, string titulo, string subtitulo)
-        {
-            container
-                .Background(ColorPrimario)
-                .Padding(18)
-                .Column(column =>
-                {
-                    column.Spacing(4);
-
-                    column.Item()
-                        .Text("SIGEBI")
-                        .FontSize(26)
-                        .Bold()
-                        .FontColor(ColorBlanco);
-
-                    column.Item()
-                        .Text(titulo)
-                        .FontSize(16)
-                        .SemiBold()
-                        .FontColor(ColorBlanco);
-
-                    column.Item()
-                        .Text(subtitulo)
-                        .FontSize(10)
-                        .FontColor("#DBEAFE");
-                });
-        }
-
-        private static void CrearFechaGeneracion(QPdfContainer container)
-        {
-            container
-                .Background(ColorFondo)
-                .Border(1)
-                .BorderColor(ColorBorde)
-                .Padding(10)
-                .Row(row =>
-                {
-                    row.RelativeItem()
-                        .Text("Documento generado automáticamente por el Sistema de Gestión Bibliotecaria")
-                        .FontSize(9)
-                        .FontColor(ColorTextoClaro);
-
-                    row.ConstantItem(160)
-                        .AlignRight()
-                        .Text($"Fecha: {DateTime.Now:dd/MM/yyyy HH:mm}")
-                        .FontSize(9)
-                        .SemiBold()
-                        .FontColor(ColorTexto);
-                });
-        }
-
-        private static void CrearTarjetaResumen(QPdfContainer container, string titulo, string valor)
-        {
-            container
-                .Background(ColorFondo)
-                .Border(1)
-                .BorderColor(ColorBorde)
-                .Padding(12)
-                .Column(column =>
-                {
-                    column.Spacing(5);
-
-                    column.Item()
-                        .Text(titulo)
-                        .FontSize(9)
-                        .FontColor(ColorTextoClaro);
-
-                    column.Item()
-                        .Text(valor)
-                        .FontSize(15)
-                        .Bold()
-                        .FontColor(ColorPrimario);
-                });
-        }
-
-        private static void CrearTituloSeccion(QPdfContainer container, string titulo)
-        {
-            container
-                .PaddingTop(5)
-                .PaddingBottom(5)
-                .BorderBottom(1)
-                .BorderColor(ColorBorde)
-                .Text(titulo)
-                .FontSize(13)
-                .Bold()
-                .FontColor(ColorPrimario);
-        }
-
-        private static void CrearMensajeSinDatos(QPdfContainer container)
-        {
-            container
-                .Background("#FEF3C7")
-                .Border(1)
-                .BorderColor("#F59E0B")
-                .Padding(12)
-                .Text("No hay datos disponibles para este reporte.")
-                .FontSize(10)
-                .FontColor("#92400E");
-        }
-
-        private static void CrearPiePagina(QPdfContainer container)
-        {
-            container
-                .BorderTop(1)
-                .BorderColor(ColorBorde)
-                .PaddingTop(8)
-                .Row(row =>
-                {
-                    row.RelativeItem()
-                        .Text("SIGEBI - Sistema de Gestión Bibliotecaria")
-                        .FontSize(9)
-                        .FontColor(ColorTextoClaro);
-
-                    row.ConstantItem(120)
-                        .AlignRight()
-                        .Text(text =>
-                        {
-                            text.Span("Página ").FontSize(9).FontColor(ColorTextoClaro);
-                            text.CurrentPageNumber().FontSize(9).FontColor(ColorTextoClaro);
-                            text.Span(" de ").FontSize(9).FontColor(ColorTextoClaro);
-                            text.TotalPages().FontSize(9).FontColor(ColorTextoClaro);
-                        });
-                });
-        }
-
-        private static void CrearCeldaEncabezado(TableCellDescriptor header, string texto)
-        {
-            header.Cell()
-                .Background(ColorSecundario)
-                .Border(1)
-                .BorderColor(ColorSecundario)
-                .PaddingVertical(7)
-                .PaddingHorizontal(5)
-                .Text(texto)
-                .FontSize(9)
-                .Bold()
-                .FontColor(ColorBlanco);
-        }
-
-        private static void CrearCeldaTexto(TableDescriptor table, string? texto)
-        {
-            table.Cell()
-                .BorderBottom(1)
-                .BorderColor(ColorBorde)
-                .PaddingVertical(6)
-                .PaddingHorizontal(5)
-                .Text(string.IsNullOrWhiteSpace(texto) ? "N/A" : texto)
-                .FontSize(9)
-                .FontColor(ColorTexto);
-        }
-
         private static void ConfigurarPaginaHorizontal(PageDescriptor page)
         {
             page.Size(PageSizes.A4.Landscape());
@@ -647,32 +434,73 @@ namespace SIGEBI.Application.Services
             page.DefaultTextStyle(text => text.FontSize(9).FontColor(ColorTexto));
         }
 
-        private static string FormatearFechaHora(DateTime fecha)
+        private static void CrearEncabezado(QPdfContainer container, string titulo, string subtitulo)
         {
-            return fecha.ToString("dd/MM/yyyy HH:mm");
+            container.Background(ColorPrimario).Padding(18).Column(column =>
+            {
+                column.Spacing(4);
+                column.Item().Text("SIGEBI").FontSize(26).Bold().FontColor(ColorBlanco);
+                column.Item().Text(titulo).FontSize(16).SemiBold().FontColor(ColorBlanco);
+                column.Item().Text(subtitulo).FontSize(10).FontColor("#DBEAFE");
+            });
         }
 
-        private static string RecortarTexto(string? texto, int longitudMaxima)
+        private static void CrearFechaGeneracion(QPdfContainer container)
         {
-            if (string.IsNullOrWhiteSpace(texto))
-                return "N/A";
-
-            texto = texto.Trim();
-
-            if (texto.Length <= longitudMaxima)
-                return texto;
-
-            return texto.Substring(0, longitudMaxima) + "...";
+            container.Background(ColorFondo).Border(1).BorderColor(ColorBorde).Padding(10).Row(row =>
+            {
+                row.RelativeItem().Text("Documento generado automáticamente por el Sistema de Gestión Bibliotecaria").FontSize(9).FontColor(ColorTextoClaro);
+                row.ConstantItem(160).AlignRight().Text($"Fecha: {DateTime.Now:dd/MM/yyyy HH:mm}").FontSize(9).SemiBold().FontColor(ColorTexto);
+            });
         }
 
-        private static string FormatearFecha(DateTime fecha)
+        private static void CrearTarjetaResumen(QPdfContainer container, string titulo, string valor)
         {
-            return fecha.ToString("dd/MM/yyyy");
+            container.Background(ColorFondo).Border(1).BorderColor(ColorBorde).Padding(12).Column(column =>
+            {
+                column.Spacing(5);
+                column.Item().Text(titulo).FontSize(9).FontColor(ColorTextoClaro);
+                column.Item().Text(valor).FontSize(15).Bold().FontColor(ColorPrimario);
+            });
         }
 
-        private static string FormatearMonto(double monto)
+        private static void CrearTituloSeccion(QPdfContainer container, string titulo)
         {
-            return $"RD$ {monto.ToString("N2", CultureInfo.InvariantCulture)}";
+            container.PaddingTop(5).PaddingBottom(5).BorderBottom(1).BorderColor(ColorBorde).Text(titulo).FontSize(13).Bold().FontColor(ColorPrimario);
         }
+
+        private static void CrearMensajeSinDatos(QPdfContainer container)
+        {
+            container.Background("#FEF3C7").Border(1).BorderColor("#F59E0B").Padding(12).Text("No hay datos disponibles para esta sección.").FontSize(10).FontColor("#92400E");
+        }
+
+        private static void CrearPiePagina(QPdfContainer container)
+        {
+            container.BorderTop(1).BorderColor(ColorBorde).PaddingTop(8).Row(row =>
+            {
+                row.RelativeItem().Text("SIGEBI - Sistema de Gestión Bibliotecaria").FontSize(9).FontColor(ColorTextoClaro);
+                row.ConstantItem(120).AlignRight().Text(text =>
+                {
+                    text.Span("Página ").FontSize(9).FontColor(ColorTextoClaro);
+                    text.CurrentPageNumber().FontSize(9).FontColor(ColorTextoClaro);
+                    text.Span(" de ").FontSize(9).FontColor(ColorTextoClaro);
+                    text.TotalPages().FontSize(9).FontColor(ColorTextoClaro);
+                });
+            });
+        }
+
+        private static void CrearCeldaEncabezado(TableCellDescriptor header, string texto)
+        {
+            header.Cell().Background(ColorSecundario).Border(1).BorderColor(ColorSecundario).PaddingVertical(7).PaddingHorizontal(5).Text(texto).FontSize(9).Bold().FontColor(ColorBlanco);
+        }
+
+        private static void CrearCeldaTexto(TableDescriptor table, string? texto)
+        {
+            table.Cell().BorderBottom(1).BorderColor(ColorBorde).PaddingVertical(6).PaddingHorizontal(5).Text(string.IsNullOrWhiteSpace(texto) ? "N/A" : texto).FontSize(9).FontColor(ColorTexto);
+        }
+
+        private static string FormatearFechaHora(DateTime fecha) => fecha.ToString("dd/MM/yyyy HH:mm");
+        private static string FormatearFecha(DateTime fecha) => fecha.ToString("dd/MM/yyyy");
+        private static string FormatearMonto(double monto) => $"RD$ {monto.ToString("N2", CultureInfo.InvariantCulture)}";
     }
 }

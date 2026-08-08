@@ -83,15 +83,36 @@ namespace SIGEBI.Api.Controllers
         [HttpGet("auditoria/pdf")]
         [Authorize(Roles = "Administrador,Auditor")]
         public async Task<IActionResult> GenerarReporteAuditoriaPDF(
-            [FromQuery] int? idResponsable = null,
+            [FromQuery] DateTime? fechaInicio = null,
+            [FromQuery] DateTime? fechaFin = null,
+            [FromQuery] string? accion = null,
             [FromQuery] string? entidadAfectada = null)
         {
-            var archivoPdf = await _servicioAuditoria.ExportarHistorialPDFAsync(idResponsable, entidadAfectada);
+            DateTime? inicioNorm = null;
+            DateTime? finNorm = null;
+
+            if (fechaInicio.HasValue && fechaFin.HasValue)
+            {
+                var rango = ValidarYNormalizarRango(fechaInicio.Value, fechaFin.Value);
+                inicioNorm = rango.FechaInicio;
+                finNorm = rango.FechaFin;
+            }
+            else if (fechaInicio.HasValue)
+            {
+                inicioNorm = fechaInicio.Value.Date;
+            }
+            else if (fechaFin.HasValue)
+            {
+                finNorm = fechaFin.Value.Date.AddDays(1).AddTicks(-1);
+            }
+
+            var archivoPdf = await _servicioAuditoria.ExportarHistorialPDFAsync(inicioNorm, finNorm, accion, entidadAfectada);
             var nombreArchivo = $"ReporteAuditoria_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
 
             return File(archivoPdf, "application/pdf", nombreArchivo);
         }
 
+        
         private static (DateTime FechaInicio, DateTime FechaFin) ValidarYNormalizarRango(DateTime fechaInicio, DateTime fechaFin)
         {
             if (fechaInicio.Date > fechaFin.Date)

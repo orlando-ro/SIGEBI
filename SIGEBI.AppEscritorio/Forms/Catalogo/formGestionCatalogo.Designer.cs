@@ -35,9 +35,9 @@
             lblTitulo.AutoSize = true;
             lblTitulo.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
             lblTitulo.ForeColor = Color.White;
-            lblTitulo.Location = new Point(25, 25);
+            lblTitulo.Location = new Point(29, 33);
             lblTitulo.Name = "lblTitulo";
-            lblTitulo.Size = new Size(252, 30);
+            lblTitulo.Size = new Size(307, 37);
             lblTitulo.TabIndex = 0;
             lblTitulo.Text = "Catálogo Bibliográfico";
             // 
@@ -52,104 +52,111 @@
             panelAcciones.Controls.Add(btnBuscar);
             panelAcciones.Controls.Add(txtBuscar);
             panelAcciones.Controls.Add(lblBuscar);
-            panelAcciones.Location = new Point(30, 75);
+            panelAcciones.Location = new Point(34, 100);
+            panelAcciones.Margin = new Padding(3, 4, 3, 4);
             panelAcciones.Name = "panelAcciones";
-            panelAcciones.Size = new Size(790, 70);
+            panelAcciones.Size = new Size(903, 93);
             panelAcciones.TabIndex = 1;
-            // 
-            // btnEjemplares
-            // 
-            this.btnEjemplares.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEjemplares.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(162)))), ((int)(((byte)(184)))));
-            this.btnEjemplares.FlatAppearance.BorderSize = 0;
-            this.btnEjemplares.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnEjemplares.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnEjemplares.ForeColor = System.Drawing.Color.White;
-            this.btnEjemplares.Location = new System.Drawing.Point(415, 17);
-            this.btnEjemplares.Name = "btnEjemplares";
-            this.btnEjemplares.Size = new System.Drawing.Size(85, 35);
-            this.btnEjemplares.TabIndex = 3;
-            this.btnEjemplares.Text = "Ejemplares";
-            this.btnEjemplares.UseVisualStyleBackColor = false;
-            // 
-            // btnNuevo
-            // 
-            this.btnNuevo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnNuevo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
-            this.btnNuevo.FlatAppearance.BorderSize = 0;
-            this.btnNuevo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnNuevo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnNuevo.ForeColor = System.Drawing.Color.White;
-            this.btnNuevo.Location = new System.Drawing.Point(510, 17);
-            this.btnNuevo.Name = "btnNuevo";
-            this.btnNuevo.Size = new System.Drawing.Size(75, 35);
-            this.btnNuevo.TabIndex = 4;
-            this.btnNuevo.Text = "+ Nuevo";
-            this.btnNuevo.UseVisualStyleBackColor = false;
-            // 
-            // btnEditar
-            // 
-            this.btnEditar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEditar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(193)))), ((int)(((byte)(7)))));
-            this.btnEditar.FlatAppearance.BorderSize = 0;
-            this.btnEditar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnEditar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnEditar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
-            this.btnEditar.Location = new System.Drawing.Point(595, 17);
-            this.btnEditar.Name = "btnEditar";
-            this.btnEditar.Size = new System.Drawing.Size(75, 35);
-            this.btnEditar.TabIndex = 5;
-            this.btnEditar.Text = "Editar";
-            this.btnEditar.UseVisualStyleBackColor = false;
             // 
             // btnDesactivar
             // 
-            this.btnDesactivar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDesactivar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
-            this.btnDesactivar.FlatAppearance.BorderSize = 0;
-            this.btnDesactivar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDesactivar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnDesactivar.ForeColor = System.Drawing.Color.White;
-            this.btnDesactivar.Location = new System.Drawing.Point(680, 17);
-            this.btnDesactivar.Name = "btnDesactivar";
-            this.btnDesactivar.Size = new System.Drawing.Size(90, 35);
-            this.btnDesactivar.TabIndex = 6;
-            this.btnDesactivar.Text = "Desactivar";
-            this.btnDesactivar.UseVisualStyleBackColor = false;
+            btnDesactivar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnDesactivar.BackColor = Color.FromArgb(220, 53, 69);
+            btnDesactivar.FlatAppearance.BorderSize = 0;
+            btnDesactivar.FlatStyle = FlatStyle.Flat;
+            btnDesactivar.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnDesactivar.ForeColor = Color.White;
+            btnDesactivar.Location = new Point(777, 23);
+            btnDesactivar.Margin = new Padding(3, 4, 3, 4);
+            btnDesactivar.Name = "btnDesactivar";
+            btnDesactivar.Size = new Size(103, 47);
+            btnDesactivar.TabIndex = 6;
+            btnDesactivar.Text = "Desactivar";
+            btnDesactivar.UseVisualStyleBackColor = false;
+            // 
+            // btnEjemplares
+            // 
+            btnEjemplares.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnEjemplares.BackColor = Color.FromArgb(23, 162, 184);
+            btnEjemplares.FlatAppearance.BorderSize = 0;
+            btnEjemplares.FlatStyle = FlatStyle.Flat;
+            btnEjemplares.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnEjemplares.ForeColor = Color.White;
+            btnEjemplares.Location = new Point(474, 23);
+            btnEjemplares.Margin = new Padding(3, 4, 3, 4);
+            btnEjemplares.Name = "btnEjemplares";
+            btnEjemplares.Size = new Size(97, 47);
+            btnEjemplares.TabIndex = 3;
+            btnEjemplares.Text = "Ejemplares";
+            btnEjemplares.UseVisualStyleBackColor = false;
+            // 
+            // btnEditar
+            // 
+            btnEditar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnEditar.BackColor = Color.FromArgb(255, 193, 7);
+            btnEditar.FlatAppearance.BorderSize = 0;
+            btnEditar.FlatStyle = FlatStyle.Flat;
+            btnEditar.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnEditar.ForeColor = Color.FromArgb(33, 37, 41);
+            btnEditar.Location = new Point(680, 23);
+            btnEditar.Margin = new Padding(3, 4, 3, 4);
+            btnEditar.Name = "btnEditar";
+            btnEditar.Size = new Size(86, 47);
+            btnEditar.TabIndex = 5;
+            btnEditar.Text = "Editar";
+            btnEditar.UseVisualStyleBackColor = false;
+            // 
+            // btnNuevo
+            // 
+            btnNuevo.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnNuevo.BackColor = Color.FromArgb(40, 167, 69);
+            btnNuevo.FlatAppearance.BorderSize = 0;
+            btnNuevo.FlatStyle = FlatStyle.Flat;
+            btnNuevo.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnNuevo.ForeColor = Color.White;
+            btnNuevo.Location = new Point(583, 23);
+            btnNuevo.Margin = new Padding(3, 4, 3, 4);
+            btnNuevo.Name = "btnNuevo";
+            btnNuevo.Size = new Size(86, 47);
+            btnNuevo.TabIndex = 4;
+            btnNuevo.Text = "+ Nuevo";
+            btnNuevo.UseVisualStyleBackColor = false;
             // 
             // btnBuscar
             // 
-            this.btnBuscar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(13)))), ((int)(((byte)(110)))), ((int)(((byte)(253)))));
-            this.btnBuscar.FlatAppearance.BorderSize = 0;
-            this.btnBuscar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnBuscar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnBuscar.ForeColor = System.Drawing.Color.White;
-            this.btnBuscar.Location = new System.Drawing.Point(270, 19);
-            this.btnBuscar.Name = "btnBuscar";
-            this.btnBuscar.Size = new System.Drawing.Size(80, 30);
-            this.btnBuscar.TabIndex = 2;
-            this.btnBuscar.Text = "Buscar";
-            this.btnBuscar.UseVisualStyleBackColor = false;
+            btnBuscar.BackColor = Color.FromArgb(13, 110, 253);
+            btnBuscar.FlatAppearance.BorderSize = 0;
+            btnBuscar.FlatStyle = FlatStyle.Flat;
+            btnBuscar.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnBuscar.ForeColor = Color.White;
+            btnBuscar.Location = new Point(309, 25);
+            btnBuscar.Margin = new Padding(3, 4, 3, 4);
+            btnBuscar.Name = "btnBuscar";
+            btnBuscar.Size = new Size(91, 40);
+            btnBuscar.TabIndex = 2;
+            btnBuscar.Text = "Buscar";
+            btnBuscar.UseVisualStyleBackColor = false;
             // 
             // txtBuscar
             // 
-            this.txtBuscar.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtBuscar.Location = new System.Drawing.Point(80, 21);
-            this.txtBuscar.Name = "txtBuscar";
-            this.txtBuscar.PlaceholderText = "ISBN o Título...";
-            this.txtBuscar.Size = new System.Drawing.Size(180, 25);
-            this.txtBuscar.TabIndex = 1;
+            txtBuscar.Font = new Font("Segoe UI", 10F);
+            txtBuscar.Location = new Point(91, 28);
+            txtBuscar.Margin = new Padding(3, 4, 3, 4);
+            txtBuscar.Name = "txtBuscar";
+            txtBuscar.PlaceholderText = "ISBN o Título...";
+            txtBuscar.Size = new Size(205, 30);
+            txtBuscar.TabIndex = 1;
             // 
             // lblBuscar
             // 
-            this.lblBuscar.AutoSize = true;
-            this.lblBuscar.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblBuscar.ForeColor = System.Drawing.Color.Gainsboro;
-            this.lblBuscar.Location = new System.Drawing.Point(20, 24);
-            this.lblBuscar.Name = "lblBuscar";
-            this.lblBuscar.Size = new System.Drawing.Size(52, 19);
-            this.lblBuscar.TabIndex = 0;
-            this.lblBuscar.Text = "Buscar:";
+            lblBuscar.AutoSize = true;
+            lblBuscar.Font = new Font("Segoe UI", 10F);
+            lblBuscar.ForeColor = Color.Gainsboro;
+            lblBuscar.Location = new Point(23, 32);
+            lblBuscar.Name = "lblBuscar";
+            lblBuscar.Size = new Size(64, 23);
+            lblBuscar.TabIndex = 0;
+            lblBuscar.Text = "Buscar:";
             // 
             // dgvLibros
             // 
@@ -175,29 +182,34 @@
             dataGridViewCellStyle2.ForeColor = Color.Gainsboro;
             dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(45, 45, 60);
             dataGridViewCellStyle2.SelectionForeColor = Color.White;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
             dgvLibros.DefaultCellStyle = dataGridViewCellStyle2;
             dgvLibros.EnableHeadersVisualStyles = false;
             dgvLibros.GridColor = Color.FromArgb(45, 45, 60);
-            dgvLibros.Location = new Point(30, 165);
+            dgvLibros.Location = new Point(34, 220);
+            dgvLibros.Margin = new Padding(3, 4, 3, 4);
             dgvLibros.MultiSelect = false;
             dgvLibros.Name = "dgvLibros";
             dgvLibros.ReadOnly = true;
             dgvLibros.RowHeadersVisible = false;
+            dgvLibros.RowHeadersWidth = 51;
             dgvLibros.RowTemplate.Height = 35;
             dgvLibros.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvLibros.Size = new Size(790, 395);
+            dgvLibros.Size = new Size(903, 527);
             dgvLibros.TabIndex = 2;
+            dgvLibros.CellContentClick += dgvLibros_CellContentClick;
             // 
             // formGestionCatalogo
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(30, 30, 45);
-            ClientSize = new Size(850, 590);
+            ClientSize = new Size(971, 787);
             Controls.Add(dgvLibros);
             Controls.Add(panelAcciones);
             Controls.Add(lblTitulo);
             FormBorderStyle = FormBorderStyle.None;
+            Margin = new Padding(3, 4, 3, 4);
             Name = "formGestionCatalogo";
             Text = "Catálogo Bibliográfico";
             panelAcciones.ResumeLayout(false);

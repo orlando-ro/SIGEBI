@@ -18,24 +18,53 @@ namespace SIGEBI.AppEscritorio.Services.Implementations
             _httpClient = httpClient;
         }
 
-        public async Task<List<AuditoriaResponseDTO>> ConsultarHistorialAuditoriaAsync(int? idResponsable = null, string? entidadAfectada = null)
+        public async Task<List<AuditoriaResponseDTO>> ConsultarHistorialAuditoriaAsync(
+            DateTime? fechaInicio = null,
+            DateTime? fechaFin = null,
+            string? accion = null,
+            string? entidadAfectada = null)
         {
             var queryParams = new List<string>();
-            if (idResponsable.HasValue)
-                queryParams.Add($"idResponsable={idResponsable}");
 
-            if (!string.IsNullOrWhiteSpace(entidadAfectada))
+            if (fechaInicio.HasValue)
+                queryParams.Add($"fechaInicio={fechaInicio.Value:yyyy-MM-dd}");
+
+            if (fechaFin.HasValue)
+                queryParams.Add($"fechaFin={fechaFin.Value:yyyy-MM-dd}");
+
+            if (!string.IsNullOrWhiteSpace(accion))
+                queryParams.Add($"accion={Uri.EscapeDataString(accion)}");
+
+            if (!string.IsNullOrWhiteSpace(entidadAfectada) && entidadAfectada != "Todos")
                 queryParams.Add($"entidadAfectada={Uri.EscapeDataString(entidadAfectada)}");
 
             string queryString = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : "";
 
             var response = await _httpClient.GetAsync($"RegistroAuditoria/ConsultarRegistrosAuditoria{queryString}");
-
-            // Si hay error, el ApiHelper lanzará la excepción hacia el Formulario
             await ApiHelper.ProcesarErrorApiAsync(response);
 
-            // Si llegamos aquí, fue un éxito (Status 200)
             return await response.Content.ReadFromJsonAsync<List<AuditoriaResponseDTO>>() ?? new List<AuditoriaResponseDTO>();
+        }
+
+        public async Task<byte[]> ExportarHistorialPDFAsync(
+            DateTime? fechaInicio = null,
+            DateTime? fechaFin = null,
+            string? accion = null,
+            string? entidadAfectada = null)
+        {
+            var queryParams = new List<string>();
+
+            if (fechaInicio.HasValue) queryParams.Add($"fechaInicio={fechaInicio.Value:yyyy-MM-dd}");
+            if (fechaFin.HasValue) queryParams.Add($"fechaFin={fechaFin.Value:yyyy-MM-dd}");
+            if (!string.IsNullOrWhiteSpace(accion)) queryParams.Add($"accion={Uri.EscapeDataString(accion)}");
+            if (!string.IsNullOrWhiteSpace(entidadAfectada) && entidadAfectada != "Todos") queryParams.Add($"entidadAfectada={Uri.EscapeDataString(entidadAfectada)}");
+
+            string queryString = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : "";
+
+            var response = await _httpClient.GetAsync($"RegistroAuditoria/ExportarPDF{queryString}");
+            await ApiHelper.ProcesarErrorApiAsync(response);
+
+            return await response.Content.ReadAsByteArrayAsync();
         }
     }
 }

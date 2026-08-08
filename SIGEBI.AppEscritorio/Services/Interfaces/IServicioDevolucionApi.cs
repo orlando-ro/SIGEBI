@@ -7,9 +7,10 @@ namespace SIGEBI.AppEscritorio.Services.Interfaces
     public interface IServicioDevolucionApi
     {
         Task<DevolucionResponseDTO?> ProcesarDevolucionAsync(DevolucionRequestDTO devolucion);
-        Task<List<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorUsuarioAsync(string identificador);
-        Task<List<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorRecursoAsync(string isbnLibro);
 
-        Task<List<DevolucionResponseDTO>> ConsultarHistorialCompletoAsync();
+       
+        Task<List<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorUsuarioAsync(string identificador, string condicion);
+        Task<List<DevolucionResponseDTO>> ConsultarHistorialDevolucionesPorTituloLibroAsync(string tituloLibro, string condicion);
+        Task<List<DevolucionResponseDTO>> ConsultarHistorialCompletoAsync(string condicion);
     }
 }

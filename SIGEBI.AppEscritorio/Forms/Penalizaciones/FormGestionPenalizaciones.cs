@@ -2,6 +2,7 @@
 using SIGEBI.AppEscritorio.Services.Interfaces;
 using SIGEBI.AppEscritorio.Utils;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,31 +19,45 @@ namespace SIGEBI.AppEscritorio.Forms.Penalizaciones
             _servicioPenalizacion = servicioPenalizacion;
         }
 
-        // 1. Carga automática con control de seguridad
         private async void FormGestionPenalizaciones_Load(object sender, EventArgs e)
         {
-            if (SessionManager.TipoUsuario != "PersonalBibliotecario" && SessionManager.TipoUsuario != "Administrador")
-            {
-                panelAcciones.Visible = false;
-                dgvPenalizaciones.Height += panelAcciones.Height;
-            }
+            // Inicializar el ComboBox de Filtros
+            cmbFiltroEstado.Items.Add("Multas Pendientes");
+            cmbFiltroEstado.Items.Add("Historial de Pagos");
+            cmbFiltroEstado.SelectedIndex = 0; // Selecciona "Pendientes" por defecto
 
-            await RecargarPendientesAsync();
+            await CargarDatosAsync();
         }
 
-        // 2. Método centralizado
-        private async Task RecargarPendientesAsync()
+        private async Task CargarDatosAsync()
         {
             try
             {
                 this.Cursor = Cursors.WaitCursor;
-                var pendientes = await _servicioPenalizacion.ObtenerTodasPendientesAsync();
-                dgvPenalizaciones.DataSource = pendientes.ToList();
-                txtMotivoResolucion.Clear();
+                string identificador = txtBusqueda.Text.Trim();
+                bool viendoHistorial = cmbFiltroEstado.SelectedIndex == 1;
+
+                IEnumerable<PenalizacionResponseDTO> resultados;
+
+                if (string.IsNullOrEmpty(identificador))
+                {
+                    resultados = viendoHistorial
+                        ? await _servicioPenalizacion.ObtenerTodasHistorialAsync()
+                        : await _servicioPenalizacion.ObtenerTodasPendientesAsync();
+                }
+                else
+                {
+                    resultados = viendoHistorial
+                        ? await _servicioPenalizacion.ObtenerHistorialPorUsuarioAsync(identificador)
+                        : await _servicioPenalizacion.ObtenerPendientesPorUsuariosAsync(identificador);
+                }
+
+                dgvPenalizaciones.DataSource = resultados.ToList();
+                dgvPenalizaciones.ClearSelection();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error al cargar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error al cargar datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 dgvPenalizaciones.DataSource = null;
             }
             finally
@@ -53,97 +68,42 @@ namespace SIGEBI.AppEscritorio.Forms.Penalizaciones
 
         private async void btnBuscar_Click(object sender, EventArgs e)
         {
-            string identificador = txtBusqueda.Text.Trim();
-
-            if (string.IsNullOrEmpty(identificador))
+            if (string.IsNullOrEmpty(txtBusqueda.Text.Trim()))
             {
-                MessageBox.Show("Por favor, ingrese la matrícula o número de empleado a buscar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Por favor, ingrese la matrícula o número de empleado.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtBusqueda.Focus();
                 return;
             }
-
-            await CargarPendientesUsuario(identificador);
+            await CargarDatosAsync();
         }
 
-        // 3. El botón ahora funciona como "Refrescar"
         private async void btnMostrarTodo_Click(object sender, EventArgs e)
         {
             txtBusqueda.Clear();
-            await RecargarPendientesAsync();
-
-            // Si después de recargar manual la tabla está vacía, mostramos aviso
-            if (dgvPenalizaciones.Rows.Count == 0)
-            {
-                MessageBox.Show("No hay penalizaciones pendientes en el sistema.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            await CargarDatosAsync();
         }
 
-        private async Task CargarPendientesUsuario(string identificador)
+        private async void cmbFiltroEstado_SelectedIndexChanged(object sender, EventArgs e)
         {
-            try
-            {
-                var pendientes = await _servicioPenalizacion.ObtenerPendientesPorUsuariosAsync(identificador);
-                dgvPenalizaciones.DataSource = pendientes;
-                txtMotivoResolucion.Clear();
-
-                if (!pendientes.Any())
-                {
-                    MessageBox.Show("Este usuario no tiene penalizaciones pendientes de pago.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error en la búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                dgvPenalizaciones.DataSource = null;
-            }
+            await CargarDatosAsync();
         }
 
-        private async void btnRegistrarPago_Click(object sender, EventArgs e)
+        private async void dgvPenalizaciones_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (dgvPenalizaciones.CurrentRow == null)
+            if (e.RowIndex < 0) return;
+
+            // Extraemos el objeto completo con la metadata oculta
+            var penalizacion = (PenalizacionResponseDTO)dgvPenalizaciones.Rows[e.RowIndex].DataBoundItem;
+
+            // Bloquear acciones si es un usuario normal (solo personal/admin pueden procesar pagos)
+            bool esStaff = SessionManager.TipoUsuario == "PersonalBibliotecario" || SessionManager.TipoUsuario == "Administrador";
+
+            using (var modal = new FormDetallePenalizacion(penalizacion, _servicioPenalizacion, esStaff))
             {
-                MessageBox.Show("Por favor, seleccione una penalización de la tabla.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            string motivoResolucion = txtMotivoResolucion.Text.Trim();
-            if (string.IsNullOrEmpty(motivoResolucion))
-            {
-                MessageBox.Show("Debe especificar el método o motivo de resolución (Ej: Pago en efectivo, Exoneración).", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtMotivoResolucion.Focus();
-                return;
-            }
-
-            int idPenalizacion = Convert.ToInt32(dgvPenalizaciones.CurrentRow.Cells["IdPenalizacion"].Value);
-
-            string matricula = dgvPenalizaciones.CurrentRow.Cells["Matricula"].Value?.ToString() ?? "";
-            string empleado = dgvPenalizaciones.CurrentRow.Cells["NumeroEmpleado"].Value?.ToString() ?? "";
-            string identificadorFinal = !string.IsNullOrEmpty(matricula) ? matricula : empleado;
-
-            var peticion = new PenalizacionRequestDTO
-            {
-                MatriculaONumeroEmpleado = identificadorFinal,
-                MotivoResolucion = motivoResolucion
-            };
-
-            try
-            {
-                await _servicioPenalizacion.ProcesarPagoMultaAsync(idPenalizacion, peticion);
-                MessageBox.Show($"El pago de la penalización #{idPenalizacion} ha sido registrado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // Si el textbox de búsqueda tiene texto, recarga solo ese usuario; si no, recarga todo
-                if (!string.IsNullOrEmpty(txtBusqueda.Text.Trim()))
+                if (modal.ShowDialog() == DialogResult.OK)
                 {
-                    await CargarPendientesUsuario(txtBusqueda.Text.Trim());
+                    await CargarDatosAsync(); // Recarga si se efectuó un pago
                 }
-                else
-                {
-                    await RecargarPendientesAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error al registrar el pago", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

@@ -40,7 +40,7 @@ namespace SIGEBI.Application.Services
                 idResponsable: idResponsable,
                 tipoAccion: "Registrar usuario",
                 entidadAfectada: "Usuario",
-                detalles: $"Se ha registrado el usuario {nuevoUsuario.Nombre} con ID {nuevoUsuario.IdUsuario}."
+                detalles: $"Se ha registrado el usuario {nuevoUsuario.Nombre}."
             );
         }
 
@@ -64,7 +64,7 @@ namespace SIGEBI.Application.Services
                 idResponsable: idResponsable,
                 tipoAccion: "Suspender usuario",
                 entidadAfectada: "Usuario",
-                detalles: $"Se ha suspendido el usuario con ID {idUsuario}."
+                detalles: $"Se ha suspendido el usuario {usuario.Nombre}."
             );
         }
 
@@ -171,7 +171,7 @@ namespace SIGEBI.Application.Services
                 idResponsable: idResponsable,
                 tipoAccion: "Actualizar usuario",
                 entidadAfectada: "Usuario",
-                detalles: $"Se ha actualizado la información del usuario con ID {idUsuario}."
+                detalles: $"Se ha actualizado la información del usuario {usuario.Nombre}."
             );
         }
 
