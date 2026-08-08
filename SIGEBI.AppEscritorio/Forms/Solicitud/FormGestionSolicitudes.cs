@@ -97,7 +97,6 @@ namespace SIGEBI.AppEscritorio.Forms.Solicitudes
             }
         }
 
-        // 👇 INYECCIÓN DE BOTONES INLINE CON DISEÑO PROFESIONAL
         private void ConfigurarColumnasAcciones()
         {
             if (dgvSolicitudes.Columns.Contains("ColDetalles")) return;
@@ -111,10 +110,11 @@ namespace SIGEBI.AppEscritorio.Forms.Solicitudes
             colDetalles.FlatStyle = FlatStyle.Flat;
             colDetalles.DefaultCellStyle.BackColor = Color.FromArgb(13, 110, 253);
             colDetalles.DefaultCellStyle.ForeColor = Color.White;
-            colDetalles.DefaultCellStyle.Padding = new Padding(3); // Margen interno para que no toque los bordes
+            // 🔥 UX FIX: Prevenimos que el color de selección arruine el color del botón
+            colDetalles.DefaultCellStyle.SelectionBackColor = Color.FromArgb(13, 110, 253);
+            colDetalles.DefaultCellStyle.Padding = new Padding(3);
             dgvSolicitudes.Columns.Add(colDetalles);
 
-            // Solo mostrar Aprobar y Rechazar si el usuario tiene permisos administrativos
             if (SessionManager.TipoUsuario == "PersonalBibliotecario" || SessionManager.TipoUsuario == "Administrador")
             {
                 // 2. Botón de Aprobar (Verde)
@@ -126,6 +126,8 @@ namespace SIGEBI.AppEscritorio.Forms.Solicitudes
                 colAprobar.FlatStyle = FlatStyle.Flat;
                 colAprobar.DefaultCellStyle.BackColor = Color.FromArgb(25, 135, 84);
                 colAprobar.DefaultCellStyle.ForeColor = Color.White;
+                // 🔥 UX FIX: Mantiene el verde incluso si la fila está seleccionada
+                colAprobar.DefaultCellStyle.SelectionBackColor = Color.FromArgb(25, 135, 84);
                 colAprobar.DefaultCellStyle.Padding = new Padding(3);
                 dgvSolicitudes.Columns.Add(colAprobar);
 
@@ -138,12 +140,13 @@ namespace SIGEBI.AppEscritorio.Forms.Solicitudes
                 colRechazar.FlatStyle = FlatStyle.Flat;
                 colRechazar.DefaultCellStyle.BackColor = Color.FromArgb(220, 53, 69);
                 colRechazar.DefaultCellStyle.ForeColor = Color.White;
+                // 🔥 UX FIX: Mantiene el rojo incluso si la fila está seleccionada
+                colRechazar.DefaultCellStyle.SelectionBackColor = Color.FromArgb(220, 53, 69);
                 colRechazar.DefaultCellStyle.Padding = new Padding(3);
                 dgvSolicitudes.Columns.Add(colRechazar);
             }
         }
 
-        // 👇 ENRUTADOR DE EVENTOS DE CLIC EN LA TABLA
         private async void dgvSolicitudes_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || !(dgvSolicitudes.Columns[e.ColumnIndex] is DataGridViewButtonColumn)) return;
@@ -165,7 +168,6 @@ namespace SIGEBI.AppEscritorio.Forms.Solicitudes
             }
         }
 
-        // 👇 LÓGICA DE NEGOCIO AISLADA
         private async System.Threading.Tasks.Task ProcesarAprobacion(SolicitudResponseDTO solicitud)
         {
             var confirmacion = MessageBox.Show($"¿Está seguro que desea APROBAR la solicitud de {solicitud.NombreUsuarioSolicitante}?", "Confirmar Aprobación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -218,13 +220,12 @@ namespace SIGEBI.AppEscritorio.Forms.Solicitudes
             }
         }
 
-        // VENTANA MODAL PARA DETALLES DE SOLICITUD
+        // 🔥 UX FIX: POSICIONAMIENTO RELATIVO PARA EVITAR OVERLAP EN RESOLUCIONES ALTAS
         private void MostrarDetallesEmergente(SolicitudResponseDTO solicitud)
         {
             Form detalles = new Form()
             {
                 Width = 450,
-                Height = 480,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 Text = "Detalles Completos de Solicitud",
                 StartPosition = FormStartPosition.CenterParent,
@@ -233,37 +234,43 @@ namespace SIGEBI.AppEscritorio.Forms.Solicitudes
                 MinimizeBox = false
             };
 
-            Label lblHeader = new Label() { Left = 20, Top = 20, Text = "Información General", ForeColor = Color.FromArgb(13, 110, 253), AutoSize = true, Font = new Font("Segoe UI", 12F, FontStyle.Bold) };
+            Label lblHeader = new Label() { Text = "Información General", ForeColor = Color.FromArgb(13, 110, 253), AutoSize = true, Font = new Font("Segoe UI", 12F, FontStyle.Bold) };
+            lblHeader.Location = new Point(20, 20);
+            detalles.Controls.Add(lblHeader);
 
             string identificador = !string.IsNullOrEmpty(solicitud.Matricula) ? $"Matrícula: {solicitud.Matricula}" : $"N° Empleado: {solicitud.NumeroEmpleado}";
-            Label lblInfo = new Label() { Left = 20, Top = 55, Text = $"Fecha: {solicitud.FechaSolicitud}\nEstado: {solicitud.Estado}\n\nSolicitante: {solicitud.NombreUsuarioSolicitante}\n{identificador}", ForeColor = Color.White, AutoSize = true, Font = new Font("Segoe UI", 10.5F) };
+            Label lblInfo = new Label() { Text = $"Fecha: {solicitud.FechaSolicitud}\nEstado: {solicitud.Estado}\n\nSolicitante: {solicitud.NombreUsuarioSolicitante}\n{identificador}", ForeColor = Color.White, AutoSize = true, Font = new Font("Segoe UI", 10.5F) };
+            lblInfo.Location = new Point(20, lblHeader.Location.Y + lblHeader.PreferredHeight + 15);
+            detalles.Controls.Add(lblInfo);
 
-            Label lblLibrosHeader = new Label() { Left = 20, Top = 180, Text = "Libros Solicitados", ForeColor = Color.FromArgb(13, 110, 253), AutoSize = true, Font = new Font("Segoe UI", 12F, FontStyle.Bold) };
+            Label lblLibrosHeader = new Label() { Text = "Libros Solicitados", ForeColor = Color.FromArgb(13, 110, 253), AutoSize = true, Font = new Font("Segoe UI", 12F, FontStyle.Bold) };
+            lblLibrosHeader.Location = new Point(20, lblInfo.Location.Y + lblInfo.PreferredHeight + 20);
+            detalles.Controls.Add(lblLibrosHeader);
 
-            TextBox txtLibros = new TextBox() { Left = 20, Top = 215, Width = 390, Height = 140, Multiline = true, ReadOnly = true, BackColor = Color.FromArgb(40, 40, 60), ForeColor = Color.White, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Segoe UI", 10.5F) };
+            TextBox txtLibros = new TextBox() { Width = 390, Height = 140, Multiline = true, ReadOnly = true, BackColor = Color.FromArgb(40, 40, 60), ForeColor = Color.White, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Segoe UI", 10.5F) };
             txtLibros.Text = solicitud.LibrosSolicitados.Replace(" | ", "\r\n• ");
             if (!txtLibros.Text.StartsWith("• ")) txtLibros.Text = "• " + txtLibros.Text;
-
-            Button btnCerrar = new Button() { Text = "Cerrar", Left = 310, Width = 100, Top = 380, DialogResult = DialogResult.OK, BackColor = Color.FromArgb(70, 75, 90), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand };
-            btnCerrar.FlatAppearance.BorderSize = 0;
-
-            detalles.Controls.Add(lblHeader);
-            detalles.Controls.Add(lblInfo);
-            detalles.Controls.Add(lblLibrosHeader);
+            txtLibros.Location = new Point(20, lblLibrosHeader.Location.Y + lblLibrosHeader.PreferredHeight + 10);
             detalles.Controls.Add(txtLibros);
+
+            Button btnCerrar = new Button() { Text = "Cerrar", Width = 100, Height = 35, DialogResult = DialogResult.OK, BackColor = Color.FromArgb(70, 75, 90), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand };
+            btnCerrar.FlatAppearance.BorderSize = 0;
+            btnCerrar.Location = new Point(detalles.ClientSize.Width - btnCerrar.Width - 20, txtLibros.Location.Y + txtLibros.Height + 20);
             detalles.Controls.Add(btnCerrar);
+
+            // Ajustamos el tamaño final de la ventana basado en dónde quedó el último botón
+            detalles.ClientSize = new Size(430, btnCerrar.Location.Y + btnCerrar.Height + 20);
             detalles.AcceptButton = btnCerrar;
 
             detalles.ShowDialog();
         }
 
-        // VENTANA MODAL PARA MOTIVO DE RECHAZO
+        // 🔥 UX FIX: POSICIONAMIENTO RELATIVO APLICADO TAMBIÉN AQUÍ
         private string? SolicitarMotivoEmergente()
         {
             Form prompt = new Form()
             {
                 Width = 450,
-                Height = 250,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 Text = "Denegar Solicitud",
                 StartPosition = FormStartPosition.CenterParent,
@@ -272,19 +279,25 @@ namespace SIGEBI.AppEscritorio.Forms.Solicitudes
                 MinimizeBox = false
             };
 
-            Label textLabel = new Label() { Left = 20, Top = 20, Text = "Motivo del rechazo:", ForeColor = Color.White, AutoSize = true, Font = new Font("Segoe UI", 10.5F, FontStyle.Bold) };
-            TextBox textBox = new TextBox() { Left = 20, Top = 50, Width = 390, Height = 80, Multiline = true, BackColor = Color.FromArgb(40, 40, 60), ForeColor = Color.White, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Segoe UI", 10.5F) };
-
-            Button confirmation = new Button() { Text = "Confirmar", Left = 200, Width = 100, Top = 150, DialogResult = DialogResult.OK, BackColor = Color.FromArgb(220, 53, 69), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand };
-            confirmation.FlatAppearance.BorderSize = 0;
-
-            Button cancel = new Button() { Text = "Cancelar", Left = 310, Width = 100, Top = 150, DialogResult = DialogResult.Cancel, BackColor = Color.FromArgb(70, 75, 90), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand };
-            cancel.FlatAppearance.BorderSize = 0;
-
-            prompt.Controls.Add(textBox);
-            prompt.Controls.Add(confirmation);
-            prompt.Controls.Add(cancel);
+            Label textLabel = new Label() { Text = "Motivo del rechazo:", ForeColor = Color.White, AutoSize = true, Font = new Font("Segoe UI", 10.5F, FontStyle.Bold) };
+            textLabel.Location = new Point(20, 20);
             prompt.Controls.Add(textLabel);
+
+            TextBox textBox = new TextBox() { Width = 390, Height = 80, Multiline = true, BackColor = Color.FromArgb(40, 40, 60), ForeColor = Color.White, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Segoe UI", 10.5F) };
+            textBox.Location = new Point(20, textLabel.Location.Y + textLabel.PreferredHeight + 10);
+            prompt.Controls.Add(textBox);
+
+            Button cancel = new Button() { Text = "Cancelar", Width = 100, Height = 35, DialogResult = DialogResult.Cancel, BackColor = Color.FromArgb(70, 75, 90), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand };
+            cancel.FlatAppearance.BorderSize = 0;
+            cancel.Location = new Point(prompt.ClientSize.Width - cancel.Width - 20, textBox.Location.Y + textBox.Height + 20);
+            prompt.Controls.Add(cancel);
+
+            Button confirmation = new Button() { Text = "Confirmar", Width = 100, Height = 35, DialogResult = DialogResult.OK, BackColor = Color.FromArgb(220, 53, 69), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand };
+            confirmation.FlatAppearance.BorderSize = 0;
+            confirmation.Location = new Point(cancel.Left - confirmation.Width - 10, textBox.Location.Y + textBox.Height + 20);
+            prompt.Controls.Add(confirmation);
+
+            prompt.ClientSize = new Size(430, cancel.Location.Y + cancel.Height + 20);
             prompt.AcceptButton = confirmation;
             prompt.CancelButton = cancel;
 

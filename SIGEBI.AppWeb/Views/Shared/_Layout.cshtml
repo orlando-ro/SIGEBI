@@ -11,10 +11,10 @@
     <link rel="stylesheet" href="~/SIGEBI.AppWeb.styles.css" asp-append-version="true" />
 
     <script>
-            (function() {
-                const savedTheme = localStorage.getItem('sigebi-theme') || 'light';
-                document.documentElement.setAttribute('data-theme', savedTheme);
-            })();
+        (function() {
+            const savedTheme = localStorage.getItem('sigebi-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
     </script>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -50,7 +50,8 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fw-semibold px-2" asp-area="" asp-controller="Solicitudes" asp-action="Index">
+                                <!-- 🔥 CAMBIO APLICADO: Ahora apunta a Crear en lugar de Index -->
+                                <a class="nav-link fw-semibold px-2" asp-area="" asp-controller="Solicitudes" asp-action="Crear">
                                     <i class="bi bi-inbox me-1"></i> Solicitudes
                                 </a>
                             </li>
@@ -85,10 +86,10 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             var nombreUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value
-                                             ?? User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value
-                                             ?? User.FindFirst("Nombre")?.Value
-                                             ?? User.Identity?.Name
-                                             ?? "Usuario";
+                            ?? User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value
+                            ?? User.FindFirst("Nombre")?.Value
+                            ?? User.Identity?.Name
+                            ?? "Usuario";
 
                             <li class="nav-item dropdown ms-2">
                                 <a class="nav-link dropdown-toggle fw-bold d-flex align-items-center gap-2" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -149,24 +150,24 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     <script>
-            function setTheme(themeName) {
-                document.documentElement.setAttribute('data-theme', themeName);
-                localStorage.setItem('sigebi-theme', themeName);
-            }
+        function setTheme(themeName) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            localStorage.setItem('sigebi-theme', themeName);
+        }
     </script>
 
     <style>
-            .notification-bell {
-                background-color: rgba(255, 193, 7, 0.15);
-                color: #ffc107 !important;
-                transition: all 0.2s ease-in-out;
-            }
+        .notification-bell {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: #ffc107 !important;
+            transition: all 0.2s ease-in-out;
+        }
 
-                .notification-bell:hover {
-                    background-color: #ffc107 !important;
-                    color: #212529 !important;
-                    transform: scale(1.05);
-                }
+            .notification-bell:hover {
+                background-color: #ffc107 !important;
+                color: #212529 !important;
+                transform: scale(1.05);
+            }
     </style>
 
     @await RenderSectionAsync("Scripts", required: false)

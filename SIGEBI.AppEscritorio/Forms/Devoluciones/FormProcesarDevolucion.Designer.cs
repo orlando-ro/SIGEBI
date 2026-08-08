@@ -13,6 +13,8 @@
         #region Windows Form Designer generated code
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             lblTitulo = new System.Windows.Forms.Label();
             lblHeaderInfo = new System.Windows.Forms.Label();
             lblNombreUsuario = new System.Windows.Forms.Label();
@@ -20,14 +22,11 @@
             lblFechas = new System.Windows.Forms.Label();
             lblRetraso = new System.Windows.Forms.Label();
             lblEjemplaresTitulo = new System.Windows.Forms.Label();
-            txtEjemplares = new System.Windows.Forms.TextBox();
+            dgvEjemplares = new System.Windows.Forms.DataGridView();
             lblSeparador = new System.Windows.Forms.Label();
-            lblCondicion = new System.Windows.Forms.Label();
-            cmbCondicion = new System.Windows.Forms.ComboBox();
-            lblObservaciones = new System.Windows.Forms.Label();
-            txtObservaciones = new System.Windows.Forms.TextBox();
             btnProcesar = new System.Windows.Forms.Button();
             btnCerrar = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(dgvEjemplares)).BeginInit();
             SuspendLayout();
             // 
             // lblTitulo
@@ -37,7 +36,7 @@
             lblTitulo.ForeColor = System.Drawing.Color.White;
             lblTitulo.Location = new System.Drawing.Point(20, 20);
             lblTitulo.Name = "lblTitulo";
-            lblTitulo.Text = "Detalles y Devolución";
+            lblTitulo.Text = "Detalles y Devolución Múltiple";
             // 
             // lblHeaderInfo
             // 
@@ -86,59 +85,47 @@
             lblEjemplaresTitulo.ForeColor = System.Drawing.Color.FromArgb(13, 110, 253);
             lblEjemplaresTitulo.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             lblEjemplaresTitulo.Location = new System.Drawing.Point(20, 205);
-            lblEjemplaresTitulo.Text = "EJEMPLARES FÍSICOS PRESTADOS";
+            lblEjemplaresTitulo.Text = "EVALUACIÓN DE EJEMPLARES FÍSICOS";
             // 
-            // txtEjemplares
+            // dgvEjemplares
             // 
-            txtEjemplares.BackColor = System.Drawing.Color.FromArgb(40, 40, 60);
-            txtEjemplares.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            txtEjemplares.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            txtEjemplares.ForeColor = System.Drawing.Color.White;
-            txtEjemplares.Location = new System.Drawing.Point(20, 230);
-            txtEjemplares.Multiline = true;
-            txtEjemplares.ReadOnly = true;
-            txtEjemplares.Size = new System.Drawing.Size(410, 80);
+            dgvEjemplares.AllowUserToAddRows = false;
+            dgvEjemplares.AllowUserToDeleteRows = false;
+            dgvEjemplares.AllowUserToResizeRows = false;
+            dgvEjemplares.BackgroundColor = System.Drawing.Color.FromArgb(40, 40, 60);
+            dgvEjemplares.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            dgvEjemplares.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(15, 18, 28);
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(15, 18, 28);
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
+            dgvEjemplares.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dgvEjemplares.ColumnHeadersHeight = 35;
+            dgvEjemplares.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(30, 34, 48);
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(13, 110, 253);
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
+            dgvEjemplares.DefaultCellStyle = dataGridViewCellStyle2;
+            dgvEjemplares.EnableHeadersVisualStyles = false;
+            dgvEjemplares.GridColor = System.Drawing.Color.FromArgb(70, 75, 90);
+            dgvEjemplares.Location = new System.Drawing.Point(20, 230);
+            dgvEjemplares.Name = "dgvEjemplares";
+            dgvEjemplares.RowHeadersVisible = false;
+            dgvEjemplares.RowTemplate.Height = 35;
+            dgvEjemplares.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            dgvEjemplares.Size = new System.Drawing.Size(650, 160);
+            dgvEjemplares.TabIndex = 0;
             // 
             // lblSeparador
             // 
             lblSeparador.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            lblSeparador.Location = new System.Drawing.Point(20, 325);
-            lblSeparador.Size = new System.Drawing.Size(410, 2);
-            // 
-            // lblCondicion
-            // 
-            lblCondicion.AutoSize = true;
-            lblCondicion.ForeColor = System.Drawing.Color.Gainsboro;
-            lblCondicion.Location = new System.Drawing.Point(20, 345);
-            lblCondicion.Text = "Condición de entrega física:";
-            // 
-            // cmbCondicion
-            // 
-            cmbCondicion.BackColor = System.Drawing.Color.FromArgb(40, 40, 60);
-            cmbCondicion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            cmbCondicion.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            cmbCondicion.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            cmbCondicion.ForeColor = System.Drawing.Color.White;
-            cmbCondicion.Location = new System.Drawing.Point(20, 370);
-            cmbCondicion.Size = new System.Drawing.Size(410, 31);
-            cmbCondicion.SelectedIndexChanged += cmbCondicion_SelectedIndexChanged;
-            // 
-            // lblObservaciones
-            // 
-            lblObservaciones.AutoSize = true;
-            lblObservaciones.ForeColor = System.Drawing.Color.Gainsboro;
-            lblObservaciones.Location = new System.Drawing.Point(20, 410);
-            lblObservaciones.Text = "Observaciones (Opcional):";
-            // 
-            // txtObservaciones
-            // 
-            txtObservaciones.BackColor = System.Drawing.Color.FromArgb(40, 40, 60);
-            txtObservaciones.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            txtObservaciones.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            txtObservaciones.ForeColor = System.Drawing.Color.White;
-            txtObservaciones.Location = new System.Drawing.Point(20, 435);
-            txtObservaciones.Multiline = true;
-            txtObservaciones.Size = new System.Drawing.Size(410, 80);
+            lblSeparador.Location = new System.Drawing.Point(20, 410);
+            lblSeparador.Size = new System.Drawing.Size(650, 2);
             // 
             // btnProcesar
             // 
@@ -148,7 +135,7 @@
             btnProcesar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             btnProcesar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             btnProcesar.ForeColor = System.Drawing.Color.White;
-            btnProcesar.Location = new System.Drawing.Point(20, 535);
+            btnProcesar.Location = new System.Drawing.Point(20, 430);
             btnProcesar.Size = new System.Drawing.Size(260, 45);
             btnProcesar.Text = "✓ Registrar Devolución";
             btnProcesar.Click += btnProcesar_Click;
@@ -161,9 +148,9 @@
             btnCerrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             btnCerrar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             btnCerrar.ForeColor = System.Drawing.Color.White;
-            btnCerrar.Location = new System.Drawing.Point(290, 535);
+            btnCerrar.Location = new System.Drawing.Point(530, 430);
             btnCerrar.Size = new System.Drawing.Size(140, 45);
-            btnCerrar.Text = "Cerrar";
+            btnCerrar.Text = "Cancelar";
             btnCerrar.Click += btnCerrar_Click;
             // 
             // FormProcesarDevolucion
@@ -171,15 +158,11 @@
             AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.Color.FromArgb(30, 30, 45);
-            ClientSize = new System.Drawing.Size(450, 610); // Ligeramente más alto para el nuevo subtítulo
+            ClientSize = new System.Drawing.Size(690, 500);
             Controls.Add(btnCerrar);
             Controls.Add(btnProcesar);
-            Controls.Add(txtObservaciones);
-            Controls.Add(lblObservaciones);
-            Controls.Add(cmbCondicion);
-            Controls.Add(lblCondicion);
             Controls.Add(lblSeparador);
-            Controls.Add(txtEjemplares);
+            Controls.Add(dgvEjemplares);
             Controls.Add(lblEjemplaresTitulo);
             Controls.Add(lblRetraso);
             Controls.Add(lblFechas);
@@ -192,8 +175,9 @@
             MinimizeBox = false;
             StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             Name = "FormProcesarDevolucion";
-            Text = "Gestión de Préstamo";
+            Text = "Gestión de Préstamo - Evaluación Individual";
             Load += FormProcesarDevolucion_Load;
+            ((System.ComponentModel.ISupportInitialize)(dgvEjemplares)).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -206,12 +190,8 @@
         private System.Windows.Forms.Label lblFechas;
         private System.Windows.Forms.Label lblRetraso;
         private System.Windows.Forms.Label lblEjemplaresTitulo;
-        private System.Windows.Forms.TextBox txtEjemplares;
+        private System.Windows.Forms.DataGridView dgvEjemplares;
         private System.Windows.Forms.Label lblSeparador;
-        private System.Windows.Forms.Label lblCondicion;
-        private System.Windows.Forms.ComboBox cmbCondicion;
-        private System.Windows.Forms.Label lblObservaciones;
-        private System.Windows.Forms.TextBox txtObservaciones;
         private System.Windows.Forms.Button btnProcesar;
         private System.Windows.Forms.Button btnCerrar;
     }
